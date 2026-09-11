@@ -1,0 +1,2733 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AFSS — Gestão de Eventos</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJwAAACgCAMAAADO3vWpAAAKMWlDQ1BJQ0MgUHJvZmlsZQAAeJydlndUU9kWh8+9N71QkhCKlNBraFICSA29SJEuKjEJEErAkAAiNkRUcERRkaYIMijggKNDkbEiioUBUbHrBBlE1HFwFBuWSWStGd+8ee/Nm98f935rn73P3Wfvfda6AJD8gwXCTFgJgAyhWBTh58WIjYtnYAcBDPAAA2wA4HCzs0IW+EYCmQJ82IxsmRP4F726DiD5+yrTP4zBAP+flLlZIjEAUJiM5/L42VwZF8k4PVecJbdPyZi2NE3OMErOIlmCMlaTc/IsW3z2mWUPOfMyhDwZy3PO4mXw5Nwn4405Er6MkWAZF+cI+LkyviZjg3RJhkDGb+SxGXxONgAoktwu5nNTZGwtY5IoMoIt43kA4EjJX/DSL1jMzxPLD8XOzFouEiSniBkmXFOGjZMTi+HPz03ni8XMMA43jSPiMdiZGVkc4XIAZs/8WRR5bRmyIjvYODk4MG0tbb4o1H9d/JuS93aWXoR/7hlEH/jD9ld+mQ0AsKZltdn6h21pFQBd6wFQu/2HzWAvAIqyvnUOfXEeunxeUsTiLGcrq9zcXEsBn2spL+jv+p8Of0NffM9Svt3v5WF485M4knQxQ143bmZ6pkTEyM7icPkM5p+H+B8H/nUeFhH8JL6IL5RFRMumTCBMlrVbyBOIBZlChkD4n5r4D8P+pNm5lona+BHQllgCpSEaQH4eACgqESAJe2Qr0O99C8ZHA/nNi9GZmJ37z4L+fVe4TP7IFiR/jmNHRDK4ElHO7Jr8WgI0IABFQAPqQBvoAxPABLbAEbgAD+ADAkEoiARxYDHgghSQAUQgFxSAtaAYlIKtYCeoBnWgETSDNnAYdIFj4DQ4By6By2AE3AFSMA6egCnwCsxAEISFyBAVUod0IEPIHLKFWJAb5AMFQxFQHJQIJUNCSAIVQOugUqgcqobqoWboW+godBq6AA1Dt6BRaBL6FXoHIzAJpsFasBFsBbNgTzgIjoQXwcnwMjgfLoK3wJVwA3wQ7oRPw5fgEVgKP4GnEYAQETqiizARFsJGQpF4JAkRIauQEqQCaUDakB6kH7mKSJGnyFsUBkVFMVBMlAvKHxWF4qKWoVahNqOqUQdQnag+1FXUKGoK9RFNRmuizdHO6AB0LDoZnYsuRlegm9Ad6LPoEfQ4+hUGg6FjjDGOGH9MHCYVswKzGbMb0445hRnGjGGmsVisOtYc64oNxXKwYmwxtgp7EHsSewU7jn2DI+J0cLY4X1w8TogrxFXgWnAncFdwE7gZvBLeEO+MD8Xz8MvxZfhGfA9+CD+OnyEoE4wJroRIQiphLaGS0EY4S7hLeEEkEvWITsRwooC4hlhJPEQ8TxwlviVRSGYkNimBJCFtIe0nnSLdIr0gk8lGZA9yPFlM3kJuJp8h3ye/UaAqWCoEKPAUVivUKHQqXFF4pohXNFT0VFysmK9YoXhEcUjxqRJeyUiJrcRRWqVUo3RU6YbStDJV2UY5VDlDebNyi/IF5UcULMWI4kPhUYoo+yhnKGNUhKpPZVO51HXURupZ6jgNQzOmBdBSaaW0b2iDtCkVioqdSrRKnkqNynEVKR2hG9ED6On0Mvph+nX6O1UtVU9Vvuom1TbVK6qv1eaoeajx1UrU2tVG1N6pM9R91NPUt6l3qd/TQGmYaYRr5Grs0Tir8XQObY7LHO6ckjmH59zWhDXNNCM0V2ju0xzQnNbS1vLTytKq0jqj9VSbru2hnaq9Q/uE9qQOVcdNR6CzQ+ekzmOGCsOTkc6oZPQxpnQ1df11Jbr1uoO6M3rGelF6hXrtevf0Cfos/ST9Hfq9+lMGOgYhBgUGrQa3DfGGLMMUw12G/YavjYyNYow2GHUZPTJWMw4wzjduNb5rQjZxN1lm0mByzRRjyjJNM91tetkMNrM3SzGrMRsyh80dzAXmu82HLdAWThZCiwaLG0wS05OZw2xljlrSLYMtCy27LJ9ZGVjFW22z6rf6aG1vnW7daH3HhmITaFNo02Pzq62ZLde2xvbaXPJc37mr53bPfW5nbse322N3055qH2K/wb7X/oODo4PIoc1h0tHAMdGx1vEGi8YKY21mnXdCO3k5rXY65vTW2cFZ7HzY+RcXpkuaS4vLo3nG8/jzGueNueq5clzrXaVuDLdEt71uUnddd457g/sDD30PnkeTx4SnqWeq50HPZ17WXiKvDq/XbGf2SvYpb8Tbz7vEe9CH4hPlU+1z31fPN9m31XfKz95vhd8pf7R/kP82/xsBWgHcgOaAqUDHwJWBfUGkoAVB1UEPgs2CRcE9IXBIYMj2kLvzDecL53eFgtCA0O2h98KMw5aFfR+OCQ8Lrwl/GGETURDRv4C6YMmClgWvIr0iyyLvRJlESaJ6oxWjE6Kbo1/HeMeUx0hjrWJXxl6K04gTxHXHY+Oj45vipxf6LNy5cDzBPqE44foi40V5iy4s1licvvj4EsUlnCVHEtGJMYktie85oZwGzvTSgKW1S6e4bO4u7hOeB28Hb5Lvyi/nTyS5JpUnPUp2Td6ePJninlKR8lTAFlQLnqf6p9alvk4LTduf9ik9Jr09A5eRmHFUSBGmCfsytTPzMoezzLOKs6TLnJftXDYlChI1ZUPZi7K7xTTZz9SAxESyXjKa45ZTk/MmNzr3SJ5ynjBvYLnZ8k3LJ/J9879egVrBXdFboFuwtmB0pefK+lXQqqWrelfrry5aPb7Gb82BtYS1aWt/KLQuLC98uS5mXU+RVtGaorH1futbixWKRcU3NrhsqNuI2ijYOLhp7qaqTR9LeCUXS61LK0rfb+ZuvviVzVeVX33akrRlsMyhbM9WzFbh1uvb3LcdKFcuzy8f2x6yvXMHY0fJjpc7l+y8UGFXUbeLsEuyS1oZXNldZVC1tep9dUr1SI1XTXutZu2m2te7ebuv7PHY01anVVda926vYO/Ner/6zgajhop9mH05+x42Rjf2f836urlJo6m06cN+4X7pgYgDfc2Ozc0tmi1lrXCrpHXyYMLBy994f9Pdxmyrb6e3lx4ChySHHn+b+O31w0GHe4+wjrR9Z/hdbQe1o6QT6lzeOdWV0iXtjusePhp4tLfHpafje8vv9x/TPVZzXOV42QnCiaITn07mn5w+lXXq6enk02O9S3rvnIk9c60vvG/wbNDZ8+d8z53p9+w/ed71/LELzheOXmRd7LrkcKlzwH6g4wf7HzoGHQY7hxyHui87Xe4Znjd84or7ldNXva+euxZw7dLI/JHh61HXb95IuCG9ybv56Fb6ree3c27P3FlzF3235J7SvYr7mvcbfjT9sV3qID0+6j068GDBgztj3LEnP2X/9H686CH5YcWEzkTzI9tHxyZ9Jy8/Xvh4/EnWk5mnxT8r/1z7zOTZd794/DIwFTs1/lz0/NOvm1+ov9j/0u5l73TY9P1XGa9mXpe8UX9z4C3rbf+7mHcTM7nvse8rP5h+6PkY9PHup4xPn34D94Tz+6TMXDkAAAA/UExURQAAAOtHJO5SF/cgGOdFIudFIv9XV749I+4kcuo8SOo3XPUJ9KpUAesnmn8BAOc+OwAAAAAAAAAAAAAAAAAAAMMKmykAAAAQdFJOUwD5FAWkYQIEKJ5fBgMbAs3D20GZAAAQMElEQVR42u1ch3bbuBIFZwBChaL//293GhoJUJQS2TnvmTm7cWiWy2mYCufePmZ3mZ4eF7rsJ47Z3f5lcEQ5oAO7B//mh8E5AdE/0P005fyYpf7HKXcALrhfcL/gfsH9gvsF9zFwSODWcABuJXD4E+DuM5yjHMz376YaMD5ymfyRv0S/vDEy+Ebq3aMgu1YofAghOSP0o68wXwVf/B7yXaBB5glU7zIC6Rt8cPk8NkLyuBVgCYlzyH8BEFUX8jRRz2eAt4fc+lGGMrRr8tbyy9BFH1wgDZgX5z04TOfpv4Tv+mAF/6RlS9B8kBcjM49wIZJuegKHBJH+DQ7kGhBVSPgE3qeErUCDTDJC5D2DI1D0Q0T6ayLeholggxP9YIYXeH8keiO9J2FSWQsqXUQOEELR3+A8sLaylAEwdj4ZcAVmNqD8QmVPHjSS5jPwOmp/QfrkBI0oRRRikjkkMtEp1EcjqqARnDAJlz1zOcpvFR5T7tKX5mcH4uNKt0YckE0ZysEgUYbAEQrM8t9+oV8d043QMWa9zw+Ih3Ticr0jPg+Ud4JL71eygSiBSLwXfcVopkRNrxdrrAxWfYnEfgRVExYHId5j8/WmaLchx03mHyoZ99pmXoxsQUhKQuQBJSxV4M16UK0ZRmQ2gkB0Zi7TqWDEu9RW/a7S/DjUltldiR5eb0+iN7v7VckmHAS2vaisrFaB7tqqABcEfqrnm1GJd70n3rCw3URg/HQ9tjQXYR1/nYieipsYEBIhVKj0llmWhIKMucmsJeoKhwstxSCiSJt+EBtsNSqzCfPlqlyREPzoIMK5EAyeiB5qLkl5YoIkpsF3FleSp/3SakqULlpQWfugRyerzm8M7pB0og2cfWHrabw1bOBaTTJoaXEl9YWFrR5/w8L/apZWhYfZIihrL3TmrhyV5/GbbyN0CHf+Bj+V679uJg/8ZINXqCbIeJHPr60R6GmzvQwPsqmN6dvTw/WdRNGvO+CYcAjZjVXe8l1sREkr+T40oqowQWMSgCkHjfmif60hfy5dvLqgiuXt4fYeYQ8MzckFH+pZFy87Bv0iZOkIzEO0Rwmj4rqhPPAL2i9fYxYClnlceV0RIfG23lRBCP/cNyezakOTwoqCDVThxOSW98B+bfRy9d7tLF9E3A5ijVe5mhjlm6BjoBOabcO9rXI1LYJBW/ZLIahEAHZ+BeXOatXZ28hRLnS+f20Il7GlpcAt3r5/6ToVJta9JXxRUyfiu2Sl9ft4zU/uPjYjG2yIyQiYAQgDnwfSh4W+7xONeLa28P9j9D3S7cwJwiObkebi2YEZEsUGrq/riLG8oH8FpCfo9/KSi3tGdcwJa0MxIwUbLyrsVKJqlUeHI1c0FN4MfDNjLSsEsi0B81KaNxLejU6IGQG3FwHCS6c1NuDvevLeZHAHX7A4Z+g46KBICPdCLuYEL4dmJMk2gRPDFJQkY29w6f64Z216kPh+bq+yO3My0AaudLCbaEt1Xvubt5Gw4cYay9pAf3D/LZAfJSEkr8K7t7Y6QYsqmxG/Y78oIVkQEQ0RpdaIFLCwDs5voRkTJC4z333HL086sRRh7hGOVwH+z/SUsQVoXsevEud8c15iLfHYZTGt2Q0ho5PrQkfsWCfKEts3I+JWig+UsU0SCWB+VwyVElTUKsoRYj6PiaMqZ2wB+IG400MR/gdUZqSDn5Z6J761LJnpC/NyBi1DsgGJ7aMSalxXn0xAWoQ9x92rg05eL+vEpcNUvpeLV7TYCBfyApDQ4faZQbUUtp9p3jmgL5+BmReBGes7OnE5MCMU1PEl9ARQMkJLI9xbdxCh6thV1QNfXYj60JmDDe864m7mZB5oAyuCRFvejHGLoudTkFSJdd09a95gVi3wGsrB2tEJMydsRvbagBwty4oaTDxalu8FRb3T6DoJbNj6R/ZAup7tAUJHqGSJdQPCEalCJMeVCSFJowkg1EKeRbCc9+wOZckCqISsfIsGkG5Gs6QShwzMieuaEU6BBPGXMlOhekS97LC0++InYAZKelsRqtyK+qXG2Mgm0e2EQc0Jm5GwRR4snhfn1owJLAiwB+fF866dmES44kzW4Ogxizw0OjV20AY5+QWBzclNQ6DG72MDuYKpmNlwrHhTg8PKxtfgKuPRgLPHaITPbg57AK2+GLGuxFdXxbWZGuDTupU0HQbg3BicOwAnCUcz9bTMza72uFJEz9ZEw+7qHcyQpGLp3X8bnEoy0yFgrRIW0qY8V52wSA+YfCa8mbi/DU5JMFmgnlSiSdPkvOLtS19q2hnEpakI9/fBFdKx6glfjXuuza1ecpIs5GVIzUI2Dn8dHDNQ7wleNINVPKUG9znja14LtZ8m1Er+98Hps8VqsHcyWy3lPqiASBrPZ3dNEn5u+hS4yYSatZP8ROeP6ij32YlJZsqxE2t26HPgpFwxWXJOnnLtJPJLSiLnVsKGq58Al/h6CWD+4dd9mE+/80IrxEpBG3wanK1kDma1LA93P0q7arDqxY0ZP/UcuByOtI/B9jGp+sM/D9Ou9Oub+r5kpIXKobHcI3CcV9SjcpjFd7DT7TcuupxaTB3U3fPG49soWUDkvWqmJq0n4RTl2qxE69jk8+Ux6zY1xYrqwyT3Xg+KOF/qn3GyV0UOT4HjDDodyxZcqvpvwenVROfVTALZOQ9m9Edcvavx4SBZBCbFmh+jnOPOSW+pLDGp9wFfLxwjirs0Tclb+jQ40wjkrIEsr5dB+Ws2cFyJAdOHz1MupHSiquuovSiasnJxUtdhLRK+B44X6AX34CLGKvWpoZOznFEYlzXNknC9LWC+qVQwoBtD1L23FThf8ugNOMunp0XK1FVcjUNbgmZJKnK3BrZPOdel3KQ9Om6Xo5BiMZZiE+RFUn5+Bo77ttRLdVUwLmazExr66jAlb+osWt7fxuDeloU1gZPbxdDhoQ1mn1k0B7GXtN2A22aUQudatw9MjUUWfAq4sBxYYQOHPjkzoReLPwMHvYu5dLa7eEUrpZGFIFarG/AEnAU3fmozX+fArZ0bZDksGbASgC4rpsqfvv8EOA/JL+WK6ovgOr8Rnwh7jMUaHOIpygWj3BtsXTln5PcoOslGy0IKW2cZXDgBjoVTl5Lo4HVw9arS6EQqSG9SY6YQ03TslrR27j1TglbkCm06DkuSvdWfFc1tBIt3rk/sHBu6vRHGM0a4rj5gnberyhNY5e2iGWEyIl4VYmyEkyPsNE3drhCR/nTA0el0QFvcz1FlWX+5UgytK2/epjRaHCxftvCT9ZneXfg39em+c1D1OKAt/MxvXc9HC7+5TAApLnrdZeqVrg/dqiQ+T10mczatY0uDtk+DS84mSxIcOZvmpiP7TOozfwfl5DVSA4MjN10ceg1wQFf+swFOI7lyIG7Arai/2HrL2cx57hWbvg5agK+p2JhtyWcpl5U14LPQMNkS0ajzQXXzBMz2eG7TEZXLB5u0P8cswT8Jqi0dURo1/B8F1SdyJSl56oP5GuN0hCVyoDDlj0LD04kcFdAniRxC/ZW7Us6nwP4EnOU8INqt4zxO1OQhf0XM/gJ8DlxKHiKkIHGYPEwZfxO6nKD7HDhJhmstIZVJ+mnXVCuhY8WSkjqTsH4XXHoDrtrGPqUu4A28e5vq53Z4DSMnVxLzfxucciVzsUn13zfN1/pEb2GkM90+USR5E1xav2XCQxdxH0sXMLbCllm4WByB58pLb4Kz8hKbbQfpLZvyUmq+ruqGOkkAZwtz74HLhJMJFEhOnt8U5nolzZLIeF7SfA9c+nRSPm/1zX1J83Ldl4pljIBiiaUi3RvgjovBJjToFU/bqGSiNyijIxbSmXC8mp87LqMniZOAdR6U0aWrb9+5wXMrHpoGhJfAcVS2TD3KNQ0IUDfK7hsQmrbqhrA+RHEAJwlDtuCmrj9XUmDD1g2NVCWSg1XcMzfqenFVQ3rbM2NdOanpZUc53+u8xRebXiwew0HTyzzseglLZGOoDT8acNrcA3ba+LZx36a7cqNwmn8wSxuH7ULDRitt3rOeqG0zJJl0BskTJdhvF657utCqt5tGqzRTt+vZqvs2e33fXvp4fcrQIa7WBYMdV6s+u0OnUSnp6L5FTVPDcS9UZahkQDr+POngSM19pXmfqwF6lDkhXLCLLjf3pRxJ1dwXcqJp2Nx36fYzebcCD78BRkhhXOgOKnHiXABE2LdFYm7MtWmFVOzjVloZusP9m+vJgzgwJ9wua11umuE5mJ+eJK+vCZymoRQa5akaSqXsNcHIjMS6FbdjThgNPyy6qqX0aJLK6LeWWYlWRMHVrbjEB7Zx/VbccqOak45OOJQmw9J5HJ7sOpMGhnT/F2jrX3UTM4gI9nrnd439fZ0QOeMZmtL+3Ws47E+iqepE2ZEmpioYzuVBXALGE+3fdFd3jEQ+kKdrATLtwD/ftWfyed6wml/Him4ObHhm3zjPZqQzctApIXBCVJJOik7mmMJ09qjSxaoxi8/C67UBfP/GTsJkNKyhqRYobW+NpTh/eKjHPdgkhV47r8jWHdZOzrUz5pKGuQDzmAu6F4hXVzJD8plQDA0iDsZcYn9AyPfQyTeDTn9YIRBegqejw16rhbpme9/prDYzMg9Gq7o+BRdlfJDnpgEpfAFewExs4YHwE+CV0aruUBpquLOyY83ehQ2l2WBj8NNZw5Jus14aOSe9/eeG0nrjfGvI/hgTLxer8rD8M/Ilm5zG7NjdC1iFZm1ktZ+/ac3J3BuENGlG9XHQV/DGw8HZGIdyPds1FHFbe4OQOM4edkZI05Qn208eg0Qti9cjpFpIatwV8ZeTA1VGSCOdW8jS+bTpwK0NmQ9HSMsMaRV2R531tqqk45ZwgN3wbV5QoVkY6uFbWR1EQJLBY5Nxevg2zxuOx5bZ/ZxAHKNcOwqhvyVICL52Vhi81YWVj5fXxpbNnLi2Hxbdw6ngoVIVNkPJUx74xrSbSj3wDep+em6hnSRY51+6h8YP24Hv+b1ReSa+emps4tUdOjUqv0SeENCZjTSteXWvj8qLObEcz9zbZMCldcznEevxJgPmFUv6gGdDIVuiZpOBklQ93mTgYHuGJD1s3SfudpI5yxQWl+0ZfNmeQUbVpDEOpKUlaSlBgDe2Z6CvvHOnf2djC21xFr0TV0V9CxsW6ugD91NJA+TEOhBCMcbXe3dji9vTjS2GG4fIRh62UjprxXcyFgZq+XNmgRzfJY2GkUHyOWGBR1uCXE7uVjKuUtwq24scJ9sArER4zFjtQJC5v1xp4aQNJGhiOvFPNlN5ukOOwIsg9ItOHUcJ9ELKfYTS5eWqvQY+uUtOvYGPsdHNqC63U+92SZsNRFOUb9rAp7v1EUYOK1YCxeAsL8JYF4g6LA7V1kfw2X2tLr1No2QEVy2gdOXmPSQ2m0Z9fk+rf3m7LWcblT3Ob1T2cN+2UZlG7mmLt2eHbfGG7luPE5vj+R/aHE+9PwKHR9sK4k9tK/i7W+QvuF9wv+D+X8CFfxgcHi1f+NOUg395U/fBZviyIf5PU+7Z8b8L7j/zeX48+yvj2gAAAABJRU5ErkJggg==">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --navy:#1C1B1A;
+    --navy-2:#2B2926;
+    --steel:#5C5650;
+    --amber:#E74623;
+    --amber-deep:#B8371A;
+    --cream:#FAF8F5;
+    --panel:#FFFFFF;
+    --ink:#211D1A;
+    --ink-soft:#6E675F;
+    --line:#E5DFD6;
+    --danger:#C0392B;
+    --danger-bg:#FBEAE7;
+    --success:#3F7D5C;
+    --success-bg:#E6EFE8;
+    --warn-bg:#FCEEE2;
+    --plum:#3F5561;
+    --plum-bg:#E9EDEF;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  h1,h2,h3,.label-font,.nav-tab,button,.tag,th{
+    font-family:'Barlow Semi Condensed',sans-serif;
+  }
+
+  /* ---------- Header ---------- */
+  header.top{
+    background:var(--navy);
+    color:#fff;
+    padding:22px 28px 0 28px;
+  }
+  .top-inner{
+    max-width:1220px;
+    margin:0 auto;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .brand{display:flex;align-items:center;gap:14px;}
+  .brand-mark{
+    width:48px;height:48px;
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .brand-mark img{width:100%;height:100%;object-fit:contain;display:block;}
+  .brand-text h1{
+    margin:0;font-size:26px;font-weight:700;letter-spacing:0.3px;line-height:1;
+  }
+  .brand-text p{
+    margin:4px 0 0 0;font-size:13px;color:#C9C2B8;font-family:'Inter',sans-serif;
+  }
+  .kpis{
+    display:flex;gap:24px;padding-bottom:16px;flex-wrap:wrap;
+  }
+  .kpi{min-width:88px;}
+  .kpi .num{font-size:23px;font-weight:700;color:var(--amber);line-height:1;font-family:'Barlow Semi Condensed',sans-serif;}
+  .kpi .num.alert{color:#E8836A;}
+  .kpi .lbl{font-size:11px;color:#B0A99E;margin-top:3px;}
+
+  nav.tabs{
+    max-width:1220px;margin:18px auto 0 auto;
+    display:flex;gap:2px;padding:0 0;flex-wrap:wrap;
+  }
+  .nav-tab{
+    background:transparent;border:none;color:#B0A99E;
+    font-size:16px;font-weight:600;letter-spacing:0.2px;
+    padding:10px 18px;cursor:pointer;
+    border-bottom:3px solid transparent;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .nav-tab:hover{color:#EDEFF1;}
+  .nav-tab.active{color:#fff;border-bottom-color:var(--amber);}
+  .nav-badge{
+    display:inline-block;background:var(--danger);color:#fff;font-size:11px;font-weight:700;
+    padding:1px 6px;border-radius:9px;margin-left:5px;vertical-align:2px;
+  }
+
+  /* ---------- Layout ---------- */
+  main{max-width:1220px;margin:0 auto;padding:28px 28px 80px 28px;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:4px solid var(--amber);
+    margin-bottom:22px;
+  }
+  .panel.steel{border-left-color:var(--steel);}
+  .panel.success{border-left-color:var(--success);}
+  .panel.plum{border-left-color:var(--plum);}
+  .panel-head{
+    padding:16px 20px;
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;
+    flex-wrap:wrap;gap:10px;
+  }
+  .panel-head h2{margin:0;font-size:20px;font-weight:600;}
+  .panel-body{padding:20px;}
+
+  /* ---------- Forms ---------- */
+  .form-grid{
+    display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+    gap:14px;align-items:end;
+  }
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-size:12.5px;color:var(--ink-soft);font-weight:500;}
+  .field input,.field select,.field textarea{
+    font-family:'Inter',sans-serif;
+    padding:9px 10px;border:1px solid #C9C2B2;background:#FCFBF8;
+    font-size:14px;color:var(--ink);
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{
+    outline:2px solid var(--amber);outline-offset:0;border-color:var(--amber);
+  }
+  .field textarea{resize:vertical;min-height:38px;}
+  .field .readout{
+    padding:9px 10px;background:#F1EEE4;border:1px solid #E0DBCC;font-size:14px;color:var(--navy);font-weight:600;
+  }
+
+  .btn{
+    font-family:'Barlow Semi Condensed',sans-serif;
+    font-weight:600;font-size:15px;letter-spacing:0.2px;
+    padding:9px 18px;border:1px solid var(--navy);
+    background:var(--navy);color:#fff;cursor:pointer;
+  }
+  .btn:hover{background:var(--navy-2);}
+  .btn.amber{background:var(--amber);border-color:var(--amber-deep);color:#fff;}
+  .btn.amber:hover{background:var(--amber-deep);color:#fff;}
+  .btn.ghost{background:transparent;color:var(--ink);border-color:#C9C2B2;}
+  .btn.ghost:hover{background:#EFEBE0;}
+  .btn.danger{background:transparent;color:var(--danger);border-color:var(--danger);}
+  .btn.danger:hover{background:var(--danger);color:#fff;}
+  .btn.plum{background:var(--plum);border-color:#463A5F;color:#fff;}
+  .btn.plum:hover{background:#463A5F;}
+  .btn.small{padding:5px 11px;font-size:13px;}
+  .btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+  /* ---------- Tables ---------- */
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  thead th{
+    text-align:left;font-size:12.5px;font-weight:600;letter-spacing:0.2px;
+    color:var(--ink-soft);border-bottom:2px solid var(--line);
+    padding:8px 9px;white-space:nowrap;
+  }
+  tbody td{
+    padding:9px 9px;border-bottom:1px solid #EDE9DE;vertical-align:middle;
+  }
+  tbody tr:hover{background:#FBFAF6;}
+  .empty-row td{
+    padding:30px 10px;text-align:center;color:var(--ink-soft);font-style:italic;
+  }
+
+  .tag{
+    display:inline-block;font-size:12px;font-weight:600;
+    padding:2px 9px;border-radius:2px;letter-spacing:0.2px;white-space:nowrap;
+  }
+  .tag.future{background:var(--warn-bg);color:#8A5E13;}
+  .tag.today{background:var(--success-bg);color:var(--success);}
+  .tag.past{background:#EAEAEA;color:#6B6B6B;}
+  .tag.low{background:var(--danger-bg);color:var(--danger);}
+  .tag.ok{background:var(--success-bg);color:var(--success);}
+  .tag.absent{background:var(--danger-bg);color:var(--danger);}
+  .tag.avail{background:var(--success-bg);color:var(--success);}
+  .tag.unavail{background:var(--danger-bg);color:var(--danger);}
+  .tag + .tag{margin-left:4px;}
+
+  .toggle-pill{
+    display:inline-block;font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:13px;
+    padding:4px 12px;border-radius:2px;cursor:pointer;border:1px solid transparent;letter-spacing:0.2px;
+    transition:background .12s ease;
+  }
+  .toggle-pill.yes{background:var(--success-bg);color:var(--success);border-color:var(--success);}
+  .toggle-pill.no{background:var(--danger-bg);color:var(--danger);border-color:var(--danger);}
+  .toggle-pill:hover{opacity:0.8;}
+
+  .row-actions{display:flex;gap:6px;flex-wrap:wrap;}
+
+  .toolbar{
+    display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px;
+  }
+  .toolbar input[type=text]{
+    padding:8px 12px;border:1px solid #C9C2B2;background:#FCFBF8;font-size:14px;min-width:200px;font-family:'Inter',sans-serif;
+  }
+  .toolbar select{padding:8px 10px;border:1px solid #C9C2B2;background:#FCFBF8;font-family:'Inter',sans-serif;font-size:14px;}
+
+  .event-picker{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+    background:var(--navy-2);color:#fff;padding:12px 20px;margin-bottom:22px;
+  }
+  .event-picker label{font-size:13px;color:#C9C2B8;font-weight:500;}
+  .event-picker select{
+    padding:7px 10px;border:1px solid var(--steel);background:#201F1D;color:#fff;font-size:14px;
+    font-family:'Inter',sans-serif;
+  }
+  .event-picker .rate-badge{
+    margin-left:auto;font-size:13px;color:var(--amber);font-weight:600;
+  }
+
+  .empty-state{
+    padding:44px 20px;text-align:center;color:var(--ink-soft);
+  }
+  .empty-state p{margin:0 0 14px 0;font-size:15px;}
+
+  .posto-block{margin-bottom:24px;}
+  .posto-title{
+    font-size:18px;font-weight:600;color:var(--navy);
+    border-bottom:2px solid var(--navy);padding-bottom:6px;margin-bottom:10px;
+    display:flex;justify-content:space-between;align-items:center;
+  }
+  .qty-control{display:flex;align-items:center;gap:8px;}
+  .qty-control button{
+    width:26px;height:26px;border:1px solid #C9C2B2;background:#fff;cursor:pointer;
+    font-family:'Barlow Semi Condensed',sans-serif;font-size:16px;font-weight:700;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .qty-control button:hover{background:#EFEBE0;}
+  .qty-control .qty-val{min-width:26px;text-align:center;font-weight:600;font-size:15px;}
+
+  .totals-bar{
+    display:flex;gap:28px;padding:14px 20px;background:#FBF9F4;border-top:2px solid var(--navy);flex-wrap:wrap;
+  }
+  .totals-bar .t-item .num{font-size:20px;font-weight:700;color:var(--navy);font-family:'Barlow Semi Condensed',sans-serif;}
+  .totals-bar .t-item .lbl{font-size:12px;color:var(--ink-soft);}
+
+  .modal-backdrop{
+    position:fixed;inset:0;background:rgba(16,32,46,0.55);
+    display:none;align-items:center;justify-content:center;z-index:50;padding:20px;
+  }
+  .modal-backdrop.show{display:flex;}
+  .modal{
+    background:#fff;max-width:420px;width:100%;padding:24px;border-top:4px solid var(--amber);
+  }
+  .modal h3{margin:0 0 8px 0;font-size:19px;}
+  .modal p{margin:0 0 18px 0;font-size:14px;color:var(--ink-soft);}
+  .modal-actions{display:flex;gap:10px;justify-content:flex-end;}
+
+  .toast{
+    position:fixed;bottom:22px;right:22px;background:var(--navy);color:#fff;
+    padding:12px 18px;font-size:14px;border-left:4px solid var(--amber);
+    opacity:0;transform:translateY(10px);transition:all .25s ease;z-index:60;max-width:320px;
+  }
+  .toast.show{opacity:1;transform:translateY(0);}
+
+  footer.foot{
+    text-align:center;padding:18px;color:var(--ink-soft);font-size:12.5px;
+  }
+
+  .hint{font-size:12.5px;color:var(--ink-soft);margin:-6px 0 14px 0;}
+
+  /* ---------- Mode switch (Gestão / Prestador) ---------- */
+  .mode-switch{
+    background:#111110;color:#fff;padding:8px 28px;
+    display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  }
+  .mode-switch-inner{max-width:1220px;margin:0 auto;width:100%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;}
+  .mode-brand{font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;letter-spacing:1px;font-size:13px;color:#7C8B96;}
+  .mode-buttons{display:flex;gap:6px;}
+  .mode-btn{
+    font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:13.5px;
+    background:transparent;color:#B0A99E;border:1px solid #3A3733;padding:6px 14px;cursor:pointer;
+  }
+  .mode-btn.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+  .mode-btn:not(.active):hover{color:#fff;border-color:#5C5650;}
+
+  .nav-tab, .p-nav-tab{
+    background:transparent;border:none;color:#B0A99E;
+    font-size:16px;font-weight:600;letter-spacing:0.2px;
+    padding:10px 18px;cursor:pointer;
+    border-bottom:3px solid transparent;
+    transition:color .15s ease, border-color .15s ease;
+    font-family:'Barlow Semi Condensed',sans-serif;
+  }
+  .nav-tab:hover, .p-nav-tab:hover{color:#EDEFF1;}
+  .nav-tab.active, .p-nav-tab.active{color:#fff;border-bottom-color:var(--amber);}
+
+  .view, .pview{display:none;}
+  .view.active, .pview.active{display:block;}
+
+  .provider-id-picker{
+    display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .provider-id-picker label{font-size:13px;color:#C9C2B8;font-weight:500;}
+  .provider-id-picker select{
+    padding:7px 10px;border:1px solid var(--steel);background:#201F1D;color:#fff;font-size:14px;
+    font-family:'Inter',sans-serif;
+  }
+
+  @media (max-width:640px){
+    .kpis{gap:14px;}
+    .panel-body{padding:14px;}
+    table{font-size:13px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="mode-switch">
+  <div class="mode-switch-inner">
+    <span class="mode-brand">AFSS</span>
+    <div class="mode-buttons">
+      <button class="mode-btn active" id="modeBtnAdmin" data-mode="admin">Vista de Gestão</button>
+      <button class="mode-btn" id="modeBtnProvider" data-mode="provider">Portal do Prestador</button>
+    </div>
+  </div>
+</div>
+
+<div id="adminRoot">
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="brand-mark"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJwAAACgCAMAAADO3vWpAAAKMWlDQ1BJQ0MgUHJvZmlsZQAAeJydlndUU9kWh8+9N71QkhCKlNBraFICSA29SJEuKjEJEErAkAAiNkRUcERRkaYIMijggKNDkbEiioUBUbHrBBlE1HFwFBuWSWStGd+8ee/Nm98f935rn73P3Wfvfda6AJD8gwXCTFgJgAyhWBTh58WIjYtnYAcBDPAAA2wA4HCzs0IW+EYCmQJ82IxsmRP4F726DiD5+yrTP4zBAP+flLlZIjEAUJiM5/L42VwZF8k4PVecJbdPyZi2NE3OMErOIlmCMlaTc/IsW3z2mWUPOfMyhDwZy3PO4mXw5Nwn4405Er6MkWAZF+cI+LkyviZjg3RJhkDGb+SxGXxONgAoktwu5nNTZGwtY5IoMoIt43kA4EjJX/DSL1jMzxPLD8XOzFouEiSniBkmXFOGjZMTi+HPz03ni8XMMA43jSPiMdiZGVkc4XIAZs/8WRR5bRmyIjvYODk4MG0tbb4o1H9d/JuS93aWXoR/7hlEH/jD9ld+mQ0AsKZltdn6h21pFQBd6wFQu/2HzWAvAIqyvnUOfXEeunxeUsTiLGcrq9zcXEsBn2spL+jv+p8Of0NffM9Svt3v5WF485M4knQxQ143bmZ6pkTEyM7icPkM5p+H+B8H/nUeFhH8JL6IL5RFRMumTCBMlrVbyBOIBZlChkD4n5r4D8P+pNm5lona+BHQllgCpSEaQH4eACgqESAJe2Qr0O99C8ZHA/nNi9GZmJ37z4L+fVe4TP7IFiR/jmNHRDK4ElHO7Jr8WgI0IABFQAPqQBvoAxPABLbAEbgAD+ADAkEoiARxYDHgghSQAUQgFxSAtaAYlIKtYCeoBnWgETSDNnAYdIFj4DQ4By6By2AE3AFSMA6egCnwCsxAEISFyBAVUod0IEPIHLKFWJAb5AMFQxFQHJQIJUNCSAIVQOugUqgcqobqoWboW+godBq6AA1Dt6BRaBL6FXoHIzAJpsFasBFsBbNgTzgIjoQXwcnwMjgfLoK3wJVwA3wQ7oRPw5fgEVgKP4GnEYAQETqiizARFsJGQpF4JAkRIauQEqQCaUDakB6kH7mKSJGnyFsUBkVFMVBMlAvKHxWF4qKWoVahNqOqUQdQnag+1FXUKGoK9RFNRmuizdHO6AB0LDoZnYsuRlegm9Ad6LPoEfQ4+hUGg6FjjDGOGH9MHCYVswKzGbMb0445hRnGjGGmsVisOtYc64oNxXKwYmwxtgp7EHsSewU7jn2DI+J0cLY4X1w8TogrxFXgWnAncFdwE7gZvBLeEO+MD8Xz8MvxZfhGfA9+CD+OnyEoE4wJroRIQiphLaGS0EY4S7hLeEEkEvWITsRwooC4hlhJPEQ8TxwlviVRSGYkNimBJCFtIe0nnSLdIr0gk8lGZA9yPFlM3kJuJp8h3ye/UaAqWCoEKPAUVivUKHQqXFF4pohXNFT0VFysmK9YoXhEcUjxqRJeyUiJrcRRWqVUo3RU6YbStDJV2UY5VDlDebNyi/IF5UcULMWI4kPhUYoo+yhnKGNUhKpPZVO51HXURupZ6jgNQzOmBdBSaaW0b2iDtCkVioqdSrRKnkqNynEVKR2hG9ED6On0Mvph+nX6O1UtVU9Vvuom1TbVK6qv1eaoeajx1UrU2tVG1N6pM9R91NPUt6l3qd/TQGmYaYRr5Grs0Tir8XQObY7LHO6ckjmH59zWhDXNNCM0V2ju0xzQnNbS1vLTytKq0jqj9VSbru2hnaq9Q/uE9qQOVcdNR6CzQ+ekzmOGCsOTkc6oZPQxpnQ1df11Jbr1uoO6M3rGelF6hXrtevf0Cfos/ST9Hfq9+lMGOgYhBgUGrQa3DfGGLMMUw12G/YavjYyNYow2GHUZPTJWMw4wzjduNb5rQjZxN1lm0mByzRRjyjJNM91tetkMNrM3SzGrMRsyh80dzAXmu82HLdAWThZCiwaLG0wS05OZw2xljlrSLYMtCy27LJ9ZGVjFW22z6rf6aG1vnW7daH3HhmITaFNo02Pzq62ZLde2xvbaXPJc37mr53bPfW5nbse322N3055qH2K/wb7X/oODo4PIoc1h0tHAMdGx1vEGi8YKY21mnXdCO3k5rXY65vTW2cFZ7HzY+RcXpkuaS4vLo3nG8/jzGueNueq5clzrXaVuDLdEt71uUnddd457g/sDD30PnkeTx4SnqWeq50HPZ17WXiKvDq/XbGf2SvYpb8Tbz7vEe9CH4hPlU+1z31fPN9m31XfKz95vhd8pf7R/kP82/xsBWgHcgOaAqUDHwJWBfUGkoAVB1UEPgs2CRcE9IXBIYMj2kLvzDecL53eFgtCA0O2h98KMw5aFfR+OCQ8Lrwl/GGETURDRv4C6YMmClgWvIr0iyyLvRJlESaJ6oxWjE6Kbo1/HeMeUx0hjrWJXxl6K04gTxHXHY+Oj45vipxf6LNy5cDzBPqE44foi40V5iy4s1licvvj4EsUlnCVHEtGJMYktie85oZwGzvTSgKW1S6e4bO4u7hOeB28Hb5Lvyi/nTyS5JpUnPUp2Td6ePJninlKR8lTAFlQLnqf6p9alvk4LTduf9ik9Jr09A5eRmHFUSBGmCfsytTPzMoezzLOKs6TLnJftXDYlChI1ZUPZi7K7xTTZz9SAxESyXjKa45ZTk/MmNzr3SJ5ynjBvYLnZ8k3LJ/J9879egVrBXdFboFuwtmB0pefK+lXQqqWrelfrry5aPb7Gb82BtYS1aWt/KLQuLC98uS5mXU+RVtGaorH1futbixWKRcU3NrhsqNuI2ijYOLhp7qaqTR9LeCUXS61LK0rfb+ZuvviVzVeVX33akrRlsMyhbM9WzFbh1uvb3LcdKFcuzy8f2x6yvXMHY0fJjpc7l+y8UGFXUbeLsEuyS1oZXNldZVC1tep9dUr1SI1XTXutZu2m2te7ebuv7PHY01anVVda926vYO/Ner/6zgajhop9mH05+x42Rjf2f836urlJo6m06cN+4X7pgYgDfc2Ozc0tmi1lrXCrpHXyYMLBy994f9Pdxmyrb6e3lx4ChySHHn+b+O31w0GHe4+wjrR9Z/hdbQe1o6QT6lzeOdWV0iXtjusePhp4tLfHpafje8vv9x/TPVZzXOV42QnCiaITn07mn5w+lXXq6enk02O9S3rvnIk9c60vvG/wbNDZ8+d8z53p9+w/ed71/LELzheOXmRd7LrkcKlzwH6g4wf7HzoGHQY7hxyHui87Xe4Znjd84or7ldNXva+euxZw7dLI/JHh61HXb95IuCG9ybv56Fb6ree3c27P3FlzF3235J7SvYr7mvcbfjT9sV3qID0+6j068GDBgztj3LEnP2X/9H686CH5YcWEzkTzI9tHxyZ9Jy8/Xvh4/EnWk5mnxT8r/1z7zOTZd794/DIwFTs1/lz0/NOvm1+ov9j/0u5l73TY9P1XGa9mXpe8UX9z4C3rbf+7mHcTM7nvse8rP5h+6PkY9PHup4xPn34D94Tz+6TMXDkAAAA/UExURQAAAOtHJO5SF/cgGOdFIudFIv9XV749I+4kcuo8SOo3XPUJ9KpUAesnmn8BAOc+OwAAAAAAAAAAAAAAAAAAAMMKmykAAAAQdFJOUwD5FAWkYQIEKJ5fBgMbAs3D20GZAAAQMElEQVR42u1ch3bbuBIFZwBChaL//293GhoJUJQS2TnvmTm7cWiWy2mYCufePmZ3mZ4eF7rsJ47Z3f5lcEQ5oAO7B//mh8E5AdE/0P005fyYpf7HKXcALrhfcL/gfsH9gvsF9zFwSODWcABuJXD4E+DuM5yjHMz376YaMD5ymfyRv0S/vDEy+Ebq3aMgu1YofAghOSP0o68wXwVf/B7yXaBB5glU7zIC6Rt8cPk8NkLyuBVgCYlzyH8BEFUX8jRRz2eAt4fc+lGGMrRr8tbyy9BFH1wgDZgX5z04TOfpv4Tv+mAF/6RlS9B8kBcjM49wIZJuegKHBJH+DQ7kGhBVSPgE3qeErUCDTDJC5D2DI1D0Q0T6ayLeholggxP9YIYXeH8keiO9J2FSWQsqXUQOEELR3+A8sLaylAEwdj4ZcAVmNqD8QmVPHjSS5jPwOmp/QfrkBI0oRRRikjkkMtEp1EcjqqARnDAJlz1zOcpvFR5T7tKX5mcH4uNKt0YckE0ZysEgUYbAEQrM8t9+oV8d043QMWa9zw+Ih3Ticr0jPg+Ud4JL71eygSiBSLwXfcVopkRNrxdrrAxWfYnEfgRVExYHId5j8/WmaLchx03mHyoZ99pmXoxsQUhKQuQBJSxV4M16UK0ZRmQ2gkB0Zi7TqWDEu9RW/a7S/DjUltldiR5eb0+iN7v7VckmHAS2vaisrFaB7tqqABcEfqrnm1GJd70n3rCw3URg/HQ9tjQXYR1/nYieipsYEBIhVKj0llmWhIKMucmsJeoKhwstxSCiSJt+EBtsNSqzCfPlqlyREPzoIMK5EAyeiB5qLkl5YoIkpsF3FleSp/3SakqULlpQWfugRyerzm8M7pB0og2cfWHrabw1bOBaTTJoaXEl9YWFrR5/w8L/apZWhYfZIihrL3TmrhyV5/GbbyN0CHf+Bj+V679uJg/8ZINXqCbIeJHPr60R6GmzvQwPsqmN6dvTw/WdRNGvO+CYcAjZjVXe8l1sREkr+T40oqowQWMSgCkHjfmif60hfy5dvLqgiuXt4fYeYQ8MzckFH+pZFy87Bv0iZOkIzEO0Rwmj4rqhPPAL2i9fYxYClnlceV0RIfG23lRBCP/cNyezakOTwoqCDVThxOSW98B+bfRy9d7tLF9E3A5ijVe5mhjlm6BjoBOabcO9rXI1LYJBW/ZLIahEAHZ+BeXOatXZ28hRLnS+f20Il7GlpcAt3r5/6ToVJta9JXxRUyfiu2Sl9ft4zU/uPjYjG2yIyQiYAQgDnwfSh4W+7xONeLa28P9j9D3S7cwJwiObkebi2YEZEsUGrq/riLG8oH8FpCfo9/KSi3tGdcwJa0MxIwUbLyrsVKJqlUeHI1c0FN4MfDNjLSsEsi0B81KaNxLejU6IGQG3FwHCS6c1NuDvevLeZHAHX7A4Z+g46KBICPdCLuYEL4dmJMk2gRPDFJQkY29w6f64Z216kPh+bq+yO3My0AaudLCbaEt1Xvubt5Gw4cYay9pAf3D/LZAfJSEkr8K7t7Y6QYsqmxG/Y78oIVkQEQ0RpdaIFLCwDs5voRkTJC4z333HL086sRRh7hGOVwH+z/SUsQVoXsevEud8c15iLfHYZTGt2Q0ho5PrQkfsWCfKEts3I+JWig+UsU0SCWB+VwyVElTUKsoRYj6PiaMqZ2wB+IG400MR/gdUZqSDn5Z6J761LJnpC/NyBi1DsgGJ7aMSalxXn0xAWoQ9x92rg05eL+vEpcNUvpeLV7TYCBfyApDQ4faZQbUUtp9p3jmgL5+BmReBGes7OnE5MCMU1PEl9ARQMkJLI9xbdxCh6thV1QNfXYj60JmDDe864m7mZB5oAyuCRFvejHGLoudTkFSJdd09a95gVi3wGsrB2tEJMydsRvbagBwty4oaTDxalu8FRb3T6DoJbNj6R/ZAup7tAUJHqGSJdQPCEalCJMeVCSFJowkg1EKeRbCc9+wOZckCqISsfIsGkG5Gs6QShwzMieuaEU6BBPGXMlOhekS97LC0++InYAZKelsRqtyK+qXG2Mgm0e2EQc0Jm5GwRR4snhfn1owJLAiwB+fF866dmES44kzW4Ogxizw0OjV20AY5+QWBzclNQ6DG72MDuYKpmNlwrHhTg8PKxtfgKuPRgLPHaITPbg57AK2+GLGuxFdXxbWZGuDTupU0HQbg3BicOwAnCUcz9bTMza72uFJEz9ZEw+7qHcyQpGLp3X8bnEoy0yFgrRIW0qY8V52wSA+YfCa8mbi/DU5JMFmgnlSiSdPkvOLtS19q2hnEpakI9/fBFdKx6glfjXuuza1ecpIs5GVIzUI2Dn8dHDNQ7wleNINVPKUG9znja14LtZ8m1Er+98Hps8VqsHcyWy3lPqiASBrPZ3dNEn5u+hS4yYSatZP8ROeP6ij32YlJZsqxE2t26HPgpFwxWXJOnnLtJPJLSiLnVsKGq58Al/h6CWD+4dd9mE+/80IrxEpBG3wanK1kDma1LA93P0q7arDqxY0ZP/UcuByOtI/B9jGp+sM/D9Ou9Oub+r5kpIXKobHcI3CcV9SjcpjFd7DT7TcuupxaTB3U3fPG49soWUDkvWqmJq0n4RTl2qxE69jk8+Ux6zY1xYrqwyT3Xg+KOF/qn3GyV0UOT4HjDDodyxZcqvpvwenVROfVTALZOQ9m9Edcvavx4SBZBCbFmh+jnOPOSW+pLDGp9wFfLxwjirs0Tclb+jQ40wjkrIEsr5dB+Ws2cFyJAdOHz1MupHSiquuovSiasnJxUtdhLRK+B44X6AX34CLGKvWpoZOznFEYlzXNknC9LWC+qVQwoBtD1L23FThf8ugNOMunp0XK1FVcjUNbgmZJKnK3BrZPOdel3KQ9Om6Xo5BiMZZiE+RFUn5+Bo77ttRLdVUwLmazExr66jAlb+osWt7fxuDeloU1gZPbxdDhoQ1mn1k0B7GXtN2A22aUQudatw9MjUUWfAq4sBxYYQOHPjkzoReLPwMHvYu5dLa7eEUrpZGFIFarG/AEnAU3fmozX+fArZ0bZDksGbASgC4rpsqfvv8EOA/JL+WK6ovgOr8Rnwh7jMUaHOIpygWj3BtsXTln5PcoOslGy0IKW2cZXDgBjoVTl5Lo4HVw9arS6EQqSG9SY6YQ03TslrR27j1TglbkCm06DkuSvdWfFc1tBIt3rk/sHBu6vRHGM0a4rj5gnberyhNY5e2iGWEyIl4VYmyEkyPsNE3drhCR/nTA0el0QFvcz1FlWX+5UgytK2/epjRaHCxftvCT9ZneXfg39em+c1D1OKAt/MxvXc9HC7+5TAApLnrdZeqVrg/dqiQ+T10mczatY0uDtk+DS84mSxIcOZvmpiP7TOozfwfl5DVSA4MjN10ceg1wQFf+swFOI7lyIG7Arai/2HrL2cx57hWbvg5agK+p2JhtyWcpl5U14LPQMNkS0ajzQXXzBMz2eG7TEZXLB5u0P8cswT8Jqi0dURo1/B8F1SdyJSl56oP5GuN0hCVyoDDlj0LD04kcFdAniRxC/ZW7Us6nwP4EnOU8INqt4zxO1OQhf0XM/gJ8DlxKHiKkIHGYPEwZfxO6nKD7HDhJhmstIZVJ+mnXVCuhY8WSkjqTsH4XXHoDrtrGPqUu4A28e5vq53Z4DSMnVxLzfxucciVzsUn13zfN1/pEb2GkM90+USR5E1xav2XCQxdxH0sXMLbCllm4WByB58pLb4Kz8hKbbQfpLZvyUmq+ruqGOkkAZwtz74HLhJMJFEhOnt8U5nolzZLIeF7SfA9c+nRSPm/1zX1J83Ldl4pljIBiiaUi3RvgjovBJjToFU/bqGSiNyijIxbSmXC8mp87LqMniZOAdR6U0aWrb9+5wXMrHpoGhJfAcVS2TD3KNQ0IUDfK7hsQmrbqhrA+RHEAJwlDtuCmrj9XUmDD1g2NVCWSg1XcMzfqenFVQ3rbM2NdOanpZUc53+u8xRebXiwew0HTyzzseglLZGOoDT8acNrcA3ba+LZx36a7cqNwmn8wSxuH7ULDRitt3rOeqG0zJJl0BskTJdhvF657utCqt5tGqzRTt+vZqvs2e33fXvp4fcrQIa7WBYMdV6s+u0OnUSnp6L5FTVPDcS9UZahkQDr+POngSM19pXmfqwF6lDkhXLCLLjf3pRxJ1dwXcqJp2Nx36fYzebcCD78BRkhhXOgOKnHiXABE2LdFYm7MtWmFVOzjVloZusP9m+vJgzgwJ9wua11umuE5mJ+eJK+vCZymoRQa5akaSqXsNcHIjMS6FbdjThgNPyy6qqX0aJLK6LeWWYlWRMHVrbjEB7Zx/VbccqOak45OOJQmw9J5HJ7sOpMGhnT/F2jrX3UTM4gI9nrnd439fZ0QOeMZmtL+3Ws47E+iqepE2ZEmpioYzuVBXALGE+3fdFd3jEQ+kKdrATLtwD/ftWfyed6wml/Him4ObHhm3zjPZqQzctApIXBCVJJOik7mmMJ09qjSxaoxi8/C67UBfP/GTsJkNKyhqRYobW+NpTh/eKjHPdgkhV47r8jWHdZOzrUz5pKGuQDzmAu6F4hXVzJD8plQDA0iDsZcYn9AyPfQyTeDTn9YIRBegqejw16rhbpme9/prDYzMg9Gq7o+BRdlfJDnpgEpfAFewExs4YHwE+CV0aruUBpquLOyY83ehQ2l2WBj8NNZw5Jus14aOSe9/eeG0nrjfGvI/hgTLxer8rD8M/Ilm5zG7NjdC1iFZm1ktZ+/ac3J3BuENGlG9XHQV/DGw8HZGIdyPds1FHFbe4OQOM4edkZI05Qn208eg0Qti9cjpFpIatwV8ZeTA1VGSCOdW8jS+bTpwK0NmQ9HSMsMaRV2R531tqqk45ZwgN3wbV5QoVkY6uFbWR1EQJLBY5Nxevg2zxuOx5bZ/ZxAHKNcOwqhvyVICL52Vhi81YWVj5fXxpbNnLi2Hxbdw6ngoVIVNkPJUx74xrSbSj3wDep+em6hnSRY51+6h8YP24Hv+b1ReSa+emps4tUdOjUqv0SeENCZjTSteXWvj8qLObEcz9zbZMCldcznEevxJgPmFUv6gGdDIVuiZpOBklQ93mTgYHuGJD1s3SfudpI5yxQWl+0ZfNmeQUbVpDEOpKUlaSlBgDe2Z6CvvHOnf2djC21xFr0TV0V9CxsW6ugD91NJA+TEOhBCMcbXe3dji9vTjS2GG4fIRh62UjprxXcyFgZq+XNmgRzfJY2GkUHyOWGBR1uCXE7uVjKuUtwq24scJ9sArER4zFjtQJC5v1xp4aQNJGhiOvFPNlN5ukOOwIsg9ItOHUcJ9ELKfYTS5eWqvQY+uUtOvYGPsdHNqC63U+92SZsNRFOUb9rAp7v1EUYOK1YCxeAsL8JYF4g6LA7V1kfw2X2tLr1No2QEVy2gdOXmPSQ2m0Z9fk+rf3m7LWcblT3Ob1T2cN+2UZlG7mmLt2eHbfGG7luPE5vj+R/aHE+9PwKHR9sK4k9tK/i7W+QvuF9wv+D+X8CFfxgcHi1f+NOUg395U/fBZviyIf5PU+7Z8b8L7j/zeX48+yvj2gAAAABJRU5ErkJggg==" alt="AFSS"></div>
+      <div class="brand-text">
+        <h1>AFSS — Gestão de Eventos</h1>
+        <p>Eventos, pessoal, prestadores e stock num só lugar</p>
+      </div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><div class="num" id="kpiEventos">0</div><div class="lbl">Eventos</div></div>
+      <div class="kpi"><div class="num" id="kpiPessoal">0</div><div class="lbl">Registos de pessoal</div></div>
+      <div class="kpi"><div class="num" id="kpiHonorarios">€0</div><div class="lbl">Valor total a pagar</div></div>
+      <div class="kpi"><div class="num" id="kpiPrestadores">0</div><div class="lbl">Prestadores disponíveis</div></div>
+      <div class="kpi"><div class="num alert" id="kpiStockBaixo">0</div><div class="lbl">Itens em stock baixo</div></div>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="nav-tab active" data-view="eventos">Eventos</button>
+    <button class="nav-tab" data-view="pessoal">Pessoal</button>
+    <button class="nav-tab" data-view="assistencias">Assistências</button>
+    <button class="nav-tab" data-view="prestadores">Prestadores</button>
+    <button class="nav-tab" data-view="alertas">Alertas<span class="nav-badge" id="navBadgeAlertas" style="display:none;"></span></button>
+    <button class="nav-tab" data-view="faturacao">Faturação</button>
+    <button class="nav-tab" data-view="stock">Stock</button>
+  </nav>
+</header>
+
+<main>
+
+  <!-- ============ EVENTOS ============ -->
+  <section class="view active" id="view-eventos">
+    <div class="panel">
+      <div class="panel-head"><h2>Novo evento</h2></div>
+      <div class="panel-body">
+        <form id="formEvento" class="form-grid">
+          <div class="field">
+            <label for="evNome">Nome do evento</label>
+            <input type="text" id="evNome" placeholder="Ex: Festival do Mar 2026">
+          </div>
+          <div class="field">
+            <label for="evTipo">Tipo de evento</label>
+            <select id="evTipo">
+              <option>Posto de Socorros</option>
+              <option>Festa Privada</option>
+              <option>Festival</option>
+              <option>Corporate</option>
+              <option>Desportivo</option>
+              <option>Feira</option>
+              <option>Filmagens</option>
+              <option>Aquático</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="evData">Data</label>
+            <input type="date" id="evData">
+          </div>
+          <div class="field">
+            <label for="evHoraInicio">Hora início</label>
+            <input type="time" id="evHoraInicio">
+          </div>
+          <div class="field">
+            <label for="evHoraFim">Hora fim</label>
+            <input type="time" id="evHoraFim">
+          </div>
+          <div class="field">
+            <label for="evLocal">Localização</label>
+            <input type="text" id="evLocal" placeholder="Ex: Cascais">
+          </div>
+          <div class="field" style="grid-column:1/-1;border-top:1px solid var(--line);padding-top:14px;margin-top:2px;">
+            <label style="font-size:13.5px;font-weight:600;color:var(--navy);">Prestadores necessários e honorário por função</label>
+          </div>
+          <div class="field">
+            <label for="needCoordenador">Coordenador — Nº</label>
+            <input type="number" id="needCoordenador" value="0" min="0">
+          </div>
+          <div class="field">
+            <label for="rateCoordenador">Coordenador — €/h</label>
+            <input type="number" id="rateCoordenador" value="25" min="0" step="0.5">
+          </div>
+          <div class="field">
+            <label for="needMedico">Médico — Nº</label>
+            <input type="number" id="needMedico" value="0" min="0">
+          </div>
+          <div class="field">
+            <label for="rateMedico">Médico — €/h</label>
+            <input type="number" id="rateMedico" value="25" min="0" step="0.5">
+          </div>
+          <div class="field">
+            <label for="needEnfermeiro">Enfermeiro — Nº</label>
+            <input type="number" id="needEnfermeiro" value="0" min="0">
+          </div>
+          <div class="field">
+            <label for="rateEnfermeiro">Enfermeiro — €/h</label>
+            <input type="number" id="rateEnfermeiro" value="25" min="0" step="0.5">
+          </div>
+          <div class="field">
+            <label for="needTecnico">Técnico — Nº</label>
+            <input type="number" id="needTecnico" value="0" min="0">
+          </div>
+          <div class="field">
+            <label for="rateTecnico">Técnico — €/h</label>
+            <input type="number" id="rateTecnico" value="25" min="0" step="0.5">
+          </div>
+          <div class="field">
+            <button type="button" class="btn amber" id="btnCriarEvento">Criar evento</button>
+          </div>
+        </form>
+        <p class="hint" style="margin-top:12px;">Se a hora de fim for menor que a hora de início, assume-se que o evento passa a meia-noite. Ex: 1 Coordenador, 2 Médico, 2 Enfermeiro.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Eventos criados</h2>
+        <button type="button" class="btn ghost small" id="btnSeedData">Carregar dados de teste</button>
+      </div>
+      <div class="panel-body">
+        <div class="toolbar">
+          <input type="text" id="searchEventos" placeholder="Pesquisar por nome ou local…">
+          <select id="filterTipo"><option value="">Todos os tipos</option></select>
+          <select id="filterEstado">
+            <option value="">Todos os estados</option>
+            <option value="future">Futuros</option>
+            <option value="today">Hoje</option>
+            <option value="past">Concluídos</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto;">
+        <table id="tblEventos">
+          <thead>
+            <tr>
+              <th>Nome</th><th>Tipo</th><th>Data</th><th>Horário</th><th>Local</th>
+              <th>Equipa necessária</th><th>Pessoal</th><th>Valor a pagar</th><th>Estado</th><th>Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PESSOAL ============ -->
+  <section class="view" id="view-pessoal">
+    <div class="event-picker">
+      <label for="pessoalEventoSelect">Evento:</label>
+      <select id="pessoalEventoSelect"><option value="">— Seleciona um evento —</option></select>
+      <span class="rate-badge" id="pessoalTaxaBadge"></span>
+    </div>
+
+    <div id="pessoalEmpty" class="empty-state" style="display:none;">
+      <p>Seleciona ou cria um evento na aba Eventos para começar a registar pessoal.</p>
+      <button class="btn amber" onclick="switchView('eventos')">Ir para Eventos</button>
+    </div>
+
+    <div id="pessoalContent" style="display:none;">
+      <div class="panel steel">
+        <div class="panel-head"><h2 id="pessoalFormTitle">Registar colaborador</h2></div>
+        <div class="panel-body">
+          <form id="formPessoal" class="form-grid">
+            <input type="hidden" id="pesId">
+            <div class="field">
+              <label for="pesPrestador">Prestador (opcional)</label>
+              <select id="pesPrestador">
+                <option value="">— Inserir manualmente —</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="pesNome">Nome</label>
+              <input type="text" id="pesNome" placeholder="Nome do colaborador">
+            </div>
+            <div class="field">
+              <label for="pesDia">Dia</label>
+              <input type="date" id="pesDia">
+            </div>
+            <div class="field">
+              <label for="pesHoraInicio">Hora início</label>
+              <input type="time" id="pesHoraInicio">
+            </div>
+            <div class="field">
+              <label for="pesHoraFim">Hora fim</label>
+              <input type="time" id="pesHoraFim">
+            </div>
+            <div class="field">
+              <label for="pesLocal">Local</label>
+              <input type="text" id="pesLocal" placeholder="Ex: Portão Norte">
+            </div>
+            <div class="field">
+              <label for="pesArea">Área</label>
+              <select id="pesArea">
+                <option value="">—</option>
+                <option>Coordenador</option>
+                <option>Médico</option>
+                <option>Enfermeiro</option>
+                <option>Técnico</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="pesTaxa">Honorário (€/hora)</label>
+              <input type="number" id="pesTaxa" min="0" step="0.5">
+            </div>
+            <div class="field">
+              <label>Horas</label>
+              <div class="readout" id="pesHorasReadout">0h</div>
+            </div>
+            <div class="field">
+              <label>Valor a pagar</label>
+              <div class="readout" id="pesValorReadout">€0,00</div>
+            </div>
+            <div class="field">
+              <label for="pesFalta">Falta</label>
+              <select id="pesFalta">
+                <option value="nao">Não</option>
+                <option value="sim">Sim</option>
+              </select>
+            </div>
+            <div class="field" id="pesMotivoWrap" style="display:none;">
+              <label for="pesMotivo">Motivo da falta</label>
+              <input type="text" id="pesMotivo" placeholder="Ex: doença">
+            </div>
+            <div class="field" style="grid-column:1/-1;">
+              <label for="pesObs">Observações</label>
+              <textarea id="pesObs" placeholder="Notas sobre o colaborador ou o turno…"></textarea>
+            </div>
+            <div class="field">
+              <button type="button" class="btn amber" id="pesSubmitBtn">Registar</button>
+            </div>
+            <div class="field">
+              <button type="button" class="btn ghost" id="pesCancelEdit" style="display:none;">Cancelar edição</button>
+            </div>
+          </form>
+          <p class="hint" style="margin-top:12px;">Se a hora de fim for menor que a hora de início, assume-se turno noturno (passa para o dia seguinte).</p>
+        </div>
+      </div>
+
+      <div class="panel steel">
+        <div class="panel-head">
+          <h2>Resumo de pessoal</h2>
+          <button class="btn ghost small" id="btnExportCsv">Exportar CSV</button>
+        </div>
+        <div class="panel-body" style="padding-bottom:0;">
+          <div class="toolbar">
+            <input type="text" id="searchPessoal" placeholder="Pesquisar colaborador…">
+          </div>
+          <div style="overflow-x:auto;">
+          <table id="tblPessoal">
+            <thead>
+              <tr>
+                <th>Nome</th><th>Dia</th><th>Início</th><th>Fim</th><th>Horas</th><th>Local</th><th>Área</th>
+                <th>Honorário/h</th><th>Valor a pagar</th><th>Falta</th><th>Recibo</th><th>Observações</th><th>Ações</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="totals-bar">
+          <div class="t-item"><div class="num" id="totPessoas">0</div><div class="lbl">Colaboradores</div></div>
+          <div class="t-item"><div class="num" id="totHoras">0h</div><div class="lbl">Horas totais</div></div>
+          <div class="t-item"><div class="num" id="totHonorarios">€0</div><div class="lbl">Valor total a pagar</div></div>
+          <div class="t-item"><div class="num" id="totFaltas">0</div><div class="lbl">Faltas</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ASSISTÊNCIAS ============ -->
+  <section class="view" id="view-assistencias">
+    <div class="event-picker">
+      <label for="assEventoSelect">Evento:</label>
+      <select id="assEventoSelect"><option value="">— Seleciona um evento —</option></select>
+    </div>
+
+    <div id="assEmpty" class="empty-state" style="display:none;">
+      <p>Seleciona ou cria um evento na aba Eventos para começar a registar assistências.</p>
+      <button class="btn amber" onclick="switchView('eventos')">Ir para Eventos</button>
+    </div>
+
+    <div id="assContent" style="display:none;">
+      <div class="panel steel">
+        <div class="panel-head"><h2 id="assFormTitle">Registar assistência</h2></div>
+        <div class="panel-body">
+          <form id="formAssistencia" class="form-grid">
+            <input type="hidden" id="assId">
+            <div class="field">
+              <label for="assHora">Hora</label>
+              <input type="time" id="assHora">
+            </div>
+            <div class="field">
+              <label for="assLocal">Local</label>
+              <input type="text" id="assLocal" placeholder="Ex: Zona VIP">
+            </div>
+            <div class="field">
+              <label for="assPessoa">Pessoa assistida</label>
+              <input type="text" id="assPessoa" placeholder="Nome ou identificação">
+            </div>
+            <div class="field">
+              <label for="assIdade">Idade (opcional)</label>
+              <input type="number" id="assIdade" min="0">
+            </div>
+            <div class="field">
+              <label for="assTipo">Tipo de ocorrência</label>
+              <select id="assTipo">
+                <option>Mal-estar</option>
+                <option>Trauma / queda</option>
+                <option>Intoxicação etílica</option>
+                <option>Reação alérgica</option>
+                <option>Ferida / corte</option>
+                <option>Outro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="assEncaminhamento">Encaminhamento</label>
+              <select id="assEncaminhamento">
+                <option>Alta no local</option>
+                <option>Transportado para hospital</option>
+                <option>Recusa de assistência</option>
+                <option>Outro</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="assResponsavel">Responsável</label>
+              <select id="assResponsavel">
+                <option value="">— Seleciona ou escreve nas notas —</option>
+              </select>
+            </div>
+            <div class="field" style="grid-column:1/-1;">
+              <label for="assProcedimento">Procedimento / tratamento</label>
+              <textarea id="assProcedimento" placeholder="O que foi feito…"></textarea>
+            </div>
+            <div class="field" style="grid-column:1/-1;">
+              <label for="assObs">Observações</label>
+              <textarea id="assObs" placeholder="Notas adicionais…"></textarea>
+            </div>
+            <div class="field">
+              <button type="button" class="btn amber" id="assSubmitBtn">Registar</button>
+            </div>
+            <div class="field">
+              <button type="button" class="btn ghost" id="assCancelEdit" style="display:none;">Cancelar edição</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="panel steel">
+        <div class="panel-head"><h2>Registo de assistências</h2></div>
+        <div class="panel-body" style="padding-bottom:0;">
+          <div class="toolbar">
+            <input type="text" id="searchAssistencias" placeholder="Pesquisar pessoa ou local…">
+          </div>
+          <div style="overflow-x:auto;">
+          <table id="tblAssistencias">
+            <thead>
+              <tr>
+                <th>Hora</th><th>Local</th><th>Pessoa</th><th>Idade</th><th>Tipo</th>
+                <th>Encaminhamento</th><th>Responsável</th><th>Observações</th><th>Ações</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          </div>
+        </div>
+        <div class="totals-bar">
+          <div class="t-item"><div class="num" id="totAssistencias">0</div><div class="lbl">Assistências</div></div>
+          <div class="t-item"><div class="num" id="totTransportados">0</div><div class="lbl">Transportados</div></div>
+          <div class="t-item"><div class="num" id="totAltaLocal">0</div><div class="lbl">Alta no local</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PRESTADORES ============ -->
+  <section class="view" id="view-prestadores">
+    <div class="panel plum">
+      <div class="panel-head"><h2 id="prestFormTitle">Novo prestador de serviço</h2></div>
+      <div class="panel-body">
+        <form id="formPrestador" class="form-grid">
+          <input type="hidden" id="prId">
+          <div class="field">
+            <label for="prNome">Nome</label>
+            <input type="text" id="prNome" placeholder="Nome do prestador">
+          </div>
+          <div class="field">
+            <label for="prContacto">Contacto</label>
+            <input type="text" id="prContacto" placeholder="Telefone ou email">
+          </div>
+          <div class="field">
+            <label for="prTipo">Tipo de serviço</label>
+            <select id="prTipo">
+              <option>Coordenador</option>
+              <option>Médico</option>
+              <option>Enfermeiro</option>
+              <option>Técnico</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="prTaxa">Tarifa sugerida (€/hora)</label>
+            <input type="number" id="prTaxa" min="0" step="0.5" placeholder="Opcional">
+          </div>
+          <div class="field">
+            <label for="prDisp">Disponibilidade</label>
+            <select id="prDisp">
+              <option value="sim">Disponível</option>
+              <option value="nao">Indisponível</option>
+            </select>
+          </div>
+          <div class="field" style="grid-column:1/-1;">
+            <label for="prNotas">Notas</label>
+            <textarea id="prNotas" placeholder="Observações sobre este prestador…"></textarea>
+          </div>
+          <div class="field">
+            <button type="button" class="btn plum" id="prSubmitBtn">Adicionar prestador</button>
+          </div>
+          <div class="field">
+            <button type="button" class="btn ghost" id="prCancelEdit" style="display:none;">Cancelar edição</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel plum">
+      <div class="panel-head"><h2>Contactos frequentes</h2></div>
+      <div class="panel-body">
+        <div class="toolbar">
+          <input type="text" id="searchPrestadores" placeholder="Pesquisar por nome ou contacto…">
+          <select id="filterPrTipo"><option value="">Todos os tipos</option></select>
+          <select id="filterPrDisp">
+            <option value="">Todas as disponibilidades</option>
+            <option value="sim">Disponíveis</option>
+            <option value="nao">Indisponíveis</option>
+          </select>
+        </div>
+        <p class="hint" id="alocarHint"></p>
+        <div style="overflow-x:auto;">
+        <table id="tblPrestadores">
+          <thead>
+            <tr>
+              <th>Nome</th><th>Contacto</th><th>Tipo</th><th>Tarifa sugerida</th><th>Disponibilidade</th><th>Notas</th><th>Ações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ ALERTAS ============ -->
+  <section class="view" id="view-alertas">
+    <div class="panel">
+      <div class="panel-head">
+        <h2>Alertas de stock baixo</h2>
+        <span class="tag low" id="stockAlertCount" style="display:none;"></span>
+      </div>
+      <div class="panel-body">
+        <p class="hint" style="margin:0 0 14px 0;">Itens em stock iguais ou abaixo do limite mínimo definido. Vai à aba Stock para repor.</p>
+        <div id="stockAlertContainer"></div>
+      </div>
+    </div>
+
+    <div class="panel plum">
+      <div class="panel-head"><h2>Alertas de disponibilidade</h2></div>
+      <div class="panel-body">
+        <p class="hint" style="margin:0 0 14px 0;">Eventos a acontecer nos próximos 30 dias. Marca o convite como enviado e regista a resposta de cada prestador. O botão "Copiar convite" gera uma mensagem que podes enviar por WhatsApp, SMS ou email.</p>
+        <div id="alertasContainer"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FATURAÇÃO ============ -->
+  <section class="view" id="view-faturacao">
+    <div class="panel success">
+      <div class="panel-head"><h2>Faturação por evento</h2></div>
+      <div class="panel-body">
+        <div class="toolbar">
+          <input type="text" id="searchFaturacao" placeholder="Pesquisar por nome do evento…">
+          <select id="filterFaturacaoEstado">
+            <option value="">Todos</option>
+            <option value="pendente">Com algo pendente</option>
+            <option value="completo">Tudo concluído</option>
+          </select>
+        </div>
+        <div style="overflow-x:auto;">
+        <table id="tblFaturacao">
+          <thead>
+            <tr>
+              <th>Evento</th><th>Data</th><th>Valor a pagar</th><th>Fatura ao cliente</th>
+              <th>Honorários pagos</th><th>Recibo emitido</th><th>Observações</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STOCK ============ -->
+  <section class="view" id="view-stock">
+    <div class="panel success">
+      <div class="panel-head"><h2>Adicionar item ao stock</h2></div>
+      <div class="panel-body">
+        <form id="formStock" class="form-grid">
+          <div class="field">
+            <label for="stPosto">Posto de trabalho</label>
+            <input type="text" id="stPosto" placeholder="Ex: Entrada Principal" list="postosList">
+            <datalist id="postosList"></datalist>
+          </div>
+          <div class="field">
+            <label for="stItem">Item</label>
+            <input type="text" id="stItem" placeholder="Ex: Coletes refletores">
+          </div>
+          <div class="field">
+            <label for="stQtd">Quantidade inicial</label>
+            <input type="number" id="stQtd" value="0" min="0">
+          </div>
+          <div class="field">
+            <label for="stMin">Limite mínimo (alerta)</label>
+            <input type="number" id="stMin" value="5" min="0">
+          </div>
+          <div class="field">
+            <button type="button" class="btn amber" id="btnAddStock">Adicionar item</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel success">
+      <div class="panel-head">
+        <h2>Stock por posto</h2>
+        <input type="text" id="searchStock" placeholder="Pesquisar item ou posto…" style="padding:8px 12px;border:1px solid #C9C2B2;background:#FCFBF8;font-size:14px;">
+      </div>
+      <div class="panel-body" id="stockContainer">
+      </div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<div id="providerRoot" style="display:none;">
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">
+        <div class="brand-mark"><img src="data:image/png;base64,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" alt="AFSS"></div>
+        <div class="brand-text">
+          <h1>Portal do Prestador</h1>
+          <p id="providerGreeting">Seleciona o teu nome para começar</p>
+        </div>
+      </div>
+      <div class="provider-id-picker">
+        <label for="providerSelfSelect">Eu sou:</label>
+        <select id="providerSelfSelect"><option value="">— Seleciona —</option></select>
+      </div>
+    </div>
+    <nav class="tabs">
+      <button class="p-nav-tab active" data-pview="disponibilidades">Disponibilidades</button>
+      <button class="p-nav-tab" data-pview="assistencias-p">Assistências</button>
+      <button class="p-nav-tab" data-pview="recibos">Recibos</button>
+      <button class="p-nav-tab" data-pview="stock-p">Stock</button>
+    </nav>
+  </header>
+
+  <main>
+
+    <!-- ============ DISPONIBILIDADES ============ -->
+    <section class="pview active" id="pview-disponibilidades">
+      <div id="provNoIdEmpty1" class="empty-state" style="display:none;">
+        <p>Seleciona o teu nome no topo da página para veres os eventos e dares a tua disponibilidade.</p>
+      </div>
+      <div id="provDisponibilidadesContent">
+        <div class="panel plum">
+          <div class="panel-head"><h2>Eventos próximos</h2></div>
+          <div class="panel-body">
+            <p class="hint" style="margin:0 0 14px 0;">Para cada evento, diz se estás disponível para o dia, horário e honorário indicados.</p>
+            <div id="provDisponibilidadesContainer"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ ASSISTÊNCIAS (prestador) ============ -->
+    <section class="pview" id="pview-assistencias-p">
+      <div id="provNoIdEmpty2" class="empty-state" style="display:none;">
+        <p>Seleciona o teu nome no topo da página para registares uma assistência.</p>
+      </div>
+      <div id="provAssistenciasContent">
+        <div class="panel plum">
+          <div class="panel-head"><h2>Registar assistência</h2></div>
+          <div class="panel-body">
+            <form id="formAssistenciaP" class="form-grid">
+              <div class="field">
+                <label for="pAssEvento">Evento</label>
+                <select id="pAssEvento"><option value="">— Seleciona o evento —</option></select>
+              </div>
+              <div class="field">
+                <label for="pAssHora">Hora</label>
+                <input type="time" id="pAssHora">
+              </div>
+              <div class="field">
+                <label for="pAssLocal">Local</label>
+                <input type="text" id="pAssLocal" placeholder="Ex: Zona VIP">
+              </div>
+              <div class="field">
+                <label for="pAssPessoa">Pessoa assistida</label>
+                <input type="text" id="pAssPessoa" placeholder="Nome ou identificação">
+              </div>
+              <div class="field">
+                <label for="pAssIdade">Idade (opcional)</label>
+                <input type="number" id="pAssIdade" min="0">
+              </div>
+              <div class="field">
+                <label for="pAssTipo">Tipo de ocorrência</label>
+                <select id="pAssTipo">
+                  <option>Mal-estar</option>
+                  <option>Trauma / queda</option>
+                  <option>Intoxicação etílica</option>
+                  <option>Reação alérgica</option>
+                  <option>Ferida / corte</option>
+                  <option>Outro</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="pAssEncaminhamento">Encaminhamento</label>
+                <select id="pAssEncaminhamento">
+                  <option>Alta no local</option>
+                  <option>Transportado para hospital</option>
+                  <option>Recusa de assistência</option>
+                  <option>Outro</option>
+                </select>
+              </div>
+              <div class="field" style="grid-column:1/-1;">
+                <label for="pAssProcedimento">Procedimento / tratamento</label>
+                <textarea id="pAssProcedimento" placeholder="O que foi feito…"></textarea>
+              </div>
+              <div class="field" style="grid-column:1/-1;">
+                <label for="pAssObs">Observações</label>
+                <textarea id="pAssObs" placeholder="Notas adicionais…"></textarea>
+              </div>
+              <div class="field">
+                <button type="button" class="btn plum" id="pAssSubmitBtn">Registar assistência</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel plum">
+          <div class="panel-head"><h2>Assistências registadas (evento selecionado)</h2></div>
+          <div class="panel-body">
+            <div style="overflow-x:auto;">
+            <table id="tblAssistenciasP">
+              <thead>
+                <tr><th>Hora</th><th>Local</th><th>Pessoa</th><th>Tipo</th><th>Encaminhamento</th><th>Responsável</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ RECIBOS ============ -->
+    <section class="pview" id="pview-recibos">
+      <div id="provNoIdEmpty3" class="empty-state" style="display:none;">
+        <p>Seleciona o teu nome no topo da página para veres os teus honorários e recibos.</p>
+      </div>
+      <div id="provRecibosContent">
+        <div class="panel plum">
+          <div class="panel-head"><h2>Os meus honorários</h2></div>
+          <div class="panel-body">
+            <p class="hint" style="margin:0 0 14px 0;">Marca "Recibo emitido" depois de entregares o recibo à AFSS para pagamento.</p>
+            <div style="overflow-x:auto;">
+            <table id="tblRecibos">
+              <thead>
+                <tr><th>Evento</th><th>Dia</th><th>Horas</th><th>Honorário/h</th><th>Valor a receber</th><th>Recibo emitido</th></tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+            </div>
+            <div class="totals-bar">
+              <div class="t-item"><div class="num" id="provTotalReceber">€0</div><div class="lbl">Total a receber</div></div>
+              <div class="t-item"><div class="num" id="provTotalPendenteRecibo">0</div><div class="lbl">Recibos pendentes</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ STOCK (prestador) ============ -->
+    <section class="pview" id="pview-stock-p">
+      <div class="panel plum">
+        <div class="panel-head"><h2>Movimentar stock</h2></div>
+        <div class="panel-body">
+          <p class="hint" style="margin:0 0 14px 0;">Seleciona um item e regista a entrada ou saída de stock no teu posto.</p>
+          <div class="form-grid" style="margin-bottom:18px;">
+            <div class="field" style="grid-column:1/-1;">
+              <label for="pStockItemSelect">Item</label>
+              <select id="pStockItemSelect"><option value="">— Seleciona um item —</option></select>
+            </div>
+            <div class="field">
+              <label>Quantidade atual</label>
+              <div class="readout" id="pStockQtyReadout">—</div>
+            </div>
+            <div class="field">
+              <label>Ajustar</label>
+              <div class="qty-control">
+                <button type="button" id="pStockDec">−</button>
+                <span class="qty-val" id="pStockDelta">1</span>
+                <button type="button" id="pStockInc">+</button>
+              </div>
+            </div>
+            <div class="field">
+              <button type="button" class="btn plum" id="pStockApplyAdd">Registar entrada</button>
+            </div>
+            <div class="field">
+              <button type="button" class="btn danger" id="pStockApplyRemove">Registar saída</button>
+            </div>
+          </div>
+          <div id="pStockContainer"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer class="foot">AFSS · Plataforma de gestão de eventos — dados guardados automaticamente</footer>
+
+<div class="modal-backdrop" id="confirmBackdrop">
+  <div class="modal">
+    <h3 id="confirmTitle">Confirmar ação</h3>
+    <p id="confirmText">Tens a certeza?</p>
+    <div class="modal-actions">
+      <button class="btn ghost" id="confirmCancel">Cancelar</button>
+      <button class="btn danger" id="confirmOk">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="modal-backdrop" id="copyBackdrop">
+  <div class="modal" style="max-width:520px;">
+    <h3>Convite para prestador</h3>
+    <p>Copiado para a área de transferência. Se não funcionar, seleciona o texto abaixo e copia manualmente.</p>
+    <textarea id="copyText" style="width:100%;min-height:140px;font-family:'Inter',sans-serif;font-size:13.5px;padding:10px;border:1px solid #C9C2B2;background:#FCFBF8;"></textarea>
+    <div class="modal-actions" style="margin-top:14px;">
+      <button class="btn ghost" id="copyClose">Fechar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------------- Ligação Supabase ----------------
+  // 1. Cria um projeto em supabase.com
+  // 2. Corre o ficheiro afss-supabase-schema.sql no SQL Editor
+  // 3. Cola aqui o Project URL e a chave "anon public" (Project Settings > API)
+  const SUPABASE_URL = 'https://lenquadkumdryhqrippz.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxlbnF1YWRrdW1kcnlocXJpcHB6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODkxMDY2NTksImV4cCI6MjEwNDY4MjY1OX0.-Obuei7WyKBQGsvT0A1mHy9HN4E-';
+  const sb = (typeof supabase !== 'undefined' && SUPABASE_URL.startsWith('http'))
+    ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+    : null;
+
+  // ---------------- State ----------------
+  let events = [];       // {id, name, serviceType, date, location, rate, createdAt, invoiceSent, feesPaid, receiptIssued, billingNotes}
+  let staff = [];         // {id, eventId, providerId, name, day, timeStart, timeEnd, local, rate, absent, absentReason, notes}
+  let providers = [];      // {id, name, contact, serviceType, available, suggestedRate, notes}
+  let stock = [];            // {id, posto, item, qty, min}
+  let assistances = [];       // {id, eventId, time, local, person, age, type, referral, responsible, procedure, notes}
+  let invitations = [];        // {id, eventId, providerId, sent, response, sentAt, respondedAt}
+  let activeEventId = null;
+  let pendingDelete = null; // {type, id}
+
+  const $ = (id) => document.getElementById(id);
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+  const todayStr = () => new Date().toISOString().slice(0,10);
+
+  function showToast(msg){
+    const t = $('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(showToast._h);
+    showToast._h = setTimeout(()=>t.classList.remove('show'), 2800);
+  }
+
+  // ---------------- Mapeamento camelCase (app) <-> snake_case (Supabase) ----------------
+  const toDbEvent = e => ({
+    id: e.id, name: e.name, service_type: e.serviceType, date: e.date,
+    time_start: e.timeStart, time_end: e.timeEnd, location: e.location,
+    rate: e.rate, staffing_needs: e.staffingNeeds || {}, area_rates: e.areaRates || {},
+    invoice_sent: !!e.invoiceSent, fees_paid: !!e.feesPaid, receipt_issued: !!e.receiptIssued,
+    billing_notes: e.billingNotes || '', created_at: e.createdAt || new Date().toISOString()
+  });
+  const fromDbEvent = r => ({
+    id: r.id, name: r.name, serviceType: r.service_type, date: r.date,
+    timeStart: r.time_start, timeEnd: r.time_end, location: r.location,
+    rate: r.rate, staffingNeeds: r.staffing_needs || {}, areaRates: r.area_rates || {},
+    invoiceSent: r.invoice_sent, feesPaid: r.fees_paid, receiptIssued: r.receipt_issued,
+    billingNotes: r.billing_notes, createdAt: r.created_at
+  });
+  const toDbStaff = s => ({
+    id: s.id, event_id: s.eventId, provider_id: s.providerId || null, name: s.name,
+    day: s.day, time_start: s.timeStart, time_end: s.timeEnd, local: s.local || '',
+    area: s.area || '', rate: s.rate, absent: !!s.absent, absent_reason: s.absentReason || '',
+    notes: s.notes || '', receipt_issued: !!s.receiptIssued
+  });
+  const fromDbStaff = r => ({
+    id: r.id, eventId: r.event_id, providerId: r.provider_id, name: r.name,
+    day: r.day, timeStart: r.time_start, timeEnd: r.time_end, local: r.local,
+    area: r.area, rate: r.rate, absent: r.absent, absentReason: r.absent_reason,
+    notes: r.notes, receiptIssued: r.receipt_issued
+  });
+  const toDbProvider = p => ({
+    id: p.id, name: p.name, contact: p.contact || '', service_type: p.serviceType,
+    available: !!p.available, suggested_rate: p.suggestedRate, notes: p.notes || ''
+  });
+  const fromDbProvider = r => ({
+    id: r.id, name: r.name, contact: r.contact, serviceType: r.service_type,
+    available: r.available, suggestedRate: r.suggested_rate, notes: r.notes
+  });
+  const toDbStock = i => ({ id: i.id, posto: i.posto, item: i.item, qty: i.qty, min: i.min });
+  const fromDbStock = r => ({ id: r.id, posto: r.posto, item: r.item, qty: r.qty, min: r.min });
+  const toDbAssistencia = a => ({
+    id: a.id, event_id: a.eventId, time: a.time, local: a.local || '', person: a.person || '',
+    age: (a.age===undefined?null:a.age), type: a.type, referral: a.referral,
+    responsible: a.responsible || '', procedure_notes: a.procedure || '', notes: a.notes || ''
+  });
+  const fromDbAssistencia = r => ({
+    id: r.id, eventId: r.event_id, time: r.time, local: r.local, person: r.person,
+    age: r.age, type: r.type, referral: r.referral, responsible: r.responsible,
+    procedure: r.procedure_notes, notes: r.notes
+  });
+  const toDbInvitation = i => ({
+    id: i.id, event_id: i.eventId, provider_id: i.providerId, sent: !!i.sent,
+    response: i.response || 'pendente', sent_at: i.sentAt, responded_at: i.respondedAt
+  });
+  const fromDbInvitation = r => ({
+    id: r.id, eventId: r.event_id, providerId: r.provider_id, sent: r.sent,
+    response: r.response, sentAt: r.sent_at, respondedAt: r.responded_at
+  });
+
+  // ---------------- Storage (Supabase) ----------------
+  async function loadAll(){
+    if(!sb){
+      showToast('Liga a app à Supabase: preenche SUPABASE_URL e SUPABASE_ANON_KEY no código');
+      renderAll();
+      return;
+    }
+    try{
+      const [e,s,pr,st,as,inv] = await Promise.all([
+        sb.from('events').select('*'),
+        sb.from('staff').select('*'),
+        sb.from('providers').select('*'),
+        sb.from('stock').select('*'),
+        sb.from('assistances').select('*'),
+        sb.from('invitations').select('*')
+      ]);
+      events = (e.data||[]).map(fromDbEvent);
+      staff = (s.data||[]).map(fromDbStaff);
+      providers = (pr.data||[]).map(fromDbProvider);
+      stock = (st.data||[]).map(fromDbStock);
+      assistances = (as.data||[]).map(fromDbAssistencia);
+      invitations = (inv.data||[]).map(fromDbInvitation);
+      if(e.error||s.error||pr.error||st.error||as.error||inv.error){
+        console.error(e.error||s.error||pr.error||st.error||as.error||inv.error);
+        showToast('Alguns dados podem não ter carregado — verifica a ligação');
+      }
+    }catch(err){
+      console.error('Erro ao carregar dados', err);
+      showToast('Erro ao ligar à base de dados');
+    }
+    renderAll();
+  }
+
+  // Sincroniza a tabela inteira com o array local: grava tudo o que existe
+  // localmente e apaga na base de dados o que já não existe cá.
+  async function resyncTable(table, localArray, toDb){
+    if(!sb) return;
+    try{
+      if(localArray.length > 0){
+        const rows = localArray.map(toDb);
+        const { error } = await sb.from(table).upsert(rows);
+        if(error) throw error;
+        const idList = localArray.map(r => `"${String(r.id).replace(/"/g,'')}"`).join(',');
+        const { error: delErr } = await sb.from(table).delete().not('id', 'in', `(${idList})`);
+        if(delErr) throw delErr;
+      }else{
+        const { error } = await sb.from(table).delete().neq('id', '__none__');
+        if(error) throw error;
+      }
+    }catch(err){
+      console.error(err);
+      showToast('Erro ao guardar dados — verifica a ligação à Supabase');
+    }
+  }
+  async function saveEvents(){ await resyncTable('events', events, toDbEvent); }
+  async function saveStaff(){ await resyncTable('staff', staff, toDbStaff); }
+  async function saveProviders(){ await resyncTable('providers', providers, toDbProvider); }
+  async function saveStock(){ await resyncTable('stock', stock, toDbStock); }
+  async function saveAssistencias(){ await resyncTable('assistances', assistances, toDbAssistencia); }
+  async function saveInvitations(){ await resyncTable('invitations', invitations, toDbInvitation); }
+
+  // Tempo real: quando alguém (noutro telemóvel/computador) muda algo,
+  // todos os que têm a app aberta veem a atualização sozinhos.
+  function subscribeRealtime(){
+    if(!sb) return;
+    let refreshTimer = null;
+    const scheduleRefresh = () => {
+      clearTimeout(refreshTimer);
+      refreshTimer = setTimeout(loadAll, 400);
+    };
+    sb.channel('afss-sync-' + uid())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'events' }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'staff' }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'providers' }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'stock' }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'assistances' }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'invitations' }, scheduleRefresh)
+      .subscribe();
+  }
+
+  // ---------------- Helpers ----------------
+  function fmtEuro(n){
+    return '€' + (Math.round((n||0)*100)/100).toLocaleString('pt-PT', {minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+  function fmtHours(n){
+    return (Math.round((n||0)*100)/100) + 'h';
+  }
+  function hoursFromShift(day, start, end){
+    if(!day || !start || !end) return 0;
+    const s = new Date(day+'T'+start+':00');
+    let e = new Date(day+'T'+end+':00');
+    if(isNaN(s) || isNaN(e)) return 0;
+    if(e <= s) e = new Date(e.getTime() + 24*60*60*1000); // turno noturno
+    return (e - s) / (1000*60*60);
+  }
+  function staffHours(s){ return hoursFromShift(s.day, s.timeStart, s.timeEnd); }
+  function staffValue(s){
+    const ev = eventById(s.eventId);
+    const rate = (s.rate !== undefined && s.rate !== null && s.rate !== '') ? parseFloat(s.rate) : (ev ? ev.rate : 25);
+    return staffHours(s) * rate;
+  }
+  function eventState(dateStr){
+    const today = new Date(); today.setHours(0,0,0,0);
+    const d = new Date(dateStr + 'T00:00:00');
+    if(d.getTime() === today.getTime()) return 'today';
+    return d > today ? 'future' : 'past';
+  }
+  function stateLabel(s){
+    return s==='today' ? 'Hoje' : s==='future' ? 'Futuro' : 'Concluído';
+  }
+  function eventById(id){ return events.find(e=>e.id===id); }
+  function staffForEvent(id){ return staff.filter(s=>s.eventId===id); }
+  function eventTotalValue(id){
+    return staffForEvent(id).reduce((sum,s)=> sum + staffValue(s), 0);
+  }
+  function assistencesForEvent(id){ return assistances.filter(a=>a.eventId===id); }
+  function daysUntil(dateStr){
+    const today = new Date(); today.setHours(0,0,0,0);
+    const d = new Date(dateStr+'T00:00:00');
+    return Math.round((d-today)/(1000*60*60*24));
+  }
+  function getInvitation(eventId, providerId){
+    return invitations.find(i=>i.eventId===eventId && i.providerId===providerId);
+  }
+  function ensureInvitation(eventId, providerId){
+    let inv = getInvitation(eventId, providerId);
+    if(!inv){
+      inv = {id: uid(), eventId, providerId, sent:false, response:'pendente', sentAt:null, respondedAt:null};
+      invitations.push(inv);
+    }
+    return inv;
+  }
+
+  const SERVICE_TYPES_PR = ['Coordenador','Médico','Enfermeiro','Técnico'];
+  const AREAS = ['Coordenador','Médico','Enfermeiro','Técnico'];
+  const AREA_FIELD_MAP = {
+    'Coordenador':'needCoordenador',
+    'Médico':'needMedico',
+    'Enfermeiro':'needEnfermeiro',
+    'Técnico':'needTecnico'
+  };
+  const RATE_FIELD_MAP = {
+    'Coordenador':'rateCoordenador',
+    'Médico':'rateMedico',
+    'Enfermeiro':'rateEnfermeiro',
+    'Técnico':'rateTecnico'
+  };
+  function eventRateForArea(ev, area){
+    if(!ev) return 25;
+    if(area && ev.areaRates && ev.areaRates[area] !== undefined && ev.areaRates[area] !== null && ev.areaRates[area] !== ''){
+      return parseFloat(ev.areaRates[area]);
+    }
+    return ev.rate;
+  }
+  function suggestedRateFor(area, provider, ev){
+    if(ev === undefined) ev = activeEventId ? eventById(activeEventId) : null;
+    if(provider && provider.suggestedRate !== undefined && provider.suggestedRate !== null && provider.suggestedRate !== ''){
+      return provider.suggestedRate;
+    }
+    return eventRateForArea(ev, area);
+  }
+  function areaShortLabel(area){
+    return area;
+  }
+  function staffAreaFilled(eventId, area){
+    return staff.filter(s=>s.eventId===eventId && s.area===area && !s.absent).length;
+  }
+  function areaCoverageHtml(ev){
+    const needs = ev.staffingNeeds || {};
+    const chips = AREAS.filter(a => (needs[a]||0) > 0).map(a=>{
+      const needed = needs[a];
+      const filled = staffAreaFilled(ev.id, a);
+      const ok = filled >= needed;
+      const rate = eventRateForArea(ev, a);
+      return `<span class="tag ${ok?'ok':'low'}" title="${areaShortLabel(a)}: ${filled} de ${needed} alocados — ${fmtEuro(rate)}/h">${areaShortLabel(a)} ${filled}/${needed}</span>`;
+    });
+    return chips.length ? chips.join(' ') : '<span style="color:var(--ink-soft);">—</span>';
+  }
+
+  // ---------------- Tabs ----------------
+  document.querySelectorAll('.nav-tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>switchView(btn.dataset.view));
+  });
+  function switchView(name){
+    document.querySelectorAll('.nav-tab').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+    document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id==='view-'+name));
+  }
+  window.switchView = switchView;
+
+  // ---------------- KPIs ----------------
+  function renderKpis(){
+    $('kpiEventos').textContent = events.length;
+    $('kpiPessoal').textContent = staff.length;
+    const totalValue = events.reduce((sum,e)=>sum+eventTotalValue(e.id),0);
+    $('kpiHonorarios').textContent = fmtEuro(totalValue);
+    $('kpiPrestadores').textContent = providers.filter(p=>p.available).length;
+    const lowCount = stock.filter(i=>i.qty <= i.min).length;
+    $('kpiStockBaixo').textContent = lowCount;
+  }
+
+  // ================= EVENTOS =================
+  async function handleCriarEvento(){
+    const name = $('evNome').value.trim();
+    const date = $('evData').value;
+    const location = $('evLocal').value.trim();
+    if(!name || !date || !location){
+      showToast('Preenche pelo menos o nome, a data e a localização');
+      return;
+    }
+    const areaRates = {
+      'Coordenador': $('rateCoordenador').value !== '' ? parseFloat($('rateCoordenador').value) : null,
+      'Médico': $('rateMedico').value !== '' ? parseFloat($('rateMedico').value) : null,
+      'Enfermeiro': $('rateEnfermeiro').value !== '' ? parseFloat($('rateEnfermeiro').value) : null,
+      'Técnico': $('rateTecnico').value !== '' ? parseFloat($('rateTecnico').value) : null
+    };
+    const setRates = Object.values(areaRates).filter(v=>v!=null);
+    const fallbackRate = setRates.length ? (setRates.reduce((a,b)=>a+b,0)/setRates.length) : 25;
+    const ev = {
+      id: uid(),
+      name: name,
+      serviceType: $('evTipo').value,
+      date: date,
+      timeStart: $('evHoraInicio').value,
+      timeEnd: $('evHoraFim').value,
+      location: location,
+      rate: fallbackRate,
+      staffingNeeds: {
+        'Coordenador': parseInt($('needCoordenador').value)||0,
+        'Médico': parseInt($('needMedico').value)||0,
+        'Enfermeiro': parseInt($('needEnfermeiro').value)||0,
+        'Técnico': parseInt($('needTecnico').value)||0
+      },
+      areaRates: areaRates,
+      createdAt: new Date().toISOString()
+    };
+    events.push(ev);
+    await saveEvents();
+    $('formEvento').reset();
+    ['needCoordenador','needMedico','needEnfermeiro','needTecnico'].forEach(id=>$(id).value = 0);
+    ['rateCoordenador','rateMedico','rateEnfermeiro','rateTecnico'].forEach(id=>$(id).value = 25);
+    renderAll();
+    showToast('Evento criado: ' + ev.name);
+  }
+  $('btnCriarEvento').addEventListener('click', handleCriarEvento);
+  $('formEvento').addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); handleCriarEvento(); }
+  });
+
+  function renderTipoFilterOptions(){
+    const sel = $('filterTipo');
+    const current = sel.value;
+    const types = [...new Set(events.map(e=>e.serviceType))];
+    sel.innerHTML = '<option value="">Todos os tipos</option>' + types.map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+    sel.value = current;
+  }
+
+  function renderEventos(){
+    renderTipoFilterOptions();
+    const search = $('searchEventos').value.trim().toLowerCase();
+    const tipoFilter = $('filterTipo').value;
+    const estadoFilter = $('filterEstado').value;
+
+    let list = events.slice().sort((a,b)=> a.date.localeCompare(b.date));
+    if(search){
+      list = list.filter(e => e.name.toLowerCase().includes(search) || e.location.toLowerCase().includes(search));
+    }
+    if(tipoFilter){
+      list = list.filter(e => e.serviceType === tipoFilter);
+    }
+    if(estadoFilter){
+      list = list.filter(e => eventState(e.date) === estadoFilter);
+    }
+
+    const tbody = document.querySelector('#tblEventos tbody');
+    if(list.length === 0){
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="10">Nenhum evento encontrado. Cria o primeiro evento acima.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = list.map(ev=>{
+      const state = eventState(ev.date);
+      const count = staffForEvent(ev.id).length;
+      const total = eventTotalValue(ev.id);
+      const dateDisplay = new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT');
+      const horario = (ev.timeStart||ev.timeEnd) ? `${ev.timeStart||'—'}–${ev.timeEnd||'—'}` : '—';
+      return `<tr>
+        <td><strong>${escapeHtml(ev.name)}</strong></td>
+        <td>${escapeHtml(ev.serviceType)}</td>
+        <td>${dateDisplay}</td>
+        <td>${horario}</td>
+        <td>${escapeHtml(ev.location)}</td>
+        <td style="white-space:normal;">${areaCoverageHtml(ev)}</td>
+        <td>${count}</td>
+        <td>${fmtEuro(total)}</td>
+        <td><span class="tag ${state}">${stateLabel(state)}</span></td>
+        <td>
+          <div class="row-actions">
+            <button class="btn ghost small" data-action="pessoal" data-id="${ev.id}">Pessoal</button>
+            <button class="btn danger small" data-action="del-event" data-id="${ev.id}">Eliminar</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+
+    tbody.querySelectorAll('[data-action="pessoal"]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        activeEventId = b.dataset.id;
+        renderPessoal();
+        switchView('pessoal');
+      });
+    });
+    tbody.querySelectorAll('[data-action="del-event"]').forEach(b=>{
+      b.addEventListener('click', ()=> confirmDelete('event', b.dataset.id, 'Eliminar este evento e todos os registos de pessoal associados?'));
+    });
+  }
+
+  $('searchEventos').addEventListener('input', renderEventos);
+  $('filterTipo').addEventListener('change', renderEventos);
+  $('filterEstado').addEventListener('change', renderEventos);
+
+  // ================= PESSOAL =================
+  function renderEventSelect(){
+    const sel = $('pessoalEventoSelect');
+    const current = activeEventId;
+    const sorted = events.slice().sort((a,b)=>b.date.localeCompare(a.date));
+    sel.innerHTML = '<option value="">— Seleciona um evento —</option>' +
+      sorted.map(ev=>`<option value="${ev.id}">${escapeHtml(ev.name)} — ${new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT')}</option>`).join('');
+    if(current && eventById(current)) sel.value = current;
+    else activeEventId = null;
+  }
+  $('pessoalEventoSelect').addEventListener('change', (e)=>{
+    activeEventId = e.target.value || null;
+    resetPessoalForm();
+    renderPessoal();
+  });
+
+  $('pesFalta').addEventListener('change', ()=>{
+    $('pesMotivoWrap').style.display = $('pesFalta').value === 'sim' ? 'flex' : 'none';
+  });
+
+  function renderPrestadorOptionsInPessoal(){
+    const sel = $('pesPrestador');
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— Inserir manualmente —</option>' +
+      providers.slice().sort((a,b)=>a.name.localeCompare(b.name))
+        .map(p=>`<option value="${p.id}">${escapeHtml(p.name)}${p.available? '' : ' (indisponível)'}</option>`).join('');
+    sel.value = current;
+  }
+  $('pesPrestador').addEventListener('change', ()=>{
+    const p = providers.find(x=>x.id===$('pesPrestador').value);
+    if(p){
+      $('pesNome').value = p.name;
+      if(AREAS.includes(p.serviceType)) $('pesArea').value = p.serviceType;
+      $('pesTaxa').value = suggestedRateFor($('pesArea').value, p);
+      updatePesCalcPreview();
+    }
+  });
+
+  $('pesArea').addEventListener('change', ()=>{
+    const p = providers.find(x=>x.id===$('pesPrestador').value) || null;
+    $('pesTaxa').value = suggestedRateFor($('pesArea').value, p);
+    updatePesCalcPreview();
+  });
+
+  function updatePesCalcPreview(){
+    const h = hoursFromShift($('pesDia').value, $('pesHoraInicio').value, $('pesHoraFim').value);
+    const rateVal = $('pesTaxa').value;
+    const rate = rateVal !== '' ? parseFloat(rateVal) : (activeEventId && eventById(activeEventId) ? eventById(activeEventId).rate : 0);
+    $('pesHorasReadout').textContent = fmtHours(h);
+    $('pesValorReadout').textContent = fmtEuro(h * (rate||0));
+  }
+  ['pesDia','pesHoraInicio','pesHoraFim','pesTaxa'].forEach(id=>{
+    $(id).addEventListener('input', updatePesCalcPreview);
+  });
+
+  function resetPessoalForm(){
+    $('formPessoal').reset();
+    $('pesId').value = '';
+    $('pesPrestador').value = '';
+    $('pesArea').value = '';
+    $('pesMotivoWrap').style.display = 'none';
+    $('pesSubmitBtn').textContent = 'Registar';
+    $('pessoalFormTitle').textContent = 'Registar colaborador';
+    $('pesCancelEdit').style.display = 'none';
+    const ev = activeEventId ? eventById(activeEventId) : null;
+    $('pesDia').value = ev ? ev.date : todayStr();
+    $('pesHoraInicio').value = ev ? (ev.timeStart||'') : '';
+    $('pesHoraFim').value = ev ? (ev.timeEnd||'') : '';
+    $('pesLocal').value = ev ? ev.location : '';
+    $('pesTaxa').value = ev ? ev.rate : 25;
+    updatePesCalcPreview();
+  }
+
+  $('pesCancelEdit').addEventListener('click', resetPessoalForm);
+
+  async function handleRegistarPessoal(){
+    if(!activeEventId){ showToast('Seleciona um evento primeiro'); return; }
+    const name = $('pesNome').value.trim();
+    if(!name){ showToast('Preenche o nome do colaborador'); return; }
+    const editId = $('pesId').value;
+    const isAbsent = $('pesFalta').value === 'sim';
+    const data = {
+      eventId: activeEventId,
+      providerId: $('pesPrestador').value || null,
+      name: name,
+      day: $('pesDia').value,
+      timeStart: $('pesHoraInicio').value,
+      timeEnd: $('pesHoraFim').value,
+      local: $('pesLocal').value.trim(),
+      area: $('pesArea').value || '',
+      rate: $('pesTaxa').value !== '' ? parseFloat($('pesTaxa').value) : null,
+      absent: isAbsent,
+      absentReason: isAbsent ? $('pesMotivo').value.trim() : '',
+      notes: $('pesObs').value.trim()
+    };
+    if(editId){
+      const idx = staff.findIndex(s=>s.id===editId);
+      if(idx>-1) staff[idx] = {...staff[idx], ...data};
+      showToast('Registo atualizado');
+    }else{
+      staff.push({id: uid(), receiptIssued:false, ...data});
+      showToast('Colaborador registado');
+    }
+    await saveStaff();
+    resetPessoalForm();
+    renderAll();
+  }
+  $('pesSubmitBtn').addEventListener('click', handleRegistarPessoal);
+  $('formPessoal').addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); handleRegistarPessoal(); }
+  });
+
+  function renderPessoal(){
+    renderEventSelect();
+    renderPrestadorOptionsInPessoal();
+    const empty = !activeEventId;
+    $('pessoalEmpty').style.display = empty ? 'block' : 'none';
+    $('pessoalContent').style.display = empty ? 'none' : 'block';
+    if(empty) return;
+
+    const ev = eventById(activeEventId);
+    $('pessoalTaxaBadge').textContent = ev ? AREAS.map(a=>`${areaShortLabel(a)} ${fmtEuro(eventRateForArea(ev,a))}/h`).join(' · ') : '';
+
+    const search = $('searchPessoal').value.trim().toLowerCase();
+    let list = staffForEvent(activeEventId);
+    if(search) list = list.filter(s=>s.name.toLowerCase().includes(search));
+    list = list.slice().sort((a,b)=> (a.day+a.timeStart).localeCompare(b.day+b.timeStart));
+
+    const tbody = document.querySelector('#tblPessoal tbody');
+    if(list.length===0){
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="13">Ainda não há pessoal registado para este evento.</td></tr>`;
+    }else{
+      tbody.innerHTML = list.map(s=>{
+        const h = staffHours(s);
+        const rate = (s.rate !== undefined && s.rate !== null) ? s.rate : (ev?ev.rate:25);
+        const val = h * rate;
+        const dateDisplay = s.day ? new Date(s.day+'T00:00:00').toLocaleDateString('pt-PT') : '—';
+        return `<tr>
+          <td><strong>${escapeHtml(s.name)}</strong></td>
+          <td>${dateDisplay}</td>
+          <td>${s.timeStart||'—'}</td>
+          <td>${s.timeEnd||'—'}</td>
+          <td>${fmtHours(h)}</td>
+          <td>${escapeHtml(s.local||'—')}</td>
+          <td>${escapeHtml(s.area||'—')}</td>
+          <td>${fmtEuro(rate)}</td>
+          <td>${fmtEuro(val)}</td>
+          <td>${s.absent ? `<span class="tag absent" title="${escapeHtml(s.absentReason||'')}">Falta</span>` : `<span class="tag ok">Presente</span>`}</td>
+          <td><span class="toggle-pill ${s.receiptIssued?'yes':'no'}" data-action="toggle-receipt" data-id="${s.id}">${s.receiptIssued?'Sim':'Não'}</span></td>
+          <td style="max-width:180px;white-space:normal;">${escapeHtml(s.notes||'—')}</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn ghost small" data-action="edit-pes" data-id="${s.id}">Editar</button>
+              <button class="btn danger small" data-action="del-pes" data-id="${s.id}">Eliminar</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    tbody.querySelectorAll('[data-action="toggle-receipt"]').forEach(el=>{
+      el.addEventListener('click', async ()=>{
+        const s = staff.find(x=>x.id===el.dataset.id);
+        if(!s) return;
+        s.receiptIssued = !s.receiptIssued;
+        await saveStaff();
+        renderPessoal();
+      });
+    });
+    tbody.querySelectorAll('[data-action="edit-pes"]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const s = staff.find(x=>x.id===b.dataset.id);
+        if(!s) return;
+        $('pesId').value = s.id;
+        $('pesPrestador').value = s.providerId || '';
+        $('pesNome').value = s.name;
+        $('pesDia').value = s.day || todayStr();
+        $('pesHoraInicio').value = s.timeStart || '';
+        $('pesHoraFim').value = s.timeEnd || '';
+        $('pesLocal').value = s.local || '';
+        $('pesArea').value = s.area || '';
+        $('pesTaxa').value = (s.rate !== undefined && s.rate !== null) ? s.rate : '';
+        $('pesFalta').value = s.absent ? 'sim' : 'nao';
+        $('pesMotivoWrap').style.display = s.absent ? 'flex' : 'none';
+        $('pesMotivo').value = s.absentReason || '';
+        $('pesObs').value = s.notes || '';
+        $('pesSubmitBtn').textContent = 'Guardar alterações';
+        $('pessoalFormTitle').textContent = 'Editar colaborador';
+        $('pesCancelEdit').style.display = 'inline-block';
+        updatePesCalcPreview();
+        window.scrollTo({top:0, behavior:'smooth'});
+      });
+    });
+    tbody.querySelectorAll('[data-action="del-pes"]').forEach(b=>{
+      b.addEventListener('click', ()=> confirmDelete('staff', b.dataset.id, 'Eliminar este registo de pessoal?'));
+    });
+
+    // totals
+    const totHours = list.reduce((s,x)=>s+staffHours(x),0);
+    const totVal = list.reduce((s,x)=>s+staffValue(x),0);
+    $('totPessoas').textContent = list.length;
+    $('totHoras').textContent = fmtHours(totHours);
+    $('totHonorarios').textContent = fmtEuro(totVal);
+    $('totFaltas').textContent = list.filter(s=>s.absent).length;
+  }
+
+  $('searchPessoal').addEventListener('input', renderPessoal);
+
+  $('btnExportCsv').addEventListener('click', ()=>{
+    if(!activeEventId) return;
+    const ev = eventById(activeEventId);
+    const list = staffForEvent(activeEventId);
+    let csv = 'Nome;Dia;Inicio;Fim;Horas;Local;Area;Honorario_hora;Valor_a_pagar;Falta;Motivo;Recibo_emitido;Observacoes\n';
+    list.forEach(s=>{
+      const h = staffHours(s);
+      const rate = (s.rate !== undefined && s.rate !== null) ? s.rate : (ev?ev.rate:25);
+      const val = h * rate;
+      csv += [s.name, s.day||'', s.timeStart||'', s.timeEnd||'', h.toFixed(2), s.local||'', s.area||'', rate.toFixed(2), val.toFixed(2), s.absent?'Sim':'Nao', s.absentReason||'', s.receiptIssued?'Sim':'Nao', (s.notes||'').replace(/;/g,',')].join(';') + '\n';
+    });
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pessoal-${(ev?ev.name:'evento').replace(/\s+/g,'_')}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // ================= ASSISTÊNCIAS =================
+  function renderAssEventoSelect(){
+    const sel = $('assEventoSelect');
+    const current = activeEventId;
+    const sorted = events.slice().sort((a,b)=>b.date.localeCompare(a.date));
+    sel.innerHTML = '<option value="">— Seleciona um evento —</option>' +
+      sorted.map(ev=>`<option value="${ev.id}">${escapeHtml(ev.name)} — ${new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT')}</option>`).join('');
+    if(current && eventById(current)) sel.value = current;
+  }
+  $('assEventoSelect').addEventListener('change', (e)=>{
+    activeEventId = e.target.value || null;
+    resetAssistenciaForm();
+    renderAll();
+  });
+
+  function renderResponsavelOptions(){
+    const sel = $('assResponsavel');
+    const current = sel.value;
+    const saude = providers.filter(p=>p.serviceType==='Médico' || p.serviceType==='Enfermeiro');
+    const listToShow = saude.length ? saude : providers;
+    sel.innerHTML = '<option value="">— Seleciona ou escreve nas notas —</option>' +
+      listToShow.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${escapeHtml(p.name)}">${escapeHtml(p.name)}</option>`).join('');
+    sel.value = current;
+  }
+
+  function resetAssistenciaForm(){
+    $('formAssistencia').reset();
+    $('assId').value = '';
+    $('assSubmitBtn').textContent = 'Registar';
+    $('assFormTitle').textContent = 'Registar assistência';
+    $('assCancelEdit').style.display = 'none';
+    const now = new Date();
+    $('assHora').value = now.toTimeString().slice(0,5);
+    renderResponsavelOptions();
+  }
+  $('assCancelEdit').addEventListener('click', resetAssistenciaForm);
+
+  async function handleRegistarAssistencia(){
+    if(!activeEventId){ showToast('Seleciona um evento primeiro'); return; }
+    const editId = $('assId').value;
+    const data = {
+      eventId: activeEventId,
+      time: $('assHora').value,
+      local: $('assLocal').value.trim(),
+      person: $('assPessoa').value.trim(),
+      age: $('assIdade').value !== '' ? parseInt($('assIdade').value) : null,
+      type: $('assTipo').value,
+      referral: $('assEncaminhamento').value,
+      responsible: $('assResponsavel').value,
+      procedure: $('assProcedimento').value.trim(),
+      notes: $('assObs').value.trim()
+    };
+    if(editId){
+      const idx = assistances.findIndex(a=>a.id===editId);
+      if(idx>-1) assistances[idx] = {...assistances[idx], ...data};
+      showToast('Assistência atualizada');
+    }else{
+      assistances.push({id: uid(), ...data});
+      showToast('Assistência registada');
+    }
+    await saveAssistencias();
+    resetAssistenciaForm();
+    renderAll();
+  }
+  $('assSubmitBtn').addEventListener('click', handleRegistarAssistencia);
+  $('formAssistencia').addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); handleRegistarAssistencia(); }
+  });
+
+  function renderAssistencias(){
+    renderAssEventoSelect();
+    const empty = !activeEventId;
+    $('assEmpty').style.display = empty ? 'block' : 'none';
+    $('assContent').style.display = empty ? 'none' : 'block';
+    if(empty) return;
+    renderResponsavelOptions();
+
+    const search = $('searchAssistencias').value.trim().toLowerCase();
+    let list = assistencesForEvent(activeEventId);
+    if(search) list = list.filter(a => (a.person||'').toLowerCase().includes(search) || (a.local||'').toLowerCase().includes(search));
+    list = list.slice().sort((a,b)=> (a.time||'').localeCompare(b.time||''));
+
+    const tbody = document.querySelector('#tblAssistencias tbody');
+    if(list.length===0){
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="9">Ainda não há assistências registadas para este evento.</td></tr>`;
+    }else{
+      tbody.innerHTML = list.map(a=>{
+        return `<tr>
+          <td>${a.time||'—'}</td>
+          <td>${escapeHtml(a.local||'—')}</td>
+          <td>${escapeHtml(a.person||'—')}</td>
+          <td>${a.age!=null ? a.age : '—'}</td>
+          <td>${escapeHtml(a.type||'—')}</td>
+          <td>${escapeHtml(a.referral||'—')}</td>
+          <td>${escapeHtml(a.responsible||'—')}</td>
+          <td style="max-width:200px;white-space:normal;">${escapeHtml(a.notes||a.procedure||'—')}</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn ghost small" data-action="edit-ass" data-id="${a.id}">Editar</button>
+              <button class="btn danger small" data-action="del-ass" data-id="${a.id}">Eliminar</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+
+    tbody.querySelectorAll('[data-action="edit-ass"]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const a = assistances.find(x=>x.id===b.dataset.id);
+        if(!a) return;
+        $('assId').value = a.id;
+        $('assHora').value = a.time || '';
+        $('assLocal').value = a.local || '';
+        $('assPessoa').value = a.person || '';
+        $('assIdade').value = a.age!=null ? a.age : '';
+        $('assTipo').value = a.type || 'Mal-estar';
+        $('assEncaminhamento').value = a.referral || 'Alta no local';
+        renderResponsavelOptions();
+        $('assResponsavel').value = a.responsible || '';
+        $('assProcedimento').value = a.procedure || '';
+        $('assObs').value = a.notes || '';
+        $('assSubmitBtn').textContent = 'Guardar alterações';
+        $('assFormTitle').textContent = 'Editar assistência';
+        $('assCancelEdit').style.display = 'inline-block';
+        window.scrollTo({top:0, behavior:'smooth'});
+      });
+    });
+    tbody.querySelectorAll('[data-action="del-ass"]').forEach(b=>{
+      b.addEventListener('click', ()=> confirmDelete('assistencia', b.dataset.id, 'Eliminar este registo de assistência?'));
+    });
+
+    $('totAssistencias').textContent = list.length;
+    $('totTransportados').textContent = list.filter(a=>a.referral==='Transportado para hospital').length;
+    $('totAltaLocal').textContent = list.filter(a=>a.referral==='Alta no local').length;
+  }
+  $('searchAssistencias').addEventListener('input', renderAssistencias);
+
+  // ================= PRESTADORES =================
+  function renderPrTipoFilterOptions(){
+    const sel = $('filterPrTipo');
+    const current = sel.value;
+    sel.innerHTML = '<option value="">Todos os tipos</option>' + SERVICE_TYPES_PR.map(t=>`<option value="${t}">${t}</option>`).join('');
+    sel.value = current;
+  }
+
+  function resetPrestadorForm(){
+    $('formPrestador').reset();
+    $('prId').value = '';
+    $('prDisp').value = 'sim';
+    $('prSubmitBtn').textContent = 'Adicionar prestador';
+    $('prestFormTitle').textContent = 'Novo prestador de serviço';
+    $('prCancelEdit').style.display = 'none';
+  }
+  $('prCancelEdit').addEventListener('click', resetPrestadorForm);
+
+  async function handleAdicionarPrestador(){
+    const name = $('prNome').value.trim();
+    if(!name){ showToast('Preenche o nome do prestador'); return; }
+    const editId = $('prId').value;
+    const data = {
+      name: name,
+      contact: $('prContacto').value.trim(),
+      serviceType: $('prTipo').value,
+      suggestedRate: $('prTaxa').value !== '' ? parseFloat($('prTaxa').value) : null,
+      available: $('prDisp').value === 'sim',
+      notes: $('prNotas').value.trim()
+    };
+    if(editId){
+      const idx = providers.findIndex(p=>p.id===editId);
+      if(idx>-1) providers[idx] = {...providers[idx], ...data};
+      showToast('Prestador atualizado');
+    }else{
+      providers.push({id: uid(), ...data});
+      showToast('Prestador adicionado');
+    }
+    await saveProviders();
+    resetPrestadorForm();
+    renderAll();
+  }
+  $('prSubmitBtn').addEventListener('click', handleAdicionarPrestador);
+  $('formPrestador').addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); handleAdicionarPrestador(); }
+  });
+
+  function renderPrestadores(){
+    renderPrTipoFilterOptions();
+    const ev = activeEventId ? eventById(activeEventId) : null;
+    $('alocarHint').textContent = ev
+      ? `Evento ativo: ${ev.name}. Prestadores disponíveis podem ser alocados diretamente a este evento.`
+      : 'Seleciona um evento na aba Pessoal para poderes alocar prestadores disponíveis a esse evento.';
+
+    const search = $('searchPrestadores').value.trim().toLowerCase();
+    const tipoFilter = $('filterPrTipo').value;
+    const dispFilter = $('filterPrDisp').value;
+
+    let list = providers.slice().sort((a,b)=>a.name.localeCompare(b.name));
+    if(search) list = list.filter(p => p.name.toLowerCase().includes(search) || (p.contact||'').toLowerCase().includes(search));
+    if(tipoFilter) list = list.filter(p => p.serviceType === tipoFilter);
+    if(dispFilter) list = list.filter(p => (p.available ? 'sim':'nao') === dispFilter);
+
+    const tbody = document.querySelector('#tblPrestadores tbody');
+    if(list.length===0){
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="7">Nenhum prestador encontrado. Adiciona o primeiro contacto acima.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = list.map(p=>{
+      const canAllocate = !!ev && p.available;
+      return `<tr>
+        <td><strong>${escapeHtml(p.name)}</strong></td>
+        <td>${escapeHtml(p.contact||'—')}</td>
+        <td>${escapeHtml(p.serviceType)}</td>
+        <td>${p.suggestedRate!=null ? fmtEuro(p.suggestedRate) : '—'}</td>
+        <td>${p.available ? '<span class="tag avail">Disponível</span>' : '<span class="tag unavail">Indisponível</span>'}</td>
+        <td style="max-width:180px;white-space:normal;">${escapeHtml(p.notes||'—')}</td>
+        <td>
+          <div class="row-actions">
+            <button class="btn plum small" data-action="alocar" data-id="${p.id}" ${canAllocate?'':'disabled'} title="${canAllocate ? 'Alocar a '+escapeHtml(ev.name) : (ev ? 'Prestador indisponível' : 'Seleciona um evento na aba Pessoal')}">Alocar</button>
+            <button class="btn ghost small" data-action="toggle-disp" data-id="${p.id}">${p.available?'Marcar indisponível':'Marcar disponível'}</button>
+            <button class="btn ghost small" data-action="edit-pr" data-id="${p.id}">Editar</button>
+            <button class="btn danger small" data-action="del-pr" data-id="${p.id}">Eliminar</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+
+    tbody.querySelectorAll('[data-action="alocar"]').forEach(b=>{
+      b.addEventListener('click', ()=> allocateProvider(b.dataset.id));
+    });
+    tbody.querySelectorAll('[data-action="toggle-disp"]').forEach(b=>{
+      b.addEventListener('click', async ()=>{
+        const p = providers.find(x=>x.id===b.dataset.id);
+        if(!p) return;
+        p.available = !p.available;
+        await saveProviders();
+        renderAll();
+      });
+    });
+    tbody.querySelectorAll('[data-action="edit-pr"]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        const p = providers.find(x=>x.id===b.dataset.id);
+        if(!p) return;
+        $('prId').value = p.id;
+        $('prNome').value = p.name;
+        $('prContacto').value = p.contact || '';
+        $('prTipo').value = p.serviceType;
+        $('prTaxa').value = p.suggestedRate!=null ? p.suggestedRate : '';
+        $('prDisp').value = p.available ? 'sim' : 'nao';
+        $('prNotas').value = p.notes || '';
+        $('prSubmitBtn').textContent = 'Guardar alterações';
+        $('prestFormTitle').textContent = 'Editar prestador';
+        $('prCancelEdit').style.display = 'inline-block';
+        window.scrollTo({top:0, behavior:'smooth'});
+      });
+    });
+    tbody.querySelectorAll('[data-action="del-pr"]').forEach(b=>{
+      b.addEventListener('click', ()=> confirmDelete('provider', b.dataset.id, 'Eliminar este prestador da lista de contactos?'));
+    });
+  }
+
+  function allocateProvider(id){
+    const p = providers.find(x=>x.id===id);
+    if(!p) return;
+    if(!activeEventId){ showToast('Seleciona um evento na aba Pessoal primeiro'); return; }
+    if(!p.available){ showToast('Este prestador está indisponível'); return; }
+    switchView('pessoal');
+    resetPessoalForm();
+    $('pesPrestador').value = p.id;
+    $('pesNome').value = p.name;
+    if(AREAS.includes(p.serviceType)) $('pesArea').value = p.serviceType;
+    $('pesTaxa').value = suggestedRateFor($('pesArea').value, p);
+    updatePesCalcPreview();
+    showToast(`${p.name} alocado ao evento — completa o horário e grava`);
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  $('searchPrestadores').addEventListener('input', renderPrestadores);
+  $('filterPrTipo').addEventListener('change', renderPrestadores);
+  $('filterPrDisp').addEventListener('change', renderPrestadores);
+
+  // ================= ALERTAS =================
+  function copyToClipboardWithFallback(text){
+    let copied = false;
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(()=>{ copied = true; }).catch(()=>{});
+      }
+    }catch(err){ /* ignore */ }
+    $('copyText').value = text;
+    $('copyBackdrop').classList.add('show');
+    setTimeout(()=>{ $('copyText').focus(); $('copyText').select(); }, 50);
+  }
+  $('copyClose').addEventListener('click', ()=> $('copyBackdrop').classList.remove('show'));
+
+  function buildInviteMessage(ev){
+    const dateDisplay = new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT');
+    const horario = (ev.timeStart||ev.timeEnd) ? ` das ${ev.timeStart||'—'} às ${ev.timeEnd||'—'}` : '';
+    return `Olá! A AFSS tem o evento "${ev.name}" no dia ${dateDisplay}${horario}, em ${ev.location} (${ev.serviceType}). Estás disponível para trabalhar? Por favor responde com sim ou não. Obrigado!`;
+  }
+
+  function renderAlertas(){
+    const container = $('alertasContainer');
+    const upcoming = events.filter(ev => {
+      const d = daysUntil(ev.date);
+      return d >= 0 && d <= 30;
+    }).sort((a,b)=>a.date.localeCompare(b.date));
+
+    if(upcoming.length === 0){
+      container.innerHTML = `<div class="empty-state"><p>Não há eventos nos próximos 30 dias. Quando criares um evento próximo, os prestadores para alertar aparecem aqui.</p></div>`;
+      updateAlertasBadge();
+      return;
+    }
+
+    container.innerHTML = upcoming.map(ev=>{
+      const dias = daysUntil(ev.date);
+      const diasLabel = dias===0 ? 'Hoje' : dias===1 ? 'Amanhã' : `Em ${dias} dias`;
+      const list = providers.slice().sort((a,b)=>a.name.localeCompare(b.name));
+
+      const rows = list.length === 0
+        ? `<tr class="empty-row"><td colspan="4">Ainda não há prestadores na lista de contactos.</td></tr>`
+        : list.map(p=>{
+            const inv = getInvitation(ev.id, p.id);
+            const sent = inv ? inv.sent : false;
+            const resp = inv ? inv.response : 'pendente';
+            return `<tr>
+              <td><strong>${escapeHtml(p.name)}</strong> <span style="color:var(--ink-soft);font-size:12.5px;">(${escapeHtml(p.serviceType)})</span></td>
+              <td><span class="toggle-pill ${sent?'yes':'no'}" data-action="toggle-sent" data-event="${ev.id}" data-provider="${p.id}">${sent?'Convite enviado':'Convite por enviar'}</span></td>
+              <td>
+                <select data-action="set-resp" data-event="${ev.id}" data-provider="${p.id}" style="padding:6px 8px;border:1px solid #C9C2B2;background:#FCFBF8;font-family:'Inter',sans-serif;font-size:13.5px;">
+                  <option value="pendente" ${resp==='pendente'?'selected':''}>Pendente</option>
+                  <option value="disponivel" ${resp==='disponivel'?'selected':''}>Disponível</option>
+                  <option value="indisponivel" ${resp==='indisponivel'?'selected':''}>Indisponível</option>
+                </select>
+              </td>
+              <td>${p.contact?escapeHtml(p.contact):'—'}</td>
+            </tr>`;
+          }).join('');
+
+      return `<div class="posto-block">
+        <div class="posto-title">
+          <span>${escapeHtml(ev.name)} — ${new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT')} (${diasLabel})</span>
+          <button class="btn plum small" data-action="copy-invite" data-event="${ev.id}">Copiar convite</button>
+        </div>
+        <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>Prestador</th><th>Convite</th><th>Resposta</th><th>Contacto</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        </div>
+      </div>`;
+    }).join('');
+
+    updateAlertasBadge();
+
+    container.querySelectorAll('[data-action="toggle-sent"]').forEach(el=>{
+      el.addEventListener('click', async ()=>{
+        const inv = ensureInvitation(el.dataset.event, el.dataset.provider);
+        inv.sent = !inv.sent;
+        inv.sentAt = inv.sent ? new Date().toISOString() : null;
+        await saveInvitations();
+        renderAlertas();
+      });
+    });
+    container.querySelectorAll('[data-action="set-resp"]').forEach(el=>{
+      el.addEventListener('change', async ()=>{
+        const inv = ensureInvitation(el.dataset.event, el.dataset.provider);
+        inv.response = el.value;
+        inv.respondedAt = new Date().toISOString();
+        await saveInvitations();
+        renderAlertas();
+      });
+    });
+    container.querySelectorAll('[data-action="copy-invite"]').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const ev = eventById(btn.dataset.event);
+        if(!ev) return;
+        copyToClipboardWithFallback(buildInviteMessage(ev));
+      });
+    });
+  }
+
+  function pendingEventsAlertCount(){
+    const upcoming = events.filter(ev => {
+      const d = daysUntil(ev.date);
+      return d >= 0 && d <= 30;
+    });
+    let count = 0;
+    upcoming.forEach(ev=>{
+      const hasConfirmed = providers.some(p => getInvitation(ev.id,p.id) && getInvitation(ev.id,p.id).response==='disponivel');
+      if(!hasConfirmed) count++;
+    });
+    return count;
+  }
+
+  function lowStockAlertCount(){
+    return stock.filter(i=>i.qty <= i.min).length;
+  }
+
+  function renderStockAlert(){
+    const container = $('stockAlertContainer');
+    const low = stock.filter(i=>i.qty <= i.min).sort((a,b)=>(a.posto+a.item).localeCompare(b.posto+b.item));
+    const countTag = $('stockAlertCount');
+    if(low.length > 0){
+      countTag.textContent = `${low.length} ${low.length===1?'item':'itens'}`;
+      countTag.style.display = 'inline-block';
+    }else{
+      countTag.style.display = 'none';
+    }
+    if(low.length === 0){
+      container.innerHTML = `<div class="empty-state"><p>Sem alertas de stock — todos os itens estão acima do limite mínimo.</p></div>`;
+      updateAlertasBadge();
+      return;
+    }
+    container.innerHTML = `<div style="overflow-x:auto;"><table>
+      <thead><tr><th>Posto</th><th>Item</th><th>Quantidade</th><th>Mínimo</th><th>Ações</th></tr></thead>
+      <tbody>${low.map(i=>`<tr>
+        <td>${escapeHtml(i.posto)}</td>
+        <td><strong>${escapeHtml(i.item)}</strong></td>
+        <td><span class="tag low">${i.qty}</span></td>
+        <td>${i.min}</td>
+        <td>
+          <div class="row-actions">
+            <button class="btn ghost small" data-action="stockalert-inc" data-id="${i.id}">+1</button>
+            <button class="btn ghost small" data-action="stockalert-goto">Ver em Stock</button>
+          </div>
+        </td>
+      </tr>`).join('')}</tbody>
+    </table></div>`;
+
+    container.querySelectorAll('[data-action="stockalert-inc"]').forEach(b=>{
+      b.addEventListener('click', ()=> adjustStock(b.dataset.id, 1));
+    });
+    container.querySelectorAll('[data-action="stockalert-goto"]').forEach(b=>{
+      b.addEventListener('click', ()=> switchView('stock'));
+    });
+
+    updateAlertasBadge();
+  }
+
+  function updateAlertasBadge(){
+    const count = pendingEventsAlertCount() + lowStockAlertCount();
+    const badge = $('navBadgeAlertas');
+    if(count > 0){
+      badge.textContent = count;
+      badge.style.display = 'inline-block';
+    }else{
+      badge.style.display = 'none';
+    }
+  }
+
+  // ================= FATURAÇÃO =================
+  async function toggleBilling(eventId, field){
+    const ev = eventById(eventId);
+    if(!ev) return;
+    ev[field] = !ev[field];
+    await saveEvents();
+    renderFaturacao();
+    renderKpis();
+  }
+
+  function renderFaturacao(){
+    const search = $('searchFaturacao').value.trim().toLowerCase();
+    const estadoFilter = $('filterFaturacaoEstado').value;
+
+    let list = events.slice().sort((a,b)=>b.date.localeCompare(a.date));
+    if(search) list = list.filter(ev=>ev.name.toLowerCase().includes(search));
+    if(estadoFilter){
+      list = list.filter(ev=>{
+        const completo = !!ev.invoiceSent && !!ev.feesPaid && !!ev.receiptIssued;
+        return estadoFilter === 'completo' ? completo : !completo;
+      });
+    }
+
+    const tbody = document.querySelector('#tblFaturacao tbody');
+    if(list.length===0){
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="7">Nenhum evento encontrado.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = list.map(ev=>{
+      const dateDisplay = new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT');
+      const total = eventTotalValue(ev.id);
+      return `<tr>
+        <td><strong>${escapeHtml(ev.name)}</strong></td>
+        <td>${dateDisplay}</td>
+        <td>${fmtEuro(total)}</td>
+        <td><span class="toggle-pill ${ev.invoiceSent?'yes':'no'}" data-action="toggle-billing" data-field="invoiceSent" data-id="${ev.id}">${ev.invoiceSent?'Sim':'Não'}</span></td>
+        <td><span class="toggle-pill ${ev.feesPaid?'yes':'no'}" data-action="toggle-billing" data-field="feesPaid" data-id="${ev.id}">${ev.feesPaid?'Sim':'Não'}</span></td>
+        <td><span class="toggle-pill ${ev.receiptIssued?'yes':'no'}" data-action="toggle-billing" data-field="receiptIssued" data-id="${ev.id}">${ev.receiptIssued?'Sim':'Não'}</span></td>
+        <td><input type="text" value="${escapeHtml(ev.billingNotes||'')}" data-action="billing-notes" data-id="${ev.id}" placeholder="Notas…" style="width:100%;padding:6px 8px;border:1px solid #C9C2B2;background:#FCFBF8;font-family:'Inter',sans-serif;font-size:13.5px;"></td>
+      </tr>`;
+    }).join('');
+
+    tbody.querySelectorAll('[data-action="toggle-billing"]').forEach(el=>{
+      el.addEventListener('click', ()=> toggleBilling(el.dataset.id, el.dataset.field));
+    });
+    tbody.querySelectorAll('[data-action="billing-notes"]').forEach(el=>{
+      el.addEventListener('change', async ()=>{
+        const ev = eventById(el.dataset.id);
+        if(!ev) return;
+        ev.billingNotes = el.value.trim();
+        await saveEvents();
+      });
+    });
+  }
+  $('searchFaturacao').addEventListener('input', renderFaturacao);
+  $('filterFaturacaoEstado').addEventListener('change', renderFaturacao);
+
+  // ================= STOCK =================
+  async function handleAdicionarStock(){
+    const posto = $('stPosto').value.trim();
+    const item = $('stItem').value.trim();
+    if(!posto || !item){ showToast('Preenche o posto e o item'); return; }
+    const existing = stock.find(i=>i.posto.toLowerCase()===posto.toLowerCase() && i.item.toLowerCase()===item.toLowerCase());
+    if(existing){
+      existing.qty += parseInt($('stQtd').value)||0;
+      existing.min = parseInt($('stMin').value)||existing.min;
+      showToast('Quantidade adicionada ao item existente');
+    }else{
+      stock.push({
+        id: uid(),
+        posto,
+        item,
+        qty: parseInt($('stQtd').value)||0,
+        min: parseInt($('stMin').value)||0
+      });
+      showToast('Item adicionado ao stock');
+    }
+    await saveStock();
+    $('formStock').reset();
+    $('stQtd').value = 0;
+    $('stMin').value = 5;
+    renderAll();
+  }
+  $('btnAddStock').addEventListener('click', handleAdicionarStock);
+  $('formStock').addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); handleAdicionarStock(); }
+  });
+
+  function renderStock(){
+    const search = $('searchStock').value.trim().toLowerCase();
+    const postoNames = [...new Set(stock.map(i=>i.posto))];
+    $('postosList').innerHTML = postoNames.map(p=>`<option value="${escapeHtml(p)}">`).join('');
+
+    let filtered = stock;
+    if(search){
+      filtered = stock.filter(i=> i.item.toLowerCase().includes(search) || i.posto.toLowerCase().includes(search));
+    }
+
+    const container = $('stockContainer');
+    if(stock.length===0){
+      container.innerHTML = `<div class="empty-state"><p>Ainda não há itens de stock registados. Adiciona o primeiro item acima.</p></div>`;
+      return;
+    }
+    if(filtered.length===0){
+      container.innerHTML = `<div class="empty-state"><p>Nenhum item corresponde à pesquisa.</p></div>`;
+      return;
+    }
+
+    const postos = [...new Set(filtered.map(i=>i.posto))].sort();
+    container.innerHTML = postos.map(posto=>{
+      const items = filtered.filter(i=>i.posto===posto);
+      const rows = items.map(i=>{
+        const low = i.qty <= i.min;
+        return `<tr>
+          <td><strong>${escapeHtml(i.item)}</strong></td>
+          <td>
+            <div class="qty-control">
+              <button data-action="dec" data-id="${i.id}" aria-label="Diminuir">−</button>
+              <span class="qty-val">${i.qty}</span>
+              <button data-action="inc" data-id="${i.id}" aria-label="Aumentar">+</button>
+            </div>
+          </td>
+          <td>${i.min}</td>
+          <td>${low ? '<span class="tag low">Stock baixo</span>' : '<span class="tag ok">OK</span>'}</td>
+          <td>
+            <button class="btn danger small" data-action="del-stock" data-id="${i.id}">Eliminar</button>
+          </td>
+        </tr>`;
+      }).join('');
+      return `<div class="posto-block">
+        <div class="posto-title"><span>${escapeHtml(posto)}</span></div>
+        <div style="overflow-x:auto;">
+        <table>
+          <thead><tr><th>Item</th><th>Quantidade</th><th>Mínimo</th><th>Estado</th><th>Ações</th></tr></thead>
+          <tbody>${rows}</tbody>
+        </table>
+        </div>
+      </div>`;
+    }).join('');
+
+    container.querySelectorAll('[data-action="inc"]').forEach(b=>{
+      b.addEventListener('click', ()=> adjustStock(b.dataset.id, 1));
+    });
+    container.querySelectorAll('[data-action="dec"]').forEach(b=>{
+      b.addEventListener('click', ()=> adjustStock(b.dataset.id, -1));
+    });
+    container.querySelectorAll('[data-action="del-stock"]').forEach(b=>{
+      b.addEventListener('click', ()=> confirmDelete('stock', b.dataset.id, 'Eliminar este item de stock?'));
+    });
+  }
+
+  async function adjustStock(id, delta){
+    const item = stock.find(i=>i.id===id);
+    if(!item) return;
+    item.qty = Math.max(0, item.qty + delta);
+    await saveStock();
+    renderAll();
+  }
+
+  $('searchStock').addEventListener('input', renderStock);
+
+  // ================= Delete confirm modal =================
+  function confirmDelete(type, id, text){
+    pendingDelete = {type, id};
+    $('confirmTitle').textContent = 'Confirmar eliminação';
+    $('confirmText').textContent = text;
+    $('confirmOk').textContent = 'Eliminar';
+    $('confirmBackdrop').classList.add('show');
+  }
+  $('confirmCancel').addEventListener('click', ()=>{
+    pendingDelete = null;
+    $('confirmBackdrop').classList.remove('show');
+  });
+  $('confirmOk').addEventListener('click', async ()=>{
+    if(!pendingDelete) return;
+    const {type, id} = pendingDelete;
+    if(type==='event'){
+      events = events.filter(e=>e.id!==id);
+      staff = staff.filter(s=>s.eventId!==id);
+      assistances = assistances.filter(a=>a.eventId!==id);
+      invitations = invitations.filter(i=>i.eventId!==id);
+      if(activeEventId===id) activeEventId = null;
+      await saveEvents();
+      await saveStaff();
+      await saveAssistencias();
+      await saveInvitations();
+      showToast('Evento eliminado');
+    }else if(type==='staff'){
+      staff = staff.filter(s=>s.id!==id);
+      await saveStaff();
+      showToast('Registo eliminado');
+    }else if(type==='assistencia'){
+      assistances = assistances.filter(a=>a.id!==id);
+      await saveAssistencias();
+      showToast('Assistência eliminada');
+    }else if(type==='provider'){
+      providers = providers.filter(p=>p.id!==id);
+      invitations = invitations.filter(i=>i.providerId!==id);
+      await saveProviders();
+      await saveInvitations();
+      showToast('Prestador eliminado');
+    }else if(type==='stock'){
+      stock = stock.filter(i=>i.id!==id);
+      await saveStock();
+      showToast('Item eliminado');
+    }else if(type==='seed'){
+      await loadSeedData();
+      showToast('Dados de teste carregados');
+    }
+    pendingDelete = null;
+    $('confirmBackdrop').classList.remove('show');
+    renderAll();
+  });
+
+  // ================= Dados de teste (fictícios) =================
+  async function loadSeedData(){
+    const d = new Date();
+    const inDays = (n)=>{ const x=new Date(d); x.setDate(x.getDate()+n); return x.toISOString().slice(0,10); };
+
+    const ev1 = { id: uid(), name:'Festival do Mar 2026', serviceType:'Festival', date: inDays(12), timeStart:'18:00', timeEnd:'02:00', location:'Cascais', rate:25, staffingNeeds:{'Coordenador':1,'Médico':1,'Enfermeiro':1,'Técnico':1}, areaRates:{'Coordenador':25,'Médico':40,'Enfermeiro':30,'Técnico':22}, createdAt:new Date().toISOString() };
+    const ev2 = { id: uid(), name:'Maratona de Lisboa', serviceType:'Desportivo', date: inDays(30), timeStart:'07:00', timeEnd:'14:00', location:'Lisboa', rate:22, staffingNeeds:{'Coordenador':1,'Médico':1,'Enfermeiro':2,'Técnico':0}, areaRates:{'Coordenador':22,'Médico':38,'Enfermeiro':28,'Técnico':null}, createdAt:new Date().toISOString() };
+    const ev3 = { id: uid(), name:'Concerto Estádio da Luz', serviceType:'Corporate', date: inDays(-5), timeStart:'16:00', timeEnd:'23:30', location:'Lisboa', rate:28, staffingNeeds:{'Coordenador':1,'Médico':1,'Enfermeiro':1,'Técnico':1}, areaRates:{'Coordenador':28,'Médico':42,'Enfermeiro':32,'Técnico':24}, createdAt:new Date().toISOString(), invoiceSent:true, feesPaid:false, receiptIssued:false, billingNotes:'À espera do recibo verde do prestador' };
+    events.push(ev1, ev2, ev3);
+
+    const p1 = { id: uid(), name:'João Silva', contact:'912 345 678', serviceType:'Coordenador', suggestedRate:25, available:true, notes:'Experiência em grandes eventos' };
+    const p2 = { id: uid(), name:'Ana Ferreira', contact:'ana.ferreira@exemplo.pt', serviceType:'Enfermeiro', suggestedRate:30, available:true, notes:'Enfermeira, disponível fins de semana' };
+    const p3 = { id: uid(), name:'Ricardo Costa', contact:'933 111 222', serviceType:'Técnico', suggestedRate:24, available:false, notes:'De férias até final do mês' };
+    const p4 = { id: uid(), name:'Marta Nunes', contact:'966 555 777', serviceType:'Médico', suggestedRate:35, available:true, notes:'' };
+    providers.push(p1, p2, p3, p4);
+
+    staff.push(
+      { id: uid(), eventId: ev1.id, providerId: p1.id, name:'João Silva', day: ev1.date, timeStart:'18:00', timeEnd:'02:00', local:'Entrada Principal', area:'Coordenador', rate:25, absent:false, absentReason:'', notes:'Chefe de equipa' },
+      { id: uid(), eventId: ev1.id, providerId: null, name:'Pedro Almeida', day: ev1.date, timeStart:'18:00', timeEnd:'02:00', local:'Backstage', area:'Técnico', rate:25, absent:false, absentReason:'', notes:'' },
+      { id: uid(), eventId: ev1.id, providerId: null, name:'Sofia Rodrigues', day: ev1.date, timeStart:'', timeEnd:'', local:'Zona VIP', area:'Enfermeiro', rate:25, absent:true, absentReason:'Doença', notes:'Avisou com 1 dia de antecedência' },
+      { id: uid(), eventId: ev2.id, providerId: p2.id, name:'Ana Ferreira', day: ev2.date, timeStart:'07:00', timeEnd:'14:00', local:'Posto médico - Meta', area:'Enfermeiro', rate:30, absent:false, absentReason:'', notes:'' }
+    );
+
+    assistances.push(
+      { id: uid(), eventId: ev3.id, time:'21:15', local:'Zona VIP', person:'Espetador não identificado', age:34, type:'Mal-estar', referral:'Alta no local', responsible:'Ana Ferreira', procedure:'Hidratação e repouso à sombra', notes:'Recuperou bem após 20 minutos' },
+      { id: uid(), eventId: ev3.id, time:'22:40', local:'Zona General', person:'Espetadora não identificada', age:22, type:'Trauma / queda', referral:'Transportado para hospital', responsible:'Ana Ferreira', procedure:'Imobilização e chamada de ambulância', notes:'Queda com possível entorse no tornozelo' },
+      { id: uid(), eventId: ev2.id, time:'09:30', local:'Km 15', person:'Corredor dorsal 245', age:41, type:'Mal-estar', referral:'Alta no local', responsible:'Ana Ferreira', procedure:'Avaliação de sinais vitais', notes:'' }
+    );
+
+    ensureInvitation(ev1.id, p1.id).sent = true;
+    ensureInvitation(ev1.id, p1.id).response = 'disponivel';
+    ensureInvitation(ev1.id, p3.id).sent = true;
+    ensureInvitation(ev1.id, p3.id).response = 'indisponivel';
+    ensureInvitation(ev1.id, p4.id).sent = true;
+
+    stock.push(
+      { id: uid(), posto:'Entrada Principal', item:'Coletes refletores', qty:18, min:10 },
+      { id: uid(), posto:'Entrada Principal', item:'Rádios comunicadores', qty:4, min:6 },
+      { id: uid(), posto:'Backstage', item:'Kits de primeiros socorros', qty:3, min:2 },
+      { id: uid(), posto:'Posto médico - Meta', item:'Garrafas de água', qty:40, min:20 }
+    );
+
+    await Promise.all([saveEvents(), saveStaff(), saveProviders(), saveStock(), saveAssistencias(), saveInvitations()]);
+  }
+
+  $('btnSeedData').addEventListener('click', ()=>{
+    pendingDelete = {type:'seed', id:null};
+    $('confirmTitle').textContent = 'Carregar dados de teste';
+    $('confirmText').textContent = 'Isto adiciona 3 eventos, 4 prestadores, registos de pessoal e stock fictícios para testares a plataforma. Podes eliminá-los depois individualmente. Continuar?';
+    $('confirmOk').textContent = 'Carregar';
+    $('confirmBackdrop').classList.add('show');
+  });
+
+  function escapeHtml(str){
+    return String(str||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+
+  // ---------------- Render all ----------------
+  function renderAll(){
+    renderKpis();
+    renderEventos();
+    renderPessoal();
+    renderAssistencias();
+    renderPrestadores();
+    renderAlertas();
+    renderStockAlert();
+    renderFaturacao();
+    renderStock();
+  }
+
+  // ================= MODO: GESTÃO / PRESTADOR =================
+  function setMode(mode){
+    $('adminRoot').style.display = mode==='admin' ? '' : 'none';
+    $('providerRoot').style.display = mode==='provider' ? '' : 'none';
+    document.querySelectorAll('.mode-btn').forEach(b=> b.classList.toggle('active', b.dataset.mode===mode));
+    if(mode==='provider'){ renderProviderSelfOptions(); renderProviderAll(); }
+  }
+  $('modeBtnAdmin').addEventListener('click', ()=>setMode('admin'));
+  $('modeBtnProvider').addEventListener('click', ()=>setMode('provider'));
+
+  document.querySelectorAll('.p-nav-tab').forEach(btn=>{
+    btn.addEventListener('click', ()=>switchPView(btn.dataset.pview));
+  });
+  function switchPView(name){
+    document.querySelectorAll('.p-nav-tab').forEach(b=>b.classList.toggle('active', b.dataset.pview===name));
+    document.querySelectorAll('.pview').forEach(v=>v.classList.toggle('active', v.id==='pview-'+name));
+  }
+
+  // ---------------- Identificação do prestador ----------------
+  let currentProviderId = null;
+
+  function renderProviderSelfOptions(){
+    const sel = $('providerSelfSelect');
+    const current = currentProviderId;
+    sel.innerHTML = '<option value="">— Seleciona —</option>' +
+      providers.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(p=>`<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('');
+    if(current && providers.find(p=>p.id===current)) sel.value = current;
+  }
+  $('providerSelfSelect').addEventListener('change', (e)=>{
+    currentProviderId = e.target.value || null;
+    const p = currentProviderId ? providers.find(x=>x.id===currentProviderId) : null;
+    $('providerGreeting').textContent = p ? `Olá, ${p.name}!` : 'Seleciona o teu nome para começar';
+    renderProviderAll();
+  });
+
+  function providerGuard(emptyElId, contentElId){
+    const empty = !currentProviderId;
+    $(emptyElId).style.display = empty ? 'block' : 'none';
+    $(contentElId).style.display = empty ? 'none' : 'block';
+    return empty;
+  }
+
+  function renderProviderAll(){
+    renderProvDisponibilidades();
+    renderProvAssistenciasEventoOptions();
+    renderProvAssistencias();
+    renderProvRecibos();
+    renderProvStockOptions();
+    renderProvStock();
+  }
+
+  // ---------------- Disponibilidades ----------------
+  function renderProvDisponibilidades(){
+    if(providerGuard('provNoIdEmpty1','provDisponibilidadesContent')) return;
+    const container = $('provDisponibilidadesContainer');
+    const upcoming = events.filter(ev => daysUntil(ev.date) >= 0).sort((a,b)=>a.date.localeCompare(b.date));
+    if(upcoming.length === 0){
+      container.innerHTML = `<div class="empty-state"><p>Não há eventos futuros de momento.</p></div>`;
+      return;
+    }
+    const p = providers.find(x=>x.id===currentProviderId);
+    container.innerHTML = `<div style="overflow-x:auto;"><table>
+      <thead><tr><th>Evento</th><th>Dia</th><th>Horário</th><th>Local</th><th>Necessidades</th><th>Honorário/h</th><th>Resposta</th><th>Ações</th></tr></thead>
+      <tbody>${upcoming.map(ev=>{
+        const inv = getInvitation(ev.id, currentProviderId);
+        const resp = inv ? inv.response : 'pendente';
+        const dateDisplay = new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT');
+        const horario = (ev.timeStart||ev.timeEnd) ? `${ev.timeStart||'—'}–${ev.timeEnd||'—'}` : '—';
+        const rate = suggestedRateFor(p ? p.serviceType : '', p, ev);
+        const needsText = AREAS.filter(a=>(ev.staffingNeeds||{})[a]>0).map(a=>`${areaShortLabel(a)} ${ev.staffingNeeds[a]}`).join(', ') || '—';
+        const respTag = resp==='disponivel' ? '<span class="tag ok">Disponível</span>' : resp==='indisponivel' ? '<span class="tag absent">Indisponível</span>' : '<span class="tag future">Pendente</span>';
+        return `<tr>
+          <td><strong>${escapeHtml(ev.name)}</strong></td>
+          <td>${dateDisplay}</td>
+          <td>${horario}</td>
+          <td>${escapeHtml(ev.location)}</td>
+          <td style="white-space:normal;">${escapeHtml(needsText)}</td>
+          <td>${fmtEuro(rate)}</td>
+          <td>${respTag}</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn ghost small" data-action="prov-disp-sim" data-event="${ev.id}">Disponível</button>
+              <button class="btn danger small" data-action="prov-disp-nao" data-event="${ev.id}">Indisponível</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+
+    container.querySelectorAll('[data-action="prov-disp-sim"]').forEach(b=>{
+      b.addEventListener('click', ()=> setProviderResponse(b.dataset.event, 'disponivel'));
+    });
+    container.querySelectorAll('[data-action="prov-disp-nao"]').forEach(b=>{
+      b.addEventListener('click', ()=> setProviderResponse(b.dataset.event, 'indisponivel'));
+    });
+  }
+  async function setProviderResponse(eventId, response){
+    const inv = ensureInvitation(eventId, currentProviderId);
+    inv.response = response;
+    inv.respondedAt = new Date().toISOString();
+    await saveInvitations();
+    showToast(response==='disponivel' ? 'Disponibilidade registada — obrigado!' : 'Indisponibilidade registada');
+    renderProvDisponibilidades();
+    renderAlertas();
+  }
+
+  // ---------------- Assistências (prestador) ----------------
+  function renderProvAssistenciasEventoOptions(){
+    const sel = $('pAssEvento');
+    const current = sel.value;
+    const sorted = events.slice().sort((a,b)=>b.date.localeCompare(a.date));
+    sel.innerHTML = '<option value="">— Seleciona o evento —</option>' +
+      sorted.map(ev=>`<option value="${ev.id}">${escapeHtml(ev.name)} — ${new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT')}</option>`).join('');
+    sel.value = current;
+  }
+  $('pAssEvento').addEventListener('change', renderProvAssistencias);
+
+  async function handleProviderRegistarAssistencia(){
+    if(providerGuard('provNoIdEmpty2','provAssistenciasContent')) return;
+    const eventId = $('pAssEvento').value;
+    if(!eventId){ showToast('Seleciona o evento'); return; }
+    const p = providers.find(x=>x.id===currentProviderId);
+    const data = {
+      eventId: eventId,
+      time: $('pAssHora').value,
+      local: $('pAssLocal').value.trim(),
+      person: $('pAssPessoa').value.trim(),
+      age: $('pAssIdade').value !== '' ? parseInt($('pAssIdade').value) : null,
+      type: $('pAssTipo').value,
+      referral: $('pAssEncaminhamento').value,
+      responsible: p ? p.name : '',
+      procedure: $('pAssProcedimento').value.trim(),
+      notes: $('pAssObs').value.trim()
+    };
+    assistances.push({id: uid(), ...data});
+    await saveAssistencias();
+    showToast('Assistência registada');
+    ['pAssHora','pAssLocal','pAssPessoa','pAssIdade','pAssProcedimento','pAssObs'].forEach(id=>$(id).value='');
+    $('pAssTipo').value = 'Mal-estar';
+    $('pAssEncaminhamento').value = 'Alta no local';
+    renderProvAssistencias();
+    if(activeEventId===eventId) renderAssistencias();
+  }
+  $('pAssSubmitBtn').addEventListener('click', handleProviderRegistarAssistencia);
+
+  function renderProvAssistencias(){
+    if(providerGuard('provNoIdEmpty2','provAssistenciasContent')) return;
+    const eventId = $('pAssEvento').value;
+    const tbody = document.querySelector('#tblAssistenciasP tbody');
+    if(!eventId){
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Seleciona um evento para ver as assistências registadas.</td></tr>`;
+      return;
+    }
+    const list = assistencesForEvent(eventId).slice().sort((a,b)=>(a.time||'').localeCompare(b.time||''));
+    if(list.length===0){
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Ainda não há assistências registadas para este evento.</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = list.map(a=>`<tr>
+      <td>${a.time||'—'}</td>
+      <td>${escapeHtml(a.local||'—')}</td>
+      <td>${escapeHtml(a.person||'—')}</td>
+      <td>${escapeHtml(a.type||'—')}</td>
+      <td>${escapeHtml(a.referral||'—')}</td>
+      <td>${escapeHtml(a.responsible||'—')}</td>
+    </tr>`).join('');
+  }
+
+  // ---------------- Recibos ----------------
+  function renderProvRecibos(){
+    if(providerGuard('provNoIdEmpty3','provRecibosContent')) return;
+    const list = staff.filter(s=>s.providerId===currentProviderId).slice().sort((a,b)=>(b.day||'').localeCompare(a.day||''));
+    const tbody = document.querySelector('#tblRecibos tbody');
+    if(list.length===0){
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Ainda não tens registos de trabalho associados.</td></tr>`;
+      $('provTotalReceber').textContent = fmtEuro(0);
+      $('provTotalPendenteRecibo').textContent = '0';
+      return;
+    }
+    let totalVal = 0, pendCount = 0;
+    tbody.innerHTML = list.map(s=>{
+      const ev = eventById(s.eventId);
+      const h = staffHours(s);
+      const rate = (s.rate !== undefined && s.rate !== null) ? s.rate : (ev?ev.rate:25);
+      const val = h * rate;
+      totalVal += val;
+      if(!s.receiptIssued) pendCount++;
+      const dateDisplay = s.day ? new Date(s.day+'T00:00:00').toLocaleDateString('pt-PT') : '—';
+      return `<tr>
+        <td><strong>${escapeHtml(ev?ev.name:'—')}</strong></td>
+        <td>${dateDisplay}</td>
+        <td>${fmtHours(h)}</td>
+        <td>${fmtEuro(rate)}</td>
+        <td>${fmtEuro(val)}</td>
+        <td><span class="toggle-pill ${s.receiptIssued?'yes':'no'}" data-action="prov-toggle-receipt" data-id="${s.id}">${s.receiptIssued?'Sim':'Não'}</span></td>
+      </tr>`;
+    }).join('');
+    $('provTotalReceber').textContent = fmtEuro(totalVal);
+    $('provTotalPendenteRecibo').textContent = pendCount;
+
+    tbody.querySelectorAll('[data-action="prov-toggle-receipt"]').forEach(el=>{
+      el.addEventListener('click', async ()=>{
+        const s = staff.find(x=>x.id===el.dataset.id);
+        if(!s) return;
+        s.receiptIssued = !s.receiptIssued;
+        await saveStaff();
+        renderProvRecibos();
+        if(activeEventId===s.eventId) renderPessoal();
+      });
+    });
+  }
+
+  // ---------------- Stock (prestador) ----------------
+  let pStockDeltaVal = 1;
+  function renderProvStockOptions(){
+    const sel = $('pStockItemSelect');
+    const current = sel.value;
+    sel.innerHTML = '<option value="">— Seleciona um item —</option>' +
+      stock.slice().sort((a,b)=> (a.posto+a.item).localeCompare(b.posto+b.item))
+        .map(i=>`<option value="${i.id}">${escapeHtml(i.posto)} — ${escapeHtml(i.item)} (${i.qty})</option>`).join('');
+    sel.value = current;
+    updatePStockQtyReadout();
+  }
+  function updatePStockQtyReadout(){
+    const item = stock.find(i=>i.id===$('pStockItemSelect').value);
+    $('pStockQtyReadout').textContent = item ? item.qty : '—';
+  }
+  $('pStockItemSelect').addEventListener('change', updatePStockQtyReadout);
+  $('pStockInc').addEventListener('click', ()=>{ pStockDeltaVal++; $('pStockDelta').textContent = pStockDeltaVal; });
+  $('pStockDec').addEventListener('click', ()=>{ pStockDeltaVal = Math.max(1, pStockDeltaVal-1); $('pStockDelta').textContent = pStockDeltaVal; });
+
+  async function applyProvStockChange(sign){
+    const item = stock.find(i=>i.id===$('pStockItemSelect').value);
+    if(!item){ showToast('Seleciona um item de stock'); return; }
+    item.qty = Math.max(0, item.qty + sign*pStockDeltaVal);
+    await saveStock();
+    showToast(sign>0 ? 'Entrada registada' : 'Saída registada');
+    pStockDeltaVal = 1; $('pStockDelta').textContent = '1';
+    renderProvStockOptions();
+    renderProvStock();
+    renderStock();
+    renderKpis();
+  }
+  $('pStockApplyAdd').addEventListener('click', ()=> applyProvStockChange(1));
+  $('pStockApplyRemove').addEventListener('click', ()=> applyProvStockChange(-1));
+
+  function renderProvStock(){
+    const container = $('pStockContainer');
+    if(stock.length===0){
+      container.innerHTML = `<div class="empty-state"><p>Ainda não há itens de stock registados.</p></div>`;
+      return;
+    }
+    const postos = [...new Set(stock.map(i=>i.posto))].sort();
+    container.innerHTML = postos.map(posto=>{
+      const items = stock.filter(i=>i.posto===posto);
+      const rows = items.map(i=>{
+        const low = i.qty <= i.min;
+        return `<tr>
+          <td><strong>${escapeHtml(i.item)}</strong></td>
+          <td>${i.qty}</td>
+          <td>${low ? '<span class="tag low">Stock baixo</span>' : '<span class="tag ok">OK</span>'}</td>
+        </tr>`;
+      }).join('');
+      return `<div class="posto-block">
+        <div class="posto-title"><span>${escapeHtml(posto)}</span></div>
+        <table><thead><tr><th>Item</th><th>Quantidade</th><th>Estado</th></tr></thead><tbody>${rows}</tbody></table>
+      </div>`;
+    }).join('');
+  }
+
+  // init
+  resetPessoalForm();
+  resetAssistenciaForm();
+  resetPrestadorForm();
+  loadAll().then(subscribeRealtime);
+})();
+</script>
+</body>
+</html>
