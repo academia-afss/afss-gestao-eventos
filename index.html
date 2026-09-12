@@ -2135,11 +2135,11 @@
     const container = $('alertasContainer');
     const upcoming = events.filter(ev => {
       const d = daysUntil(ev.date);
-      return d >= 0 && d <= 30;
+      return d >= 0;
     }).sort((a,b)=>a.date.localeCompare(b.date));
 
     if(upcoming.length === 0){
-      container.innerHTML = `<div class="empty-state"><p>Não há eventos nos próximos 30 dias. Quando criares um evento próximo, os prestadores para alertar aparecem aqui.</p></div>`;
+      container.innerHTML = `<div class="empty-state"><p>Não há eventos futuros. Quando criares um evento, os prestadores para alertar aparecem aqui.</p></div>`;
       updateAlertasBadge();
       return;
     }
