@@ -1093,6 +1093,19 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="adminPassBackdrop">
+  <div class="modal" style="max-width:380px;">
+    <h3>Vista de Gestão</h3>
+    <p>Esta área é só para a equipa AFSS. Introduz a palavra-passe para continuar.</p>
+    <input type="password" id="adminPassInput" placeholder="Palavra-passe" style="width:100%;padding:10px;border:1px solid #C9C2B2;background:#FCFBF8;font-size:14px;font-family:'Inter',sans-serif;box-sizing:border-box;">
+    <p id="adminPassError" style="color:var(--danger);font-size:13px;margin:8px 0 0 0;display:none;">Palavra-passe incorreta.</p>
+    <div class="modal-actions" style="margin-top:14px;">
+      <button class="btn ghost" id="adminPassCancel">Cancelar</button>
+      <button class="btn amber" id="adminPassSubmit">Entrar</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
   "use strict";
@@ -2480,7 +2493,45 @@
     document.querySelectorAll('.mode-btn').forEach(b=> b.classList.toggle('active', b.dataset.mode===mode));
     if(mode==='provider'){ checkProviderSession(); }
   }
-  $('modeBtnAdmin').addEventListener('click', ()=>setMode('admin'));
+
+  // ---------------- Palavra-passe da Vista de Gestão ----------------
+  const ADMIN_PASSWORD = 'GestãoAFSSeventos';
+  function isAdminUnlocked(){
+    try{ return sessionStorage.getItem('afss_admin_unlocked') === 'yes'; }catch(err){ return false; }
+  }
+  function setAdminUnlocked(){
+    try{ sessionStorage.setItem('afss_admin_unlocked', 'yes'); }catch(err){ /* ignore */ }
+  }
+  function openAdminPassModal(){
+    $('adminPassInput').value = '';
+    $('adminPassError').style.display = 'none';
+    $('adminPassBackdrop').classList.add('show');
+    setTimeout(()=> $('adminPassInput').focus(), 50);
+  }
+  function closeAdminPassModal(){
+    $('adminPassBackdrop').classList.remove('show');
+  }
+  function submitAdminPass(){
+    if($('adminPassInput').value === ADMIN_PASSWORD){
+      setAdminUnlocked();
+      closeAdminPassModal();
+      setMode('admin');
+    }else{
+      $('adminPassError').style.display = 'block';
+    }
+  }
+  $('adminPassSubmit').addEventListener('click', submitAdminPass);
+  $('adminPassCancel').addEventListener('click', ()=>{
+    closeAdminPassModal();
+    if(!isAdminUnlocked()) setMode('provider');
+  });
+  $('adminPassInput').addEventListener('keydown', (e)=>{
+    if(e.key === 'Enter'){ e.preventDefault(); submitAdminPass(); }
+  });
+
+  $('modeBtnAdmin').addEventListener('click', ()=>{
+    if(isAdminUnlocked()){ setMode('admin'); } else { openAdminPassModal(); }
+  });
   $('modeBtnProvider').addEventListener('click', ()=>setMode('provider'));
 
   document.querySelectorAll('.p-nav-tab').forEach(btn=>{
@@ -2779,18 +2830,26 @@
   }
 
   // ---------------- Links diretos (deep links) ----------------
-  // ?portal=1            -> abre logo no Portal do Prestador
+  // ?portal=1            -> abre logo no Portal do Prestador (link exclusivo dos prestadores)
   // ?tab=prestadores      -> abre na Gestão, já na aba Prestadores (qualquer nome de aba válido serve: eventos, pessoal, assistencias, prestadores, alertas, faturacao, stock)
   function applyDeepLink(){
     const params = new URLSearchParams(window.location.search);
     if(params.get('portal') === '1'){
+      $('modeBtnAdmin').style.display = 'none';
       setMode('provider');
       return;
     }
-    const tab = params.get('tab');
-    const validTabs = ['eventos','pessoal','assistencias','prestadores','alertas','faturacao','stock'];
-    if(tab && validTabs.includes(tab)){
-      switchView(tab);
+    if(isAdminUnlocked()){
+      setMode('admin');
+      const tab = params.get('tab');
+      const validTabs = ['eventos','pessoal','assistencias','prestadores','alertas','faturacao','stock'];
+      if(tab && validTabs.includes(tab)){
+        switchView(tab);
+      }
+    }else{
+      $('adminRoot').style.display = 'none';
+      $('providerRoot').style.display = 'none';
+      openAdminPassModal();
     }
   }
 
