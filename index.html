@@ -1403,6 +1403,23 @@
     });
     return chips.length ? chips.join(' ') : '<span style="color:var(--ink-soft);">—</span>';
   }
+  function areaAvailableCount(eventId, area){
+    return providers.filter(p=>{
+      if(p.serviceType !== area) return false;
+      const inv = getInvitation(eventId, p.id);
+      return inv && inv.response === 'disponivel';
+    }).length;
+  }
+  function areaAvailabilityHtml(ev){
+    const needs = ev.staffingNeeds || {};
+    const chips = AREAS.filter(a => (needs[a]||0) > 0).map(a=>{
+      const needed = needs[a];
+      const available = areaAvailableCount(ev.id, a);
+      const ok = available >= needed;
+      return `<span class="tag ${ok?'ok':'future'}" title="${areaShortLabel(a)}: ${available} confirmaram disponibilidade, de ${needed} necessários">${areaShortLabel(a)} ${available}/${needed} disponíveis</span>`;
+    });
+    return chips.length ? chips.join(' ') : '';
+  }
 
   // ---------------- Tabs ----------------
   document.querySelectorAll('.nav-tab').forEach(btn=>{
@@ -1515,7 +1532,7 @@
         <td>${dateDisplay}</td>
         <td>${horario}</td>
         <td>${escapeHtml(ev.location)}</td>
-        <td style="white-space:normal;">${areaCoverageHtml(ev)}</td>
+        <td style="white-space:normal;">${areaCoverageHtml(ev)}${areaAvailabilityHtml(ev) ? '<div style="margin-top:4px;">'+areaAvailabilityHtml(ev)+'</div>' : ''}</td>
         <td>${count}</td>
         <td>${fmtEuro(total)}</td>
         <td><span class="tag ${state}">${stateLabel(state)}</span></td>
@@ -2174,6 +2191,7 @@
           <span>${escapeHtml(ev.name)} — ${new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT')} (${diasLabel})</span>
           <button class="btn plum small" data-action="copy-invite" data-event="${ev.id}">Copiar convite</button>
         </div>
+        <div style="margin:-4px 0 12px 0;">${areaAvailabilityHtml(ev)}</div>
         <div style="overflow-x:auto;">
         <table>
           <thead><tr><th>Prestador</th><th>Convite</th><th>Resposta</th><th>Contacto</th></tr></thead>
