@@ -1260,23 +1260,30 @@
 
   // Sincroniza a tabela inteira com o array local: grava tudo o que existe
   // localmente e apaga na base de dados o que já não existe cá.
+  // Grava (insere/atualiza) as linhas do array local. NUNCA apaga linhas que
+  // não estão no array — isso seria perigoso com várias pessoas a usar a app
+  // ao mesmo tempo (uma aba podia apagar o que outra acabou de criar).
+  // Eliminações reais são feitas à parte, uma linha específica de cada vez,
+  // através de dbDelete().
   async function resyncTable(table, localArray, toDb){
-    if(!sb) return;
+    if(!sb || localArray.length === 0) return;
     try{
-      if(localArray.length > 0){
-        const rows = localArray.map(toDb);
-        const { error } = await sb.from(table).upsert(rows);
-        if(error) throw error;
-        const idList = localArray.map(r => `"${String(r.id).replace(/"/g,'')}"`).join(',');
-        const { error: delErr } = await sb.from(table).delete().not('id', 'in', `(${idList})`);
-        if(delErr) throw delErr;
-      }else{
-        const { error } = await sb.from(table).delete().neq('id', '__none__');
-        if(error) throw error;
-      }
+      const rows = localArray.map(toDb);
+      const { error } = await sb.from(table).upsert(rows);
+      if(error) throw error;
     }catch(err){
       console.error(err);
       showToast('Erro ao guardar dados — verifica a ligação à Supabase');
+    }
+  }
+  async function dbDelete(table, id){
+    if(!sb) return;
+    try{
+      const { error } = await sb.from(table).delete().eq('id', id);
+      if(error) throw error;
+    }catch(err){
+      console.error(err);
+      showToast('Erro ao eliminar — verifica a ligação à Supabase');
     }
   }
   async function saveEvents(){ await resyncTable('events', events, toDbEvent); }
@@ -1430,6 +1437,7 @@
   function switchView(name){
     document.querySelectorAll('.nav-tab').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
     document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active', v.id==='view-'+name));
+    renderAll();
   }
   window.switchView = switchView;
 
@@ -1973,7 +1981,7 @@
     const matchingPending = pendingSignups.find(p=>p.email.toLowerCase()===email);
     if(matchingPending){
       pendingSignups = pendingSignups.filter(p=>p.id!==matchingPending.id);
-      await savePendingSignups();
+      await dbDelete('pending_signups', matchingPending.id);
     }
     resetPrestadorForm();
     renderAll();
@@ -2026,7 +2034,7 @@
     container.querySelectorAll('[data-action="reject-signup"]').forEach(b=>{
       b.addEventListener('click', async ()=>{
         pendingSignups = pendingSignups.filter(p=>p.id!==b.dataset.id);
-        await savePendingSignups();
+        await dbDelete('pending_signups', b.dataset.id);
         renderAll();
         showToast('Pedido rejeitado');
       });
@@ -2483,28 +2491,24 @@
       assistances = assistances.filter(a=>a.eventId!==id);
       invitations = invitations.filter(i=>i.eventId!==id);
       if(activeEventId===id) activeEventId = null;
-      await saveEvents();
-      await saveStaff();
-      await saveAssistencias();
-      await saveInvitations();
+      await dbDelete('events', id); // apaga em cascata pessoal/assistências/alertas ligados a este evento
       showToast('Evento eliminado');
     }else if(type==='staff'){
       staff = staff.filter(s=>s.id!==id);
-      await saveStaff();
+      await dbDelete('staff', id);
       showToast('Registo eliminado');
     }else if(type==='assistencia'){
       assistances = assistances.filter(a=>a.id!==id);
-      await saveAssistencias();
+      await dbDelete('assistances', id);
       showToast('Assistência eliminada');
     }else if(type==='provider'){
       providers = providers.filter(p=>p.id!==id);
       invitations = invitations.filter(i=>i.providerId!==id);
-      await saveProviders();
-      await saveInvitations();
+      await dbDelete('providers', id); // apaga em cascata os alertas/convites deste prestador
       showToast('Prestador eliminado');
     }else if(type==='stock'){
       stock = stock.filter(i=>i.id!==id);
-      await saveStock();
+      await dbDelete('stock', id);
       showToast('Item eliminado');
     }else if(type==='seed'){
       await loadSeedData();
