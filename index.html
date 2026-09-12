@@ -353,7 +353,7 @@
     <button class="nav-tab active" data-view="eventos">Eventos</button>
     <button class="nav-tab" data-view="pessoal">Pessoal</button>
     <button class="nav-tab" data-view="assistencias">Assistências</button>
-    <button class="nav-tab" data-view="prestadores">Prestadores</button>
+    <button class="nav-tab" data-view="prestadores">Prestadores<span class="nav-badge" id="navBadgePrestadores" style="display:none;"></span></button>
     <button class="nav-tab" data-view="alertas">Alertas<span class="nav-badge" id="navBadgeAlertas" style="display:none;"></span></button>
     <button class="nav-tab" data-view="faturacao">Faturação</button>
     <button class="nav-tab" data-view="stock">Stock</button>
@@ -706,6 +706,16 @@
 
   <!-- ============ PRESTADORES ============ -->
   <section class="view" id="view-prestadores">
+    <div class="panel" id="pendingSignupsPanel" style="display:none;">
+      <div class="panel-head">
+        <h2>Pedidos de acesso pendentes</h2>
+        <span class="tag low" id="pendingSignupsCount"></span>
+      </div>
+      <div class="panel-body">
+        <p class="hint" style="margin:0 0 14px 0;">Estas pessoas criaram conta no Portal do Prestador, mas ainda não têm ficha na lista de prestadores. Aprova para lhes dar acesso, ou rejeita para os remover do pedido.</p>
+        <div id="pendingSignupsContainer"></div>
+      </div>
+    </div>
     <div class="panel plum">
       <div class="panel-head"><h2 id="prestFormTitle">Novo prestador de serviço</h2></div>
       <div class="panel-body">
@@ -1137,6 +1147,7 @@
   let stock = [];            // {id, posto, item, qty, min}
   let assistances = [];       // {id, eventId, time, local, person, age, type, referral, responsible, procedure, notes}
   let invitations = [];        // {id, eventId, providerId, sent, response, sentAt, respondedAt}
+  let pendingSignups = [];      // {id, email, requestedAt}
   let activeEventId = null;
   let pendingDelete = null; // {type, id}
 
@@ -1207,6 +1218,8 @@
     id: r.id, eventId: r.event_id, providerId: r.provider_id, sent: r.sent,
     response: r.response, sentAt: r.sent_at, respondedAt: r.responded_at
   });
+  const toDbPendingSignup = p => ({ id: p.id, email: p.email, requested_at: p.requestedAt });
+  const fromDbPendingSignup = r => ({ id: r.id, email: r.email, requestedAt: r.requested_at });
 
   // ---------------- Storage (Supabase) ----------------
   async function loadAll(){
@@ -1216,13 +1229,14 @@
       return;
     }
     try{
-      const [e,s,pr,st,as,inv] = await Promise.all([
+      const [e,s,pr,st,as,inv,ps] = await Promise.all([
         sb.from('events').select('*'),
         sb.from('staff').select('*'),
         sb.from('providers').select('*'),
         sb.from('stock').select('*'),
         sb.from('assistances').select('*'),
-        sb.from('invitations').select('*')
+        sb.from('invitations').select('*'),
+        sb.from('pending_signups').select('*')
       ]);
       events = (e.data||[]).map(fromDbEvent);
       staff = (s.data||[]).map(fromDbStaff);
@@ -1230,6 +1244,7 @@
       stock = (st.data||[]).map(fromDbStock);
       assistances = (as.data||[]).map(fromDbAssistencia);
       invitations = (inv.data||[]).map(fromDbInvitation);
+      pendingSignups = (ps.data||[]).map(fromDbPendingSignup);
       if(e.error||s.error||pr.error||st.error||as.error||inv.error){
         console.error(e.error||s.error||pr.error||st.error||as.error||inv.error);
         showToast('Alguns dados podem não ter carregado — verifica a ligação');
@@ -1268,6 +1283,7 @@
   async function saveStock(){ await resyncTable('stock', stock, toDbStock); }
   async function saveAssistencias(){ await resyncTable('assistances', assistances, toDbAssistencia); }
   async function saveInvitations(){ await resyncTable('invitations', invitations, toDbInvitation); }
+  async function savePendingSignups(){ await resyncTable('pending_signups', pendingSignups, toDbPendingSignup); }
 
   // Tempo real: quando alguém (noutro telemóvel/computador) muda algo,
   // todos os que têm a app aberta veem a atualização sozinhos.
@@ -1285,6 +1301,7 @@
       .on('postgres_changes', { event: '*', schema: 'public', table: 'stock' }, scheduleRefresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'assistances' }, scheduleRefresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'invitations' }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'pending_signups' }, scheduleRefresh)
       .subscribe();
   }
 
@@ -1934,6 +1951,11 @@
       showToast('Prestador adicionado');
     }
     await saveProviders();
+    const matchingPending = pendingSignups.find(p=>p.email.toLowerCase()===email);
+    if(matchingPending){
+      pendingSignups = pendingSignups.filter(p=>p.id!==matchingPending.id);
+      await savePendingSignups();
+    }
     resetPrestadorForm();
     renderAll();
   }
@@ -1941,6 +1963,56 @@
   $('formPrestador').addEventListener('keydown', (e)=>{
     if(e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); handleAdicionarPrestador(); }
   });
+
+  function renderPendingSignups(){
+    const panel = $('pendingSignupsPanel');
+    const container = $('pendingSignupsContainer');
+    const countTag = $('pendingSignupsCount');
+    if(pendingSignups.length === 0){
+      panel.style.display = 'none';
+      $('navBadgePrestadores').style.display = 'none';
+      return;
+    }
+    panel.style.display = 'block';
+    $('navBadgePrestadores').textContent = pendingSignups.length;
+    $('navBadgePrestadores').style.display = 'inline-block';
+    countTag.textContent = `${pendingSignups.length} ${pendingSignups.length===1?'pedido':'pedidos'}`;
+    const sorted = pendingSignups.slice().sort((a,b)=>(b.requestedAt||'').localeCompare(a.requestedAt||''));
+    container.innerHTML = `<div style="overflow-x:auto;"><table>
+      <thead><tr><th>Email</th><th>Pedido em</th><th>Ações</th></tr></thead>
+      <tbody>${sorted.map(p=>{
+        const dt = p.requestedAt ? new Date(p.requestedAt).toLocaleString('pt-PT') : '—';
+        return `<tr>
+          <td><strong>${escapeHtml(p.email)}</strong></td>
+          <td>${dt}</td>
+          <td>
+            <div class="row-actions">
+              <button class="btn amber small" data-action="approve-signup" data-email="${escapeHtml(p.email)}">Aprovar</button>
+              <button class="btn danger small" data-action="reject-signup" data-id="${p.id}">Rejeitar</button>
+            </div>
+          </td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+
+    container.querySelectorAll('[data-action="approve-signup"]').forEach(b=>{
+      b.addEventListener('click', ()=>{
+        resetPrestadorForm();
+        $('prEmail').value = b.dataset.email;
+        $('prNome').focus();
+        showToast('Completa os dados do prestador e grava para aprovar o acesso');
+        window.scrollTo({top:0, behavior:'smooth'});
+      });
+    });
+    container.querySelectorAll('[data-action="reject-signup"]').forEach(b=>{
+      b.addEventListener('click', async ()=>{
+        pendingSignups = pendingSignups.filter(p=>p.id!==b.dataset.id);
+        await savePendingSignups();
+        renderAll();
+        showToast('Pedido rejeitado');
+      });
+    });
+  }
 
   function renderPrestadores(){
     renderPrTipoFilterOptions();
@@ -2487,6 +2559,7 @@
     renderPessoal();
     renderAssistencias();
     renderPrestadores();
+    renderPendingSignups();
     renderAlertas();
     renderStockAlert();
     renderFaturacao();
@@ -2573,13 +2646,23 @@
 
     if(session && !p){
       $('providerGreeting').textContent = `Sessão iniciada como ${email}, mas não encontrei nenhum prestador com este email. Pede à gestão para o adicionar.`;
-      $('providerLoggedOutScreen').innerHTML = `<p style="font-size:16px;margin-bottom:6px;">Sessão iniciada, mas sem correspondência.</p><p style="font-size:13.5px;">Não encontrámos nenhum prestador com o email <strong>${escapeHtml(email)}</strong>. Pede à gestão para te adicionar com este email.</p>`;
+      $('providerLoggedOutScreen').innerHTML = `<p style="font-size:16px;margin-bottom:6px;">Pedido enviado à gestão.</p><p style="font-size:13.5px;">Criámos a tua conta com o email <strong>${escapeHtml(email)}</strong>, mas ainda falta a gestão aprovar o teu acesso. Assim que aprovarem, entra normalmente com este email e password.</p>`;
+      registerPendingSignup(email);
     }else if(p){
       $('providerGreeting').textContent = `Olá, ${p.name}!`;
     }else{
       $('providerGreeting').textContent = 'Inicia sessão com o teu email para começar';
     }
     renderProviderAll();
+  }
+
+  async function registerPendingSignup(email){
+    if(!sb) return;
+    try{
+      await sb.from('pending_signups').upsert({ id: email, email: email, requested_at: new Date().toISOString() }, { onConflict: 'id' });
+    }catch(err){
+      console.error('Erro ao registar pedido de acesso', err);
+    }
   }
 
   $('providerLoginBtn').addEventListener('click', async ()=>{
