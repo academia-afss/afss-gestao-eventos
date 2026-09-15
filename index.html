@@ -403,6 +403,10 @@
             <label for="evLocal">Localização</label>
             <input type="text" id="evLocal" placeholder="Ex: Cascais">
           </div>
+          <div class="field">
+            <label for="evMorada">Morada do evento</label>
+            <input type="text" id="evMorada" placeholder="Ex: Rua das Flores, 12, 2900-000">
+          </div>
           <div class="field" style="grid-column:1/-1;border-top:1px solid var(--line);padding-top:14px;margin-top:2px;">
             <label style="font-size:13.5px;font-weight:600;color:var(--navy);">Prestadores necessários e honorário por função</label>
           </div>
@@ -736,6 +740,10 @@
             <input type="text" id="prContacto" placeholder="Telefone">
           </div>
           <div class="field">
+            <label for="prConcelho">Concelho de residência</label>
+            <input type="text" id="prConcelho" placeholder="Ex: Seixal">
+          </div>
+          <div class="field">
             <label for="prTipo">Tipo de serviço</label>
             <select id="prTipo">
               <option>Coordenador</option>
@@ -786,7 +794,7 @@
         <table id="tblPrestadores">
           <thead>
             <tr>
-              <th>Nome</th><th>Email</th><th>Contacto</th><th>Tipo</th><th>Tarifa sugerida</th><th>Disponibilidade</th><th>Notas</th><th>Ações</th>
+              <th>Nome</th><th>Email</th><th>Contacto</th><th>Concelho</th><th>Tipo</th><th>Tarifa sugerida</th><th>Disponibilidade</th><th>Notas</th><th>Ações</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -1034,7 +1042,7 @@
             <div style="overflow-x:auto;">
             <table id="tblRecibos">
               <thead>
-                <tr><th>Evento</th><th>Dia</th><th>Horas</th><th>Honorário/h</th><th>Valor a receber</th><th>Recibo emitido</th></tr>
+                <tr><th>Evento</th><th>Dia</th><th>Início</th><th>Fim</th><th>Local</th><th>Horas</th><th>Honorário/h</th><th>Valor a receber</th><th>Recibo emitido</th></tr>
               </thead>
               <tbody></tbody>
             </table>
@@ -1168,14 +1176,14 @@
   // ---------------- Mapeamento camelCase (app) <-> snake_case (Supabase) ----------------
   const toDbEvent = e => ({
     id: e.id, name: e.name, service_type: e.serviceType, date: e.date,
-    time_start: e.timeStart, time_end: e.timeEnd, location: e.location,
+    time_start: e.timeStart, time_end: e.timeEnd, location: e.location, morada: e.morada || '',
     rate: e.rate, staffing_needs: e.staffingNeeds || {}, area_rates: e.areaRates || {},
     invoice_sent: !!e.invoiceSent, fees_paid: !!e.feesPaid, receipt_issued: !!e.receiptIssued,
     billing_notes: e.billingNotes || '', created_at: e.createdAt || new Date().toISOString()
   });
   const fromDbEvent = r => ({
     id: r.id, name: r.name, serviceType: r.service_type, date: r.date,
-    timeStart: r.time_start, timeEnd: r.time_end, location: r.location,
+    timeStart: r.time_start, timeEnd: r.time_end, location: r.location, morada: r.morada || '',
     rate: r.rate, staffingNeeds: r.staffing_needs || {}, areaRates: r.area_rates || {},
     invoiceSent: r.invoice_sent, feesPaid: r.fees_paid, receiptIssued: r.receipt_issued,
     billingNotes: r.billing_notes, createdAt: r.created_at
@@ -1194,11 +1202,11 @@
   });
   const toDbProvider = p => ({
     id: p.id, name: p.name, email: (p.email||'').trim().toLowerCase(), contact: p.contact || '', service_type: p.serviceType,
-    available: !!p.available, suggested_rate: p.suggestedRate, notes: p.notes || ''
+    available: !!p.available, suggested_rate: p.suggestedRate, notes: p.notes || '', concelho: p.concelho || ''
   });
   const fromDbProvider = r => ({
     id: r.id, name: r.name, email: r.email || '', contact: r.contact, serviceType: r.service_type,
-    available: r.available, suggestedRate: r.suggested_rate, notes: r.notes
+    available: r.available, suggestedRate: r.suggested_rate, notes: r.notes, concelho: r.concelho || ''
   });
   const toDbStock = i => ({ id: i.id, posto: i.posto, item: i.item, qty: i.qty, min: i.min });
   const fromDbStock = r => ({ id: r.id, posto: r.posto, item: r.item, qty: r.qty, min: r.min });
@@ -1477,6 +1485,7 @@
       timeStart: $('evHoraInicio').value,
       timeEnd: $('evHoraFim').value,
       location: location,
+      morada: $('evMorada').value.trim(),
       rate: fallbackRate,
       staffingNeeds: {
         'Coordenador': parseInt($('needCoordenador').value)||0,
@@ -1541,7 +1550,7 @@
         <td>${escapeHtml(ev.serviceType)}</td>
         <td>${dateDisplay}</td>
         <td>${horario}</td>
-        <td>${escapeHtml(ev.location)}</td>
+        <td>${escapeHtml(ev.location)}${ev.morada ? `<div style="font-size:12px;color:var(--ink-soft);">${escapeHtml(ev.morada)}</div>` : ''}</td>
         <td style="white-space:normal;">${areaCoverageHtml(ev)}${areaAvailabilityHtml(ev) ? '<div style="margin-top:4px;">'+areaAvailabilityHtml(ev)+'</div>' : ''}</td>
         <td>${count}</td>
         <td>${fmtEuro(total)}</td>
@@ -1964,6 +1973,7 @@
       name: name,
       email: email,
       contact: $('prContacto').value.trim(),
+      concelho: $('prConcelho').value.trim(),
       serviceType: $('prTipo').value,
       suggestedRate: $('prTaxa').value !== '' ? parseFloat($('prTaxa').value) : null,
       available: $('prDisp').value === 'sim',
@@ -2059,7 +2069,7 @@
 
     const tbody = document.querySelector('#tblPrestadores tbody');
     if(list.length===0){
-      tbody.innerHTML = `<tr class="empty-row"><td colspan="8">Nenhum prestador encontrado. Adiciona o primeiro contacto acima.</td></tr>`;
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="9">Nenhum prestador encontrado. Adiciona o primeiro contacto acima.</td></tr>`;
       return;
     }
     tbody.innerHTML = list.map(p=>{
@@ -2068,6 +2078,7 @@
         <td><strong>${escapeHtml(p.name)}</strong></td>
         <td>${escapeHtml(p.email||'—')}</td>
         <td>${escapeHtml(p.contact||'—')}</td>
+        <td>${escapeHtml(p.concelho||'—')}</td>
         <td>${escapeHtml(p.serviceType)}</td>
         <td>${p.suggestedRate!=null ? fmtEuro(p.suggestedRate) : '—'}</td>
         <td>${p.available ? '<span class="tag avail">Disponível</span>' : '<span class="tag unavail">Indisponível</span>'}</td>
@@ -2103,6 +2114,7 @@
         $('prNome').value = p.name;
         $('prEmail').value = p.email || '';
         $('prContacto').value = p.contact || '';
+        $('prConcelho').value = p.concelho || '';
         $('prTipo').value = p.serviceType;
         $('prTaxa').value = p.suggestedRate!=null ? p.suggestedRate : '';
         $('prDisp').value = p.available ? 'sim' : 'nao';
@@ -2758,12 +2770,13 @@
   function renderProvDisponibilidades(){
     if(providerGuard('provNoIdEmpty1','provDisponibilidadesContent')) return;
     const container = $('provDisponibilidadesContainer');
-    const upcoming = events.filter(ev => daysUntil(ev.date) >= 0).sort((a,b)=>a.date.localeCompare(b.date));
+    const p = providers.find(x=>x.id===currentProviderId);
+    const myArea = p ? p.serviceType : null;
+    const upcoming = events.filter(ev => daysUntil(ev.date) >= 0 && (ev.staffingNeeds||{})[myArea] > 0).sort((a,b)=>a.date.localeCompare(b.date));
     if(upcoming.length === 0){
-      container.innerHTML = `<div class="empty-state"><p>Não há eventos futuros de momento.</p></div>`;
+      container.innerHTML = `<div class="empty-state"><p>Não há eventos futuros que precisem da tua função (${escapeHtml(myArea||'—')}) de momento.</p></div>`;
       return;
     }
-    const p = providers.find(x=>x.id===currentProviderId);
     container.innerHTML = `<div style="overflow-x:auto;"><table>
       <thead><tr><th>Evento</th><th>Dia</th><th>Horário</th><th>Local</th><th>Necessidades</th><th>Honorário/h</th><th>Resposta</th><th>Ações</th></tr></thead>
       <tbody>${upcoming.map(ev=>{
@@ -2778,7 +2791,7 @@
           <td><strong>${escapeHtml(ev.name)}</strong></td>
           <td>${dateDisplay}</td>
           <td>${horario}</td>
-          <td>${escapeHtml(ev.location)}</td>
+          <td>${escapeHtml(ev.location)}${ev.morada ? `<div style="font-size:12px;color:var(--ink-soft);">${escapeHtml(ev.morada)}</div>` : ''}</td>
           <td style="white-space:normal;">${escapeHtml(needsText)}</td>
           <td>${fmtEuro(rate)}</td>
           <td>${respTag}</td>
@@ -2877,7 +2890,7 @@
     const list = staff.filter(s=>s.providerId===currentProviderId).slice().sort((a,b)=>(b.day||'').localeCompare(a.day||''));
     const tbody = document.querySelector('#tblRecibos tbody');
     if(list.length===0){
-      tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Ainda não tens registos de trabalho associados.</td></tr>`;
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="9">Ainda não tens registos de trabalho associados.</td></tr>`;
       $('provTotalReceber').textContent = fmtEuro(0);
       $('provTotalPendenteRecibo').textContent = '0';
       return;
@@ -2894,6 +2907,9 @@
       return `<tr>
         <td><strong>${escapeHtml(ev?ev.name:'—')}</strong></td>
         <td>${dateDisplay}</td>
+        <td>${s.timeStart||'—'}</td>
+        <td>${s.timeEnd||'—'}</td>
+        <td>${escapeHtml(s.local||(ev?ev.location:'')||'—')}${ev&&ev.morada ? `<div style="font-size:12px;color:var(--ink-soft);">${escapeHtml(ev.morada)}</div>` : ''}</td>
         <td>${fmtHours(h)}</td>
         <td>${fmtEuro(rate)}</td>
         <td>${fmtEuro(val)}</td>
