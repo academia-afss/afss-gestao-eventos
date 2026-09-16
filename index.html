@@ -495,6 +495,12 @@
     </div>
 
     <div id="pessoalContent" style="display:none;">
+      <div class="panel success" id="pessoalDisponiveisPanel">
+        <div class="panel-head"><h2>Colaboradores disponíveis para este evento</h2></div>
+        <div class="panel-body">
+          <div id="pessoalDisponiveisContainer"></div>
+        </div>
+      </div>
       <div class="panel steel">
         <div class="panel-head"><h2 id="pessoalFormTitle">Registar colaborador</h2></div>
         <div class="panel-body">
@@ -1723,6 +1729,39 @@
     if(e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); handleRegistarPessoal(); }
   });
 
+  function renderPessoalDisponiveis(ev){
+    const container = $('pessoalDisponiveisContainer');
+    if(!ev){ container.innerHTML = ''; return; }
+    const alreadyStaffedIds = new Set(staffForEvent(ev.id).filter(s=>s.providerId).map(s=>s.providerId));
+    const disponiveis = providers.filter(p=>{
+      if(alreadyStaffedIds.has(p.id)) return false;
+      const inv = getInvitation(ev.id, p.id);
+      return inv && inv.response === 'disponivel';
+    }).sort((a,b)=>a.name.localeCompare(b.name));
+
+    if(disponiveis.length === 0){
+      container.innerHTML = `<p style="margin:0;color:var(--ink-soft);font-size:14px;">Ainda ninguém confirmou disponibilidade para este evento (ou já foram todos alocados).</p>`;
+      return;
+    }
+    container.innerHTML = `<div style="overflow-x:auto;"><table>
+      <thead><tr><th>Nome</th><th>Área</th><th>Contacto</th><th>Honorário/h</th><th>Ações</th></tr></thead>
+      <tbody>${disponiveis.map(p=>{
+        const rate = suggestedRateFor(p.serviceType, p, ev);
+        return `<tr>
+          <td><strong>${escapeHtml(p.name)}</strong></td>
+          <td>${escapeHtml(p.serviceType)}</td>
+          <td>${escapeHtml(p.contact||'—')}</td>
+          <td>${fmtEuro(rate)}</td>
+          <td><button class="btn amber small" data-action="alocar-disponivel" data-id="${p.id}">Alocar</button></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+
+    container.querySelectorAll('[data-action="alocar-disponivel"]').forEach(b=>{
+      b.addEventListener('click', ()=> allocateProvider(b.dataset.id));
+    });
+  }
+
   function renderPessoal(){
     renderEventSelect();
     renderPrestadorOptionsInPessoal();
@@ -1733,6 +1772,7 @@
 
     const ev = eventById(activeEventId);
     $('pessoalTaxaBadge').textContent = ev ? AREAS.map(a=>`${areaShortLabel(a)} ${fmtEuro(eventRateForArea(ev,a))}/h`).join(' · ') : '';
+    renderPessoalDisponiveis(ev);
 
     const search = $('searchPessoal').value.trim().toLowerCase();
     let list = staffForEvent(activeEventId);
