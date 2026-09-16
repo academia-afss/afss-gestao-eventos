@@ -2239,18 +2239,36 @@
             </tr>`;
           }).join('');
 
+      const disponiveis = providers.filter(p=>{
+        const inv = getInvitation(ev.id, p.id);
+        return inv && inv.response === 'disponivel';
+      }).sort((a,b)=>a.name.localeCompare(b.name));
+
+      const disponiveisHtml = disponiveis.length === 0
+        ? `<p style="margin:0 0 12px 0;color:var(--ink-soft);font-size:13.5px;">Ainda ninguém confirmou disponibilidade para este evento.</p>`
+        : `<div style="margin:0 0 12px 0;padding:10px 12px;background:var(--success-bg);border-left:3px solid var(--success);">
+            <strong style="font-size:13px;color:var(--success);">Disponíveis para este evento:</strong>
+            <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:8px;">
+              ${disponiveis.map(p=>`<span class="tag ok" title="${escapeHtml(p.contact||'')}">${escapeHtml(p.name)} — ${escapeHtml(p.serviceType)}</span>`).join('')}
+            </div>
+          </div>`;
+
       return `<div class="posto-block">
         <div class="posto-title">
           <span>${escapeHtml(ev.name)} — ${new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT')} (${diasLabel})</span>
           <button class="btn plum small" data-action="copy-invite" data-event="${ev.id}">Copiar convite</button>
         </div>
-        <div style="margin:-4px 0 12px 0;">${areaAvailabilityHtml(ev)}</div>
-        <div style="overflow-x:auto;">
-        <table>
-          <thead><tr><th>Prestador</th><th>Convite</th><th>Resposta</th><th>Contacto</th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-        </div>
+        <div style="margin:-4px 0 8px 0;">${areaAvailabilityHtml(ev)}</div>
+        ${disponiveisHtml}
+        <details>
+          <summary style="cursor:pointer;font-size:13px;color:var(--ink-soft);margin-bottom:8px;">Ver todos os prestadores (convites e respostas)</summary>
+          <div style="overflow-x:auto;">
+          <table>
+            <thead><tr><th>Prestador</th><th>Convite</th><th>Resposta</th><th>Contacto</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+          </div>
+        </details>
       </div>`;
     }).join('');
 
