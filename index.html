@@ -2075,10 +2075,21 @@
     if(e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); handleAdicionarPrestador(); }
   });
 
-  function renderPendingSignups(){
+  async function renderPendingSignups(){
     const panel = $('pendingSignupsPanel');
     const container = $('pendingSignupsContainer');
     const countTag = $('pendingSignupsCount');
+
+    // Auto-limpeza: remove pedidos cujo email já corresponde a um prestador existente
+    // (cobre casos em que a aprovação aconteceu por outro caminho, ex: edição manual).
+    const staleIds = pendingSignups
+      .filter(ps => providers.some(p => (p.email||'').toLowerCase() === (ps.email||'').toLowerCase()))
+      .map(ps => ps.id);
+    if(staleIds.length > 0){
+      pendingSignups = pendingSignups.filter(ps => !staleIds.includes(ps.id));
+      await savePendingSignups();
+    }
+
     if(pendingSignups.length === 0){
       panel.style.display = 'none';
       $('navBadgePrestadores').style.display = 'none';
