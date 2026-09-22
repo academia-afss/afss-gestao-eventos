@@ -2255,8 +2255,16 @@
     return `Olá! A AFSS tem o evento "${ev.name}" no dia ${dateDisplay}${horario}, em ${ev.location} (${ev.serviceType}). Estás disponível para trabalhar? Por favor responde com sim ou não. Obrigado!`;
   }
 
+  let alertasOpenDetails = new Set();
+
   function renderAlertas(){
     const container = $('alertasContainer');
+    // Antes de regenerar o HTML, guarda que blocos <details> estão abertos neste momento
+    container.querySelectorAll('details[data-event-id]').forEach(d=>{
+      if(d.open) alertasOpenDetails.add(d.dataset.eventId);
+      else alertasOpenDetails.delete(d.dataset.eventId);
+    });
+
     const upcoming = events.filter(ev => {
       const d = daysUntil(ev.date);
       return d >= 0;
@@ -2273,25 +2281,50 @@
       const diasLabel = dias===0 ? 'Hoje' : dias===1 ? 'Amanhã' : `Em ${dias} dias`;
       const list = providers.slice().sort((a,b)=>a.name.localeCompare(b.name));
 
-      const rows = list.length === 0
-        ? `<tr class="empty-row"><td colspan="4">Ainda não há prestadores na lista de contactos.</td></tr>`
-        : list.map(p=>{
-            const inv = getInvitation(ev.id, p.id);
-            const sent = inv ? inv.sent : false;
-            const resp = inv ? inv.response : 'pendente';
-            return `<tr>
-              <td><strong>${escapeHtml(p.name)}</strong> <span style="color:var(--ink-soft);font-size:12.5px;">(${escapeHtml(p.serviceType)})</span></td>
-              <td><span class="toggle-pill ${sent?'yes':'no'}" data-action="toggle-sent" data-event="${ev.id}" data-provider="${p.id}">${sent?'Convite enviado':'Convite por enviar'}</span></td>
-              <td>
-                <select data-action="set-resp" data-event="${ev.id}" data-provider="${p.id}" style="padding:6px 8px;border:1px solid #C9C2B2;background:#FCFBF8;font-family:'Inter',sans-serif;font-size:13.5px;">
-                  <option value="pendente" ${resp==='pendente'?'selected':''}>Pendente</option>
-                  <option value="disponivel" ${resp==='disponivel'?'selected':''}>Disponível</option>
-                  <option value="indisponivel" ${resp==='indisponivel'?'selected':''}>Indisponível</option>
-                </select>
-              </td>
-              <td>${p.contact?escapeHtml(p.contact):'—'}</td>
-            </tr>`;
+      const groupsHtml = list.length === 0
+        ? `<p style="color:var(--ink-soft);font-size:13.5px;margin:0;">Ainda não há prestadores na lista de contactos.</p>`
+        : AREAS.map(area=>{
+            const inGroup = list.filter(p=>p.serviceType===area);
+            if(inGroup.length===0) return '';
+            const rows = inGroup.map(p=>{
+              const inv = getInvitation(ev.id, p.id);
+              const sent = inv ? inv.sent : false;
+              const resp = inv ? inv.response : 'pendente';
+              return `<tr>
+                <td><strong>${escapeHtml(p.name)}</strong></td>
+                <td><span class="toggle-pill ${sent?'yes':'no'}" data-action="toggle-sent" data-event="${ev.id}" data-provider="${p.id}">${sent?'Convite enviado':'Convite por enviar'}</span></td>
+                <td>
+                  <select data-action="set-resp" data-event="${ev.id}" data-provider="${p.id}" style="padding:6px 8px;border:1px solid #C9C2B2;background:#FCFBF8;font-family:'Inter',sans-serif;font-size:13.5px;">
+                    <option value="pendente" ${resp==='pendente'?'selected':''}>Pendente</option>
+                    <option value="disponivel" ${resp==='disponivel'?'selected':''}>Disponível</option>
+                    <option value="indisponivel" ${resp==='indisponivel'?'selected':''}>Indisponível</option>
+                  </select>
+                </td>
+                <td>${p.contact?escapeHtml(p.contact):'—'}</td>
+              </tr>`;
+            }).join('');
+            const pendingCount = inGroup.filter(p=>{
+              const inv = getInvitation(ev.id, p.id);
+              return !inv || !inv.sent;
+            }).length;
+            return `<div style="margin-bottom:16px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px;">
+                <strong style="font-size:13.5px;color:var(--navy);">${areaShortLabel(area)} (${inGroup.length})</strong>
+                <button class="btn ghost small" data-action="invite-group" data-event="${ev.id}" data-area="${escapeHtml(area)}" ${pendingCount===0?'disabled':''}>Enviar convite a todos os ${areaShortLabel(area)}${pendingCount>0?' ('+pendingCount+')':''}</button>
+              </div>
+              <div style="overflow-x:auto;">
+              <table>
+                <thead><tr><th>Prestador</th><th>Convite</th><th>Resposta</th><th>Contacto</th></tr></thead>
+                <tbody>${rows}</tbody>
+              </table>
+              </div>
+            </div>`;
           }).join('');
+
+      const totalPendentes = list.filter(p=>{
+        const inv = getInvitation(ev.id, p.id);
+        return !inv || !inv.sent;
+      }).length;
 
       const disponiveis = providers.filter(p=>{
         const inv = getInvitation(ev.id, p.id);
@@ -2307,27 +2340,61 @@
             </div>
           </div>`;
 
+      const isOpen = alertasOpenDetails.has(ev.id);
+
       return `<div class="posto-block">
         <div class="posto-title">
           <span>${escapeHtml(ev.name)} — ${new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT')} (${diasLabel})</span>
-          <button class="btn plum small" data-action="copy-invite" data-event="${ev.id}">Copiar convite</button>
+          <div class="row-actions">
+            <button class="btn plum small" data-action="copy-invite" data-event="${ev.id}">Copiar convite</button>
+            <button class="btn amber small" data-action="invite-all" data-event="${ev.id}" ${totalPendentes===0?'disabled':''}>Enviar convite a todos${totalPendentes>0?' ('+totalPendentes+')':''}</button>
+          </div>
         </div>
         <div style="margin:-4px 0 8px 0;">${areaAvailabilityHtml(ev)}</div>
         ${disponiveisHtml}
-        <details>
+        <details data-event-id="${ev.id}" ${isOpen?'open':''}>
           <summary style="cursor:pointer;font-size:13px;color:var(--ink-soft);margin-bottom:8px;">Ver todos os prestadores (convites e respostas)</summary>
-          <div style="overflow-x:auto;">
-          <table>
-            <thead><tr><th>Prestador</th><th>Convite</th><th>Resposta</th><th>Contacto</th></tr></thead>
-            <tbody>${rows}</tbody>
-          </table>
-          </div>
+          ${groupsHtml}
         </details>
       </div>`;
     }).join('');
 
     updateAlertasBadge();
 
+    container.querySelectorAll('details[data-event-id]').forEach(d=>{
+      d.addEventListener('toggle', ()=>{
+        if(d.open) alertasOpenDetails.add(d.dataset.eventId);
+        else alertasOpenDetails.delete(d.dataset.eventId);
+      });
+    });
+    container.querySelectorAll('[data-action="invite-group"]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const eventId = btn.dataset.event;
+        const area = btn.dataset.area;
+        const targets = providers.filter(p=>p.serviceType===area);
+        targets.forEach(p=>{
+          const inv = ensureInvitation(eventId, p.id);
+          inv.sent = true;
+          inv.sentAt = new Date().toISOString();
+        });
+        await saveInvitations();
+        showToast(`Convite enviado a ${targets.length} ${areaShortLabel(area)}(s)`);
+        renderAlertas();
+      });
+    });
+    container.querySelectorAll('[data-action="invite-all"]').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        const eventId = btn.dataset.event;
+        providers.forEach(p=>{
+          const inv = ensureInvitation(eventId, p.id);
+          inv.sent = true;
+          inv.sentAt = new Date().toISOString();
+        });
+        await saveInvitations();
+        showToast(`Convite enviado a todos os prestadores (${providers.length})`);
+        renderAlertas();
+      });
+    });
     container.querySelectorAll('[data-action="toggle-sent"]').forEach(el=>{
       el.addEventListener('click', async ()=>{
         const inv = ensureInvitation(el.dataset.event, el.dataset.provider);
