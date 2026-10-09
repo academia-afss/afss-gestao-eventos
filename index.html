@@ -359,6 +359,13 @@
   .modal{background:var(--panel);color:var(--ink);}
   .modal-backdrop{background:rgba(0,0,0,0.72);}
   footer.foot{color:#777;}
+
+  .event-picker input[type=date]{padding:6px 8px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--ink);font-size:14px;font-family:'Inter',sans-serif;}
+  .periodo-switch{display:inline-flex;border:1px solid var(--input-border);margin-right:6px;}
+  .periodo-btn{font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:14px;background:transparent;color:#9A9A9A;border:none;padding:7px 14px;cursor:pointer;}
+  .periodo-btn + .periodo-btn{border-left:1px solid var(--input-border);}
+  .periodo-btn.active{background:var(--amber);color:#000;}
+  .periodo-btn:not(.active):hover{color:#fff;}
 </style>
 </head>
 <body>
@@ -525,6 +532,16 @@
   <!-- ============ PESSOAL ============ -->
   <section class="view" id="view-pessoal">
     <div class="event-picker">
+      <div class="periodo-switch">
+        <button type="button" class="periodo-btn active" data-periodo="proximos" id="pesPeriodoProximos">Próximos</button>
+        <button type="button" class="periodo-btn" data-periodo="realizados" id="pesPeriodoRealizados">Já realizados</button>
+      </div>
+      <label for="pessoalFiltroDe">De:</label>
+      <input type="date" id="pessoalFiltroDe">
+      <label for="pessoalFiltroAte">Até:</label>
+      <input type="date" id="pessoalFiltroAte">
+      <button type="button" class="btn ghost small on-dark" id="pessoalFiltroLimpar" style="display:none;">Limpar datas</button>
+      <div style="flex-basis:100%;height:0;"></div>
       <label for="pessoalEventoSelect">Evento:</label>
       <select id="pessoalEventoSelect"><option value="">— Seleciona um evento —</option></select>
       <span class="rate-badge" id="pessoalTaxaBadge"></span>
@@ -1661,15 +1678,56 @@
   $('filterEstado').addEventListener('change', renderEventos);
 
   // ================= PESSOAL =================
+  let pessoalPeriodo = 'proximos';
+  function isEventoRealizado(ev){ return eventState(ev.date) === 'past'; }
+  function pessoalForaDoIntervalo(ev){
+    const de = $('pessoalFiltroDe').value, ate = $('pessoalFiltroAte').value;
+    return (de && ev.date < de) || (ate && ev.date > ate);
+  }
   function renderEventSelect(){
     const sel = $('pessoalEventoSelect');
-    const current = activeEventId;
-    const sorted = events.slice().sort((a,b)=>b.date.localeCompare(a.date));
-    sel.innerHTML = '<option value="">— Seleciona um evento —</option>' +
-      sorted.map(ev=>`<option value="${ev.id}">${escapeHtml(ev.name)} — ${new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT')}</option>`).join('');
-    if(current && eventById(current)) sel.value = current;
+    // Evento escolhido noutra aba (ex: botão "Pessoal" em Eventos): ajusta os filtros para o mostrar
+    const ativo = activeEventId ? eventById(activeEventId) : null;
+    if(ativo){
+      pessoalPeriodo = isEventoRealizado(ativo) ? 'realizados' : 'proximos';
+      if(pessoalForaDoIntervalo(ativo)){ $('pessoalFiltroDe').value = ''; $('pessoalFiltroAte').value = ''; }
+    }
+    const inRange = ev => !pessoalForaDoIntervalo(ev);
+    const proximos = events.filter(ev=>!isEventoRealizado(ev) && inRange(ev)).sort((a,b)=>a.date.localeCompare(b.date));
+    const realizados = events.filter(ev=>isEventoRealizado(ev) && inRange(ev)).sort((a,b)=>b.date.localeCompare(a.date));
+    const list = pessoalPeriodo === 'realizados' ? realizados : proximos;
+
+    $('pesPeriodoProximos').textContent = `Próximos (${proximos.length})`;
+    $('pesPeriodoRealizados').textContent = `Já realizados (${realizados.length})`;
+    document.querySelectorAll('.periodo-btn').forEach(b=>b.classList.toggle('active', b.dataset.periodo===pessoalPeriodo));
+    const temDatas = $('pessoalFiltroDe').value || $('pessoalFiltroAte').value;
+    $('pessoalFiltroLimpar').style.display = temDatas ? 'inline-block' : 'none';
+
+    const vazio = pessoalPeriodo === 'realizados' ? '— Sem eventos realizados neste intervalo —' : '— Sem eventos próximos neste intervalo —';
+    sel.innerHTML = `<option value="">${list.length ? '— Seleciona um evento —' : vazio}</option>` +
+      list.map(ev=>`<option value="${ev.id}">${escapeHtml(ev.name)} — ${new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT')}</option>`).join('');
+    if(activeEventId && list.some(ev=>ev.id===activeEventId)) sel.value = activeEventId;
     else activeEventId = null;
   }
+  document.querySelectorAll('.periodo-btn').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      pessoalPeriodo = b.dataset.periodo;
+      const ev = activeEventId ? eventById(activeEventId) : null;
+      if(ev && (isEventoRealizado(ev) ? 'realizados' : 'proximos') !== pessoalPeriodo){ activeEventId = null; resetPessoalForm(); }
+      renderPessoal();
+    });
+  });
+  ['pessoalFiltroDe','pessoalFiltroAte'].forEach(id=>{
+    $(id).addEventListener('change', ()=>{
+      const ev = activeEventId ? eventById(activeEventId) : null;
+      if(ev && pessoalForaDoIntervalo(ev)){ activeEventId = null; resetPessoalForm(); }
+      renderPessoal();
+    });
+  });
+  $('pessoalFiltroLimpar').addEventListener('click', ()=>{
+    $('pessoalFiltroDe').value = ''; $('pessoalFiltroAte').value = '';
+    renderPessoal();
+  });
   $('pessoalEventoSelect').addEventListener('change', (e)=>{
     activeEventId = e.target.value || null;
     resetPessoalForm();
