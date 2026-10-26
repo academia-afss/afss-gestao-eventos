@@ -3382,7 +3382,7 @@
           const ev = eventById(s.eventId);
           const dateDisplay = new Date(s.day+'T00:00:00').toLocaleDateString('pt-PT');
           return `<tr>
-            <td><strong>${escapeHtml(ev?ev.name:'—')}</strong></td>
+            <td><strong>${escapeHtml(ev?ev.name:'—')}</strong>${ev&&ev.notes ? `<div class="ev-notes">${escapeHtml(ev.notes)}</div>` : ''}</td>
             <td>${dateDisplay}</td>
             <td>${s.timeStart||'—'}</td>
             <td>${s.timeEnd||'—'}</td>
@@ -3409,7 +3409,7 @@
           const val = h * rate;
           const dateDisplay = new Date(s.day+'T00:00:00').toLocaleDateString('pt-PT');
           return `<tr>
-            <td><strong>${escapeHtml(ev?ev.name:'—')}</strong></td>
+            <td><strong>${escapeHtml(ev?ev.name:'—')}</strong>${ev&&ev.notes ? `<div class="ev-notes">${escapeHtml(ev.notes)}</div>` : ''}</td>
             <td>${dateDisplay}</td>
             <td>${fmtEuro(val)}</td>
             <td><button class="btn amber small" data-action="prov-alert-recibo" data-id="${s.id}">Marcar recibo emitido</button></td>
@@ -3591,7 +3591,7 @@
       if(!s.receiptIssued) pendCount++;
       const dateDisplay = s.day ? new Date(s.day+'T00:00:00').toLocaleDateString('pt-PT') : '—';
       return `<tr>
-        <td><strong>${escapeHtml(ev?ev.name:'—')}</strong></td>
+        <td><strong>${escapeHtml(ev?ev.name:'—')}</strong>${ev&&ev.notes ? `<div class="ev-notes">${escapeHtml(ev.notes)}</div>` : ''}</td>
         <td>${dateDisplay}</td>
         <td>${s.timeStart||'—'}</td>
         <td>${s.timeEnd||'—'}</td>
