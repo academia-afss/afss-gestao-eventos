@@ -366,6 +366,12 @@
   .periodo-btn + .periodo-btn{border-left:1px solid var(--input-border);}
   .periodo-btn.active{background:var(--amber);color:#000;}
   .periodo-btn:not(.active):hover{color:#fff;}
+
+  .admin-login-input{width:100%;padding:10px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--ink);font-size:14px;font-family:'Inter',sans-serif;box-sizing:border-box;margin-top:8px;}
+  .toolbar input[type=month]{padding:8px 10px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--ink);font-family:'Inter',sans-serif;font-size:14px;}
+  .fat-lbl{font-size:13px;color:var(--ink-soft);}
+  .fat-subtotal td{font-weight:700;background:var(--panel-2);}
+  .fat-total td{font-weight:700;color:var(--amber);border-top:2px solid var(--amber);}
 </style>
 </head>
 <body>
@@ -374,6 +380,11 @@
   <div class="mode-switch-inner">
     <span class="mode-brand">AFSS</span>
     <div class="mode-buttons">
+      <span id="managerBar" style="display:none;align-items:center;gap:6px;">
+        <span id="managerEmailLabel" style="font-size:12.5px;color:#9A9A9A;margin-right:4px;"></span>
+        <button class="mode-btn" id="btnGestores" type="button">Gestores</button>
+        <button class="mode-btn" id="btnManagerLogout" type="button">Sair</button>
+      </span>
       <button class="mode-btn active" id="modeBtnAdmin" data-mode="admin">Vista de Gestão</button>
       <button class="mode-btn" id="modeBtnProvider" data-mode="provider">Portal do Colaborador</button>
     </div>
@@ -894,6 +905,30 @@
   <!-- ============ FATURAÇÃO ============ -->
   <section class="view" id="view-faturacao">
     <div class="panel success">
+      <div class="panel-head">
+        <h2>Valores a pagar por mês e tipo de evento</h2>
+        <div class="row-actions">
+          <button type="button" class="btn amber small" id="btnExportFatResumo">Exportar resumo (Excel)</button>
+          <button type="button" class="btn ghost small" id="btnExportFatDetalhe">Exportar detalhe por colaborador</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="toolbar">
+          <label for="fatMesDe" class="fat-lbl">De</label>
+          <input type="month" id="fatMesDe" placeholder="AAAA-MM">
+          <label for="fatMesAte" class="fat-lbl">Até</label>
+          <input type="month" id="fatMesAte" placeholder="AAAA-MM">
+          <select id="fatTipoFiltro"><option value="">Todos os tipos</option></select>
+        </div>
+        <div style="overflow-x:auto;">
+        <table id="tblFatResumo">
+          <thead><tr><th>Mês</th><th>Tipo de evento</th><th>Eventos</th><th>Registos de pessoal</th><th>Horas</th><th>Valor a pagar</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        </div>
+      </div>
+    </div>
+    <div class="panel success">
       <div class="panel-head"><h2>Faturação por evento</h2></div>
       <div class="panel-body">
         <div class="toolbar">
@@ -1218,15 +1253,27 @@
 </div>
 
 <div class="modal-backdrop" id="adminPassBackdrop">
-  <div class="modal" style="max-width:380px;">
+  <div class="modal" style="max-width:400px;">
     <h3>Vista de Gestão</h3>
-    <p>Esta área é só para a equipa AFSS. Introduz a palavra-passe para continuar.</p>
-    <input type="password" id="adminPassInput" placeholder="Palavra-passe" style="width:100%;padding:10px;border:1px solid #3A3A3A;background:#1E1E1E;font-size:14px;font-family:'Inter',sans-serif;box-sizing:border-box;">
-    <p id="adminPassError" style="color:var(--danger);font-size:13px;margin:8px 0 0 0;display:none;">Palavra-passe incorreta.</p>
+    <p id="adminLoginIntro">Esta área é só para a equipa AFSS. Entra com o teu email e password de gestor.</p>
+    <input type="email" id="adminEmailInput" placeholder="Email" class="admin-login-input" autocomplete="username">
+    <input type="password" id="adminPassInput" placeholder="Password" class="admin-login-input" autocomplete="current-password">
+    <input type="password" id="adminCodeInput" placeholder="Código de gestor" class="admin-login-input" style="display:none;">
+    <p id="adminPassError" style="color:var(--danger);font-size:13px;margin:8px 0 0 0;display:none;"></p>
     <div class="modal-actions" style="margin-top:14px;">
       <button class="btn ghost" id="adminPassCancel">Cancelar</button>
       <button class="btn amber" id="adminPassSubmit">Entrar</button>
     </div>
+    <p style="margin:14px 0 0 0;font-size:13px;"><a href="#" id="adminToggleSignup" style="color:var(--amber);">Primeiro acesso? Criar acesso de gestor</a></p>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="gestoresBackdrop">
+  <div class="modal" style="max-width:480px;">
+    <h3>Gestores com acesso</h3>
+    <p>Para dar acesso a outra pessoa da equipa, partilha com ela o código de gestor: ela entra em "Criar acesso de gestor" com o seu próprio email.</p>
+    <div id="gestoresList" style="overflow-x:auto;"></div>
+    <div class="modal-actions" style="margin-top:14px;"><button class="btn ghost" id="gestoresClose">Fechar</button></div>
   </div>
 </div>
 
@@ -1244,7 +1291,10 @@
     ? supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
     : null;
   if(sb){
-    sb.auth.onAuthStateChange((_event, session) => { applyProviderSession(session); });
+    sb.auth.onAuthStateChange((event, session) => {
+      applyProviderSession(session);
+      if(event === 'SIGNED_OUT') handleManagerSignedOut();
+    });
   }
 
   // ---------------- State ----------------
@@ -2599,7 +2649,104 @@
     renderKpis();
   }
 
+  function fatMonthLabel(ym){
+    const [y,m] = ym.split('-').map(Number);
+    const s = new Date(y, m-1, 1).toLocaleDateString('pt-PT', { month:'long', year:'numeric' });
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  }
+  function fatFilteredEvents(){
+    const de = $('fatMesDe').value, ate = $('fatMesAte').value, tipo = $('fatTipoFiltro').value;
+    return events.filter(ev=>{
+      if(!ev.date) return false;
+      const ym = ev.date.slice(0,7);
+      if(de && ym < de) return false;
+      if(ate && ym > ate) return false;
+      if(tipo && ev.serviceType !== tipo) return false;
+      return true;
+    });
+  }
+  function fatResumoRows(){
+    const groups = new Map();
+    fatFilteredEvents().forEach(ev=>{
+      const mes = ev.date.slice(0,7), tipo = ev.serviceType || '—';
+      const key = mes + '|' + tipo;
+      if(!groups.has(key)) groups.set(key, { mes, tipo, eventos:0, registos:0, horas:0, valor:0 });
+      const g = groups.get(key);
+      g.eventos++;
+      staffForEvent(ev.id).forEach(s=>{ g.registos++; g.horas += staffHours(s); g.valor += staffValue(s); });
+    });
+    return [...groups.values()];
+  }
+  function renderFatTipoOptions(){
+    const sel = $('fatTipoFiltro'); const cur = sel.value;
+    const tipos = [...new Set(events.map(e=>e.serviceType).filter(Boolean))].sort();
+    sel.innerHTML = '<option value="">Todos os tipos</option>' + tipos.map(t=>`<option value="${escapeHtml(t)}">${escapeHtml(t)}</option>`).join('');
+    sel.value = tipos.includes(cur) ? cur : '';
+  }
+  function renderFatResumo(){
+    renderFatTipoOptions();
+    const rows = fatResumoRows().sort((a,b)=> a.mes===b.mes ? a.tipo.localeCompare(b.tipo) : b.mes.localeCompare(a.mes));
+    const tbody = document.querySelector('#tblFatResumo tbody');
+    if(rows.length === 0){ tbody.innerHTML = `<tr class="empty-row"><td colspan="6">Sem eventos no período selecionado.</td></tr>`; return; }
+    const soma = (lst)=> lst.reduce((a,r)=>({ eventos:a.eventos+r.eventos, registos:a.registos+r.registos, horas:a.horas+r.horas, valor:a.valor+r.valor }), { eventos:0, registos:0, horas:0, valor:0 });
+    let html = '';
+    [...new Set(rows.map(r=>r.mes))].forEach(mes=>{
+      const doMes = rows.filter(r=>r.mes===mes);
+      doMes.forEach((r,i)=>{
+        html += `<tr><td>${i===0 ? `<strong>${fatMonthLabel(mes)}</strong>` : ''}</td><td>${escapeHtml(r.tipo)}</td><td>${r.eventos}</td><td>${r.registos}</td><td>${fmtHours(r.horas)}</td><td>${fmtEuro(r.valor)}</td></tr>`;
+      });
+      if(doMes.length > 1){
+        const sub = soma(doMes);
+        html += `<tr class="fat-subtotal"><td></td><td>Total do mês</td><td>${sub.eventos}</td><td>${sub.registos}</td><td>${fmtHours(sub.horas)}</td><td>${fmtEuro(sub.valor)}</td></tr>`;
+      }
+    });
+    const tot = soma(rows);
+    html += `<tr class="fat-total"><td>Total</td><td></td><td>${tot.eventos}</td><td>${tot.registos}</td><td>${fmtHours(tot.horas)}</td><td>${fmtEuro(tot.valor)}</td></tr>`;
+    tbody.innerHTML = html;
+  }
+  function csvCell(v){ const s = String(v==null ? '' : v); return /[;"\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s; }
+  function csvNum(n){ return (Math.round((n||0)*100)/100).toFixed(2).replace('.', ','); }
+  function downloadCsv(filename, lines){
+    const blob = new Blob(['\ufeff' + lines.map(l=>l.map(csvCell).join(';')).join('\r\n')], { type:'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1000);
+  }
+  function fatPeriodoSufixo(){
+    const de = $('fatMesDe').value, ate = $('fatMesAte').value, tipo = $('fatTipoFiltro').value;
+    return (de||ate ? `_${de||'inicio'}_a_${ate||'hoje'}` : '') + (tipo ? '_' + tipo.replace(/\s+/g,'-') : '');
+  }
+  $('btnExportFatResumo').addEventListener('click', ()=>{
+    const rows = fatResumoRows().sort((a,b)=> a.mes===b.mes ? a.tipo.localeCompare(b.tipo) : a.mes.localeCompare(b.mes));
+    if(!rows.length){ showToast('Sem dados para exportar'); return; }
+    const lines = [['Mês','Tipo de evento','Nº eventos','Nº registos de pessoal','Horas','Valor a pagar (€)']];
+    const tot = { e:0, r:0, h:0, v:0 };
+    rows.forEach(r=>{
+      lines.push([r.mes, r.tipo, r.eventos, r.registos, csvNum(r.horas), csvNum(r.valor)]);
+      tot.e += r.eventos; tot.r += r.registos; tot.h += r.horas; tot.v += r.valor;
+    });
+    lines.push(['TOTAL', '', tot.e, tot.r, csvNum(tot.h), csvNum(tot.v)]);
+    downloadCsv(`valores_a_pagar_por_mes_e_tipo${fatPeriodoSufixo()}.csv`, lines);
+  });
+  $('btnExportFatDetalhe').addEventListener('click', ()=>{
+    const evs = fatFilteredEvents().sort((a,b)=>a.date.localeCompare(b.date));
+    const lines = [['Mês','Data','Evento','Tipo de evento','Colaborador','Área','Horas','Honorário/h (€)','Valor a pagar (€)','Falta','Recibo emitido']];
+    evs.forEach(ev=>{
+      staffForEvent(ev.id).forEach(s=>{
+        const rate = (s.rate !== undefined && s.rate !== null && s.rate !== '') ? parseFloat(s.rate) : (ev ? ev.rate : 25);
+        lines.push([ev.date.slice(0,7), new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT'), ev.name, ev.serviceType||'', s.name, s.area||'',
+          csvNum(staffHours(s)), csvNum(rate), csvNum(staffValue(s)), s.absent ? 'Sim' : 'Não', s.receiptIssued ? 'Sim' : 'Não']);
+      });
+    });
+    if(lines.length === 1){ showToast('Sem registos de pessoal no período'); return; }
+    downloadCsv(`valores_a_pagar_detalhe${fatPeriodoSufixo()}.csv`, lines);
+  });
+  ['fatMesDe','fatMesAte','fatTipoFiltro'].forEach(id=> $(id).addEventListener('change', renderFatResumo));
+
   function renderFaturacao(){
+    renderFatResumo();
     const search = $('searchFaturacao').value.trim().toLowerCase();
     const estadoFilter = $('filterFaturacaoEstado').value;
 
@@ -2871,47 +3018,149 @@
   }
 
   // ================= MODO: GESTÃO / PRESTADOR =================
+  var currentMode = 'admin';
+  var currentManagerEmail = null;
   function setMode(mode){
+    currentMode = mode;
     $('adminRoot').style.display = mode==='admin' ? '' : 'none';
     $('providerRoot').style.display = mode==='provider' ? '' : 'none';
     document.querySelectorAll('.mode-btn').forEach(b=> b.classList.toggle('active', b.dataset.mode===mode));
     if(mode==='provider'){ checkProviderSession(); }
   }
 
-  // ---------------- Palavra-passe da Vista de Gestão ----------------
-  const ADMIN_PASSWORD = 'GestãoAFSSeventos';
-  function isAdminUnlocked(){
-    try{ return sessionStorage.getItem('afss_admin_unlocked') === 'yes'; }catch(err){ return false; }
+  // ---------------- Login de gestor (email + password) ----------------
+  var adminSignupMode = false;
+  function isAdminUnlocked(){ return !!currentManagerEmail; }
+  function updateManagerBar(){
+    $('managerBar').style.display = currentManagerEmail ? 'inline-flex' : 'none';
+    $('managerEmailLabel').textContent = currentManagerEmail || '';
   }
-  function setAdminUnlocked(){
-    try{ sessionStorage.setItem('afss_admin_unlocked', 'yes'); }catch(err){ /* ignore */ }
+  async function refreshManagerSession(){
+    currentManagerEmail = null;
+    if(sb){
+      try{
+        const { data } = await sb.auth.getSession();
+        const session = data && data.session;
+        if(session && session.user && session.user.email){
+          const { data: ok, error } = await sb.rpc('am_i_manager');
+          if(!error && ok === true) currentManagerEmail = session.user.email.toLowerCase();
+        }
+      }catch(err){ console.error('Erro ao verificar gestor', err); }
+    }
+    updateManagerBar();
   }
-  function openAdminPassModal(){
-    $('adminPassInput').value = '';
+  function handleManagerSignedOut(){
+    if(!currentManagerEmail) return;
+    currentManagerEmail = null;
+    updateManagerBar();
+    if(currentMode === 'admin'){ $('adminRoot').style.display = 'none'; openAdminPassModal(); }
+  }
+  function setAdminLoginMode(signup){
+    adminSignupMode = signup;
+    $('adminCodeInput').style.display = signup ? 'block' : 'none';
+    $('adminPassSubmit').textContent = signup ? 'Criar acesso' : 'Entrar';
+    $('adminToggleSignup').textContent = signup ? 'Já tenho acesso — entrar' : 'Primeiro acesso? Criar acesso de gestor';
+    $('adminLoginIntro').textContent = signup
+      ? 'Usa o teu email e escolhe uma password (mínimo 6 caracteres). O código de gestor confirma que pertences à equipa. Se já tens conta de colaborador com este email, usa a mesma password.'
+      : 'Esta área é só para a equipa AFSS. Entra com o teu email e password de gestor.';
     $('adminPassError').style.display = 'none';
+  }
+  function showAdminError(msg){ $('adminPassError').textContent = msg; $('adminPassError').style.display = 'block'; }
+  function openAdminPassModal(){
+    setAdminLoginMode(false);
+    $('adminPassInput').value = '';
+    $('adminCodeInput').value = '';
     $('adminPassBackdrop').classList.add('show');
-    setTimeout(()=> $('adminPassInput').focus(), 50);
+    setTimeout(()=> ($('adminEmailInput').value ? $('adminPassInput') : $('adminEmailInput')).focus(), 50);
   }
   function closeAdminPassModal(){
     $('adminPassBackdrop').classList.remove('show');
   }
-  function submitAdminPass(){
-    if($('adminPassInput').value === ADMIN_PASSWORD){
-      setAdminUnlocked();
+  async function submitAdminPass(){
+    if(!sb){ showAdminError('Sem ligação à base de dados. Tenta outra vez.'); return; }
+    const email = $('adminEmailInput').value.trim().toLowerCase();
+    const password = $('adminPassInput').value;
+    const code = $('adminCodeInput').value;
+    if(!email || !password){ showAdminError('Preenche o email e a password.'); return; }
+    if(adminSignupMode && !code){ showAdminError('Preenche o código de gestor.'); return; }
+    if(adminSignupMode && password.length < 6){ showAdminError('A password precisa de pelo menos 6 caracteres.'); return; }
+    const btn = $('adminPassSubmit');
+    btn.disabled = true;
+    try{
+      let signedIn = false;
+      if(adminSignupMode){
+        const { data, error } = await sb.auth.signUp({ email, password });
+        if(!error && data && data.session) signedIn = true;
+      }
+      if(!signedIn){
+        const { error } = await sb.auth.signInWithPassword({ email, password });
+        if(error){
+          const txt = String(error.message || '');
+          showAdminError(/confirm/i.test(txt)
+            ? 'Confirma primeiro o teu email (verifica a caixa de entrada) e tenta outra vez.'
+            : (adminSignupMode ? 'Este email já tem conta com outra password. Usa a password dessa conta.' : 'Email ou password incorretos.'));
+          return;
+        }
+      }
+      if(adminSignupMode){
+        const { data: ok, error } = await sb.rpc('register_manager', { code });
+        if(error || ok !== true){ await sb.auth.signOut(); showAdminError('Código de gestor incorreto.'); return; }
+      }
+      await refreshManagerSession();
+      if(!currentManagerEmail){
+        await sb.auth.signOut();
+        showAdminError('Este email não tem acesso de gestor. Se és da equipa, usa "Criar acesso de gestor" com o código.');
+        return;
+      }
       closeAdminPassModal();
       setMode('admin');
-    }else{
-      $('adminPassError').style.display = 'block';
+      showToast('Sessão de gestor iniciada');
+    }catch(err){
+      console.error(err);
+      showAdminError('Não foi possível entrar. Tenta outra vez.');
+    }finally{
+      btn.disabled = false;
     }
   }
   $('adminPassSubmit').addEventListener('click', submitAdminPass);
+  $('adminToggleSignup').addEventListener('click', (e)=>{ e.preventDefault(); setAdminLoginMode(!adminSignupMode); });
   $('adminPassCancel').addEventListener('click', ()=>{
     closeAdminPassModal();
     if(!isAdminUnlocked()) setMode('provider');
   });
-  $('adminPassInput').addEventListener('keydown', (e)=>{
-    if(e.key === 'Enter'){ e.preventDefault(); submitAdminPass(); }
+  ['adminEmailInput','adminPassInput','adminCodeInput'].forEach(id=>{
+    $(id).addEventListener('keydown', (e)=>{ if(e.key === 'Enter'){ e.preventDefault(); submitAdminPass(); } });
   });
+  $('btnManagerLogout').addEventListener('click', async ()=>{
+    if(sb) await sb.auth.signOut();
+    currentManagerEmail = null;
+    updateManagerBar();
+    $('adminRoot').style.display = 'none';
+    $('providerRoot').style.display = 'none';
+    openAdminPassModal();
+  });
+  async function renderGestores(){
+    const box = $('gestoresList');
+    if(!sb){ box.innerHTML = ''; return; }
+    box.innerHTML = '<p style="color:var(--ink-soft);">A carregar…</p>';
+    const { data, error } = await sb.from('managers').select('email,created_at').order('created_at');
+    if(error){ box.innerHTML = '<p style="color:var(--danger);">Não foi possível carregar a lista.</p>'; return; }
+    box.innerHTML = `<table><thead><tr><th>Email</th><th></th></tr></thead><tbody>${(data||[]).map(m=>`<tr>
+      <td>${escapeHtml(m.email)}</td>
+      <td style="text-align:right;">${m.email===currentManagerEmail ? '<span class="tag ok">Tu</span>' : `<button class="btn danger small" data-action="del-gestor" data-email="${escapeHtml(m.email)}">Remover acesso</button>`}</td>
+    </tr>`).join('')}</tbody></table>`;
+    box.querySelectorAll('[data-action="del-gestor"]').forEach(b=>{
+      b.addEventListener('click', async ()=>{
+        if(!confirm(`Remover o acesso de gestor de ${b.dataset.email}?`)) return;
+        const { error } = await sb.from('managers').delete().eq('email', b.dataset.email);
+        if(error){ showToast('Não foi possível remover'); return; }
+        showToast('Acesso de gestor removido');
+        renderGestores();
+      });
+    });
+  }
+  $('btnGestores').addEventListener('click', ()=>{ $('gestoresBackdrop').classList.add('show'); renderGestores(); });
+  $('gestoresClose').addEventListener('click', ()=> $('gestoresBackdrop').classList.remove('show'));
 
   $('modeBtnAdmin').addEventListener('click', ()=>{
     if(isAdminUnlocked()){ setMode('admin'); } else { openAdminPassModal(); }
@@ -2951,7 +3200,7 @@
     if(session && !p){
       $('providerGreeting').textContent = `Sessão iniciada como ${email}, mas não encontrei nenhum prestador com este email. Pede à gestão para o adicionar.`;
       $('providerLoggedOutScreen').innerHTML = `<p style="font-size:16px;margin-bottom:6px;">Pedido enviado à gestão.</p><p style="font-size:13.5px;">Criámos a tua conta com o email <strong>${escapeHtml(email)}</strong>, mas ainda falta a gestão aprovar o teu acesso. Assim que aprovarem, entra normalmente com este email e password.</p>`;
-      registerPendingSignup(email);
+      if(currentMode === 'provider' && email !== currentManagerEmail) registerPendingSignup(email);
     }else if(p){
       $('providerGreeting').textContent = `Olá, ${p.name}!`;
     }else{
@@ -3411,7 +3660,7 @@
   resetPessoalForm();
   resetAssistenciaForm();
   resetPrestadorForm();
-  loadAll().then(()=>{ subscribeRealtime(); applyDeepLink(); });
+  loadAll().then(async ()=>{ subscribeRealtime(); await refreshManagerSession(); applyDeepLink(); });
 
   if('serviceWorker' in navigator){
     window.addEventListener('load', ()=>{
