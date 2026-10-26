@@ -913,8 +913,9 @@
       <div class="panel-head">
         <h2>Valores a pagar por mês e tipo de evento</h2>
         <div class="row-actions">
-          <button type="button" class="btn amber small" id="btnExportFatResumo">Exportar resumo (Excel)</button>
-          <button type="button" class="btn ghost small" id="btnExportFatDetalhe">Exportar detalhe por colaborador</button>
+          <button type="button" class="btn amber small" id="btnExportFatExcel">Exportar Excel completo</button>
+          <button type="button" class="btn ghost small" id="btnExportFatResumo">CSV resumo</button>
+          <button type="button" class="btn ghost small" id="btnExportFatDetalhe">CSV detalhe</button>
         </div>
       </div>
       <div class="panel-body">
@@ -2783,6 +2784,142 @@
     const de = $('fatMesDe').value, ate = $('fatMesAte').value, tipo = $('fatTipoFiltro').value;
     return (de||ate ? `_${de||'inicio'}_a_${ate||'hoje'}` : '') + (tipo ? '_' + tipo.replace(/\s+/g,'-') : '');
   }
+  // ---------- Exportação Excel (.xlsx) completa ----------
+  let xlsxLoading = null;
+  function loadXlsxLib(){
+    if(window.XLSX) return Promise.resolve(window.XLSX);
+    if(xlsxLoading) return xlsxLoading;
+    xlsxLoading = new Promise((resolve, reject)=>{
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+      s.onload = ()=> window.XLSX ? resolve(window.XLSX) : reject(new Error('XLSX indisponível'));
+      s.onerror = ()=>{ xlsxLoading = null; reject(new Error('Falha a carregar a biblioteca Excel')); };
+      document.head.appendChild(s);
+    });
+    return xlsxLoading;
+  }
+  function xlDate(iso){
+    if(!iso) return '';
+    const [y,m,d] = String(iso).slice(0,10).split('-').map(Number);
+    if(!y || !m || !d) return '';
+    return (Date.UTC(y, m-1, d) - Date.UTC(1899, 11, 30)) / 86400000;
+  }
+  function xlSheet(XLSX, rows, formats, widths){
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    const range = XLSX.utils.decode_range(ws['!ref']);
+    for(let r = 1; r <= range.e.r; r++){
+      Object.entries(formats).forEach(([ci, z])=>{
+        const cell = ws[XLSX.utils.encode_cell({ r, c: Number(ci) })];
+        if(cell && cell.t === 'n') cell.z = z;
+      });
+    }
+    ws['!cols'] = widths.map(w=>({ wch: w }));
+    ws['!autofilter'] = { ref: XLSX.utils.encode_range({ s:{ r:0, c:0 }, e:{ r: Math.max(0, range.e.r - 1), c: range.e.c } }) };
+    return ws;
+  }
+  const XL_EUR = '#,##0.00 "€"', XL_H = '0.00', XL_DATA = 'dd/mm/yyyy';
+  const simNao = v => v ? 'Sim' : 'Não';
+  const r2 = n => Math.round((n||0)*100)/100;
+  function totalRow(len, values){ const row = new Array(len).fill(''); row[0] = 'TOTAL'; Object.entries(values).forEach(([i,v])=> row[Number(i)] = v); return row; }
+
+  async function exportFaturacaoExcel(){
+    const btn = $('btnExportFatExcel');
+    const evs = fatFilteredEvents().sort((a,b)=> (a.date + (a.timeStart||'')).localeCompare(b.date + (b.timeStart||'')));
+    if(!evs.length){ showToast('Sem eventos no período selecionado'); return; }
+    const txt = btn.textContent;
+    btn.disabled = true; btn.textContent = 'A preparar…';
+    try{
+      const XLSX = await loadXlsxLib();
+      const provById = id => providers.find(p=>p.id===id) || null;
+      const horarioEv = ev => (ev.timeStart || ev.timeEnd) ? `${ev.timeStart||'—'}–${ev.timeEnd||'—'}` : '';
+      const turnoOrd = (a,b)=> ((a.day||'') + (a.timeStart||'')).localeCompare((b.day||'') + (b.timeStart||''));
+
+      // Folha 1 — Detalhe: uma linha por colaborador registado (eventos sem pessoal também aparecem)
+      const det = [['Mês','Data do evento','Evento','Tipo de evento','Local do evento','Morada','Horário do evento',
+        'Colaborador','Área','Email','Contacto','Dia do turno','Hora início','Hora fim','Local do turno',
+        'Horas','Honorário/h','Valor a pagar','Falta','Motivo da falta','Recibo emitido (colaborador)',
+        'Observações do registo','Observações do evento','Fatura ao cliente','Honorários pagos','Recibo emitido (evento)','Notas de faturação']];
+      let detH = 0, detV = 0;
+      evs.forEach(ev=>{
+        const base = [ev.date.slice(0,7), xlDate(ev.date), ev.name, ev.serviceType||'', ev.location||'', ev.morada||'', horarioEv(ev)];
+        const fat = [simNao(ev.invoiceSent), simNao(ev.feesPaid), simNao(ev.receiptIssued), ev.billingNotes||''];
+        const lst = staffForEvent(ev.id).slice().sort(turnoOrd);
+        if(!lst.length){
+          det.push([...base, '(sem pessoal registado)', '', '', '', '', '', '', '', 0, '', 0, '', '', '', '', ev.notes||'', ...fat]);
+          return;
+        }
+        lst.forEach(s=>{
+          const p = s.providerId ? provById(s.providerId) : null;
+          const rate = (s.rate !== undefined && s.rate !== null && s.rate !== '') ? parseFloat(s.rate) : (ev ? ev.rate : 25);
+          const h = staffHours(s), v = staffValue(s);
+          detH += h; detV += v;
+          det.push([...base, s.name||'', s.area||'', p ? (p.email||'') : '', p ? (p.contact||'') : '',
+            s.day ? xlDate(s.day) : '', s.timeStart||'', s.timeEnd||'', s.local||'',
+            r2(h), r2(rate), r2(v), simNao(s.absent), s.absentReason||'', simNao(s.receiptIssued),
+            s.notes||'', ev.notes||'', ...fat]);
+        });
+      });
+      det.push(totalRow(det[0].length, { 15: r2(detH), 17: r2(detV) }));
+
+      // Folha 2 — Resumo por mês e tipo de evento
+      const resumo = [['Mês','Tipo de evento','Nº eventos','Nº registos de pessoal','Horas','Valor a pagar']];
+      const tr = { e:0, r:0, h:0, v:0 };
+      fatResumoRows().sort((a,b)=> a.mes===b.mes ? a.tipo.localeCompare(b.tipo) : a.mes.localeCompare(b.mes)).forEach(r=>{
+        resumo.push([r.mes, r.tipo, r.eventos, r.registos, r2(r.horas), r2(r.valor)]);
+        tr.e += r.eventos; tr.r += r.registos; tr.h += r.horas; tr.v += r.valor;
+      });
+      resumo.push(['TOTAL', '', tr.e, tr.r, r2(tr.h), r2(tr.v)]);
+
+      // Folha 3 — Por colaborador (para pagamentos)
+      const porColab = new Map();
+      evs.forEach(ev=> staffForEvent(ev.id).forEach(s=>{
+        const key = s.providerId || ('nome:' + (s.name||'').toLowerCase());
+        if(!porColab.has(key)){
+          const p = s.providerId ? provById(s.providerId) : null;
+          porColab.set(key, { nome: s.name || (p ? p.name : ''), area: s.area || (p ? p.serviceType : ''), email: p ? (p.email||'') : '', contacto: p ? (p.contact||'') : '', turnos:0, faltas:0, horas:0, valor:0, recibosPend:0 });
+        }
+        const g = porColab.get(key);
+        g.turnos++; if(s.absent) g.faltas++; if(!s.receiptIssued) g.recibosPend++;
+        g.horas += staffHours(s); g.valor += staffValue(s);
+      }));
+      const colab = [['Colaborador','Área','Email','Contacto','Nº turnos','Faltas','Horas','Valor a pagar','Recibos por emitir']];
+      const tc = { t:0, f:0, h:0, v:0, rp:0 };
+      [...porColab.values()].sort((a,b)=> a.nome.localeCompare(b.nome)).forEach(g=>{
+        colab.push([g.nome, g.area, g.email, g.contacto, g.turnos, g.faltas, r2(g.horas), r2(g.valor), g.recibosPend]);
+        tc.t += g.turnos; tc.f += g.faltas; tc.h += g.horas; tc.v += g.valor; tc.rp += g.recibosPend;
+      });
+      colab.push(['TOTAL', '', '', '', tc.t, tc.f, r2(tc.h), r2(tc.v), tc.rp]);
+
+      // Folha 4 — Eventos (estado de faturação)
+      const evRows = [['Data','Evento','Tipo de evento','Local','Morada','Hora início','Hora fim','Nº pessoal','Horas','Valor a pagar',
+        'Fatura ao cliente','Honorários pagos','Recibo emitido','Notas de faturação','Observações do evento']];
+      const te = { n:0, h:0, v:0 };
+      evs.forEach(ev=>{
+        const lst = staffForEvent(ev.id);
+        const h = lst.reduce((a,s)=> a + staffHours(s), 0), v = eventTotalValue(ev.id);
+        te.n += lst.length; te.h += h; te.v += v;
+        evRows.push([xlDate(ev.date), ev.name, ev.serviceType||'', ev.location||'', ev.morada||'', ev.timeStart||'', ev.timeEnd||'',
+          lst.length, r2(h), r2(v), simNao(ev.invoiceSent), simNao(ev.feesPaid), simNao(ev.receiptIssued), ev.billingNotes||'', ev.notes||'']);
+      });
+      evRows.push(totalRow(evRows[0].length, { 7: te.n, 8: r2(te.h), 9: r2(te.v) }));
+
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, xlSheet(XLSX, det, { 1:XL_DATA, 11:XL_DATA, 15:XL_H, 16:XL_EUR, 17:XL_EUR },
+        [9,12,28,16,18,26,13,24,13,26,14,12,10,10,18,8,12,13,7,18,12,32,32,12,12,12,28]), 'Detalhe');
+      XLSX.utils.book_append_sheet(wb, xlSheet(XLSX, resumo, { 4:XL_H, 5:XL_EUR }, [10,20,11,22,9,14]), 'Resumo mês e tipo');
+      XLSX.utils.book_append_sheet(wb, xlSheet(XLSX, colab, { 6:XL_H, 7:XL_EUR }, [26,13,28,15,10,8,9,14,17]), 'Por colaborador');
+      XLSX.utils.book_append_sheet(wb, xlSheet(XLSX, evRows, { 0:XL_DATA, 8:XL_H, 9:XL_EUR }, [12,28,16,18,26,10,10,10,9,14,12,12,12,28,32]), 'Eventos');
+      XLSX.writeFile(wb, `faturacao_AFSS${fatPeriodoSufixo()}.xlsx`);
+      showToast('Excel exportado');
+    }catch(err){
+      console.error(err);
+      showToast('Não foi possível gerar o Excel. Verifica a ligação e tenta outra vez.');
+    }finally{
+      btn.disabled = false; btn.textContent = txt;
+    }
+  }
+  $('btnExportFatExcel').addEventListener('click', exportFaturacaoExcel);
+
   $('btnExportFatResumo').addEventListener('click', ()=>{
     const rows = fatResumoRows().sort((a,b)=> a.mes===b.mes ? a.tipo.localeCompare(b.tipo) : a.mes.localeCompare(b.mes));
     if(!rows.length){ showToast('Sem dados para exportar'); return; }
