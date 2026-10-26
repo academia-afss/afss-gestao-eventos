@@ -372,6 +372,7 @@
   .fat-lbl{font-size:13px;color:var(--ink-soft);}
   .fat-subtotal td{font-weight:700;background:var(--panel-2);}
   .fat-total td{font-weight:700;color:var(--amber);border-top:2px solid var(--amber);}
+  .ev-notes{font-size:12px;color:var(--ink-soft);white-space:pre-line;max-width:260px;margin-top:3px;}
 </style>
 </head>
 <body>
@@ -465,6 +466,10 @@
           <div class="field">
             <label for="evMorada">Morada do evento</label>
             <input type="text" id="evMorada" placeholder="Ex: Rua das Flores, 12, 2900-000">
+          </div>
+          <div class="field" style="grid-column:1/-1;">
+            <label for="evObs">Observações do evento</label>
+            <textarea id="evObs" placeholder="Notas sobre o evento (cliente, acessos, material, contactos no local…)"></textarea>
           </div>
           <div class="field" style="grid-column:1/-1;border-top:1px solid var(--line);padding-top:14px;margin-top:2px;">
             <label style="font-size:13.5px;font-weight:600;color:var(--heading);">Prestadores necessários e honorário por função</label>
@@ -1268,6 +1273,17 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="eventNotesBackdrop">
+  <div class="modal" style="max-width:520px;">
+    <h3 id="eventNotesTitle">Observações do evento</h3>
+    <textarea id="eventNotesText" class="admin-login-input" style="min-height:140px;resize:vertical;" placeholder="Notas sobre o evento…"></textarea>
+    <div class="modal-actions" style="margin-top:14px;">
+      <button class="btn ghost" id="eventNotesCancel">Cancelar</button>
+      <button class="btn amber" id="eventNotesSave">Guardar</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="gestoresBackdrop">
   <div class="modal" style="max-width:480px;">
     <h3>Gestores com acesso</h3>
@@ -1326,14 +1342,14 @@
     time_start: e.timeStart, time_end: e.timeEnd, location: e.location, morada: e.morada || '',
     rate: e.rate, staffing_needs: e.staffingNeeds || {}, area_rates: e.areaRates || {},
     invoice_sent: !!e.invoiceSent, fees_paid: !!e.feesPaid, receipt_issued: !!e.receiptIssued,
-    billing_notes: e.billingNotes || '', created_at: e.createdAt || new Date().toISOString()
+    billing_notes: e.billingNotes || '', notes: e.notes || '', created_at: e.createdAt || new Date().toISOString()
   });
   const fromDbEvent = r => ({
     id: r.id, name: r.name, serviceType: r.service_type, date: r.date,
     timeStart: r.time_start, timeEnd: r.time_end, location: r.location, morada: r.morada || '',
     rate: r.rate, staffingNeeds: r.staffing_needs || {}, areaRates: r.area_rates || {},
     invoiceSent: r.invoice_sent, feesPaid: r.fees_paid, receiptIssued: r.receipt_issued,
-    billingNotes: r.billing_notes, createdAt: r.created_at
+    billingNotes: r.billing_notes, notes: r.notes || '', createdAt: r.created_at
   });
   const toDbStaff = s => ({
     id: s.id, event_id: s.eventId, provider_id: s.providerId || null, name: s.name,
@@ -1608,6 +1624,28 @@
   }
 
   // ================= EVENTOS =================
+  let eventNotesId = null;
+  function openEventNotes(id){
+    const ev = eventById(id);
+    if(!ev) return;
+    eventNotesId = id;
+    $('eventNotesTitle').textContent = `Observações — ${ev.name}`;
+    $('eventNotesText').value = ev.notes || '';
+    $('eventNotesBackdrop').classList.add('show');
+    setTimeout(()=> $('eventNotesText').focus(), 50);
+  }
+  $('eventNotesCancel').addEventListener('click', ()=>{ eventNotesId = null; $('eventNotesBackdrop').classList.remove('show'); });
+  $('eventNotesSave').addEventListener('click', async ()=>{
+    const ev = eventNotesId ? eventById(eventNotesId) : null;
+    if(!ev) return;
+    ev.notes = $('eventNotesText').value.trim();
+    await saveEvents();
+    $('eventNotesBackdrop').classList.remove('show');
+    eventNotesId = null;
+    renderAll();
+    showToast('Observações guardadas');
+  });
+
   async function handleCriarEvento(){
     const name = $('evNome').value.trim();
     const date = $('evData').value;
@@ -1633,6 +1671,7 @@
       timeEnd: $('evHoraFim').value,
       location: location,
       morada: $('evMorada').value.trim(),
+      notes: $('evObs').value.trim(),
       rate: fallbackRate,
       staffingNeeds: {
         'Coordenador': parseInt($('needCoordenador').value)||0,
@@ -1693,7 +1732,7 @@
       const dateDisplay = new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT');
       const horario = (ev.timeStart||ev.timeEnd) ? `${ev.timeStart||'—'}–${ev.timeEnd||'—'}` : '—';
       return `<tr>
-        <td><strong>${escapeHtml(ev.name)}</strong></td>
+        <td><strong>${escapeHtml(ev.name)}</strong>${ev.notes ? `<div class="ev-notes">${escapeHtml(ev.notes)}</div>` : ''}</td>
         <td>${escapeHtml(ev.serviceType)}</td>
         <td>${dateDisplay}</td>
         <td>${horario}</td>
@@ -1705,12 +1744,16 @@
         <td>
           <div class="row-actions">
             <button class="btn ghost small" data-action="pessoal" data-id="${ev.id}">Pessoal</button>
+            <button class="btn ghost small" data-action="ev-notes" data-id="${ev.id}">Observações</button>
             <button class="btn danger small" data-action="del-event" data-id="${ev.id}">Eliminar</button>
           </div>
         </td>
       </tr>`;
     }).join('');
 
+    tbody.querySelectorAll('[data-action="ev-notes"]').forEach(b=>{
+      b.addEventListener('click', ()=> openEventNotes(b.dataset.id));
+    });
     tbody.querySelectorAll('[data-action="pessoal"]').forEach(b=>{
       b.addEventListener('click', ()=>{
         activeEventId = b.dataset.id;
