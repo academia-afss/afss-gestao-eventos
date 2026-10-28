@@ -1274,6 +1274,18 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="pedirDispBackdrop">
+  <div class="modal" style="max-width:580px;">
+    <h3 id="pedirDispTitle">Pedir disponibilidade</h3>
+    <p id="pedirDispIntro">Escolhe a quem enviar o pedido. Cada pessoa recebe um email com os dados do evento e responde no Portal do Colaborador.</p>
+    <div id="pedirDispList" style="max-height:55vh;overflow:auto;"></div>
+    <div class="modal-actions" style="margin-top:14px;">
+      <button class="btn ghost" id="pedirDispCancel">Cancelar</button>
+      <button class="btn amber" id="pedirDispSend">Enviar pedidos</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-backdrop" id="eventNotesBackdrop">
   <div class="modal" style="max-width:520px;">
     <h3 id="eventNotesTitle">Observações do evento</h3>
@@ -1645,6 +1657,91 @@
   }
 
   // ================= EVENTOS =================
+  // ---------- Pedir disponibilidade às pessoas habilitadas ----------
+  function areasNecessarias(ev){
+    const needs = ev.staffingNeeds || {};
+    return AREAS.filter(a => (needs[a] || 0) > 0);
+  }
+  function habilitadosParaEvento(ev){
+    const areas = areasNecessarias(ev);
+    return providers.filter(p => areas.includes(p.serviceType));
+  }
+  function porPedirDisp(ev){
+    return habilitadosParaEvento(ev).filter(p=>{
+      const inv = getInvitation(ev.id, p.id);
+      return p.available !== false && !(inv && inv.sent);
+    });
+  }
+  function pedirDispButtonHtml(ev){
+    if(areasNecessarias(ev).length === 0){
+      return `<button class="btn amber small" disabled title="Define primeiro as funções necessárias neste evento">Pedir disponibilidade</button>`;
+    }
+    const pendentes = porPedirDisp(ev);
+    const n = pendentes.filter(p=>(p.email||'').trim()).length;
+    const sufixo = n ? ` (${n})` : (pendentes.length ? '' : ' ✓');
+    const titulo = n ? `${n} pessoa(s) habilitada(s) ainda sem pedido` : (pendentes.length ? 'Há pessoas habilitadas sem email na ficha' : 'Todas as pessoas habilitadas já receberam o pedido');
+    return `<button class="btn amber small" data-action="pedir-disp" data-id="${ev.id}" title="${titulo}">Pedir disponibilidade${sufixo}</button>`;
+  }
+  let pedirDispEventId = null;
+  function openPedirDisp(eventId){
+    const ev = eventById(eventId);
+    if(!ev) return;
+    pedirDispEventId = eventId;
+    const needs = ev.staffingNeeds || {};
+    const respLabel = { disponivel:'<span class="tag ok">Disponível</span>', indisponivel:'<span class="tag absent">Indisponível</span>', pendente:'<span class="tag future">Pedido enviado — sem resposta</span>' };
+    $('pedirDispTitle').textContent = `Pedir disponibilidade — ${ev.name}`;
+    const blocos = areasNecessarias(ev).map(area=>{
+      const pessoas = providers.filter(p=>p.serviceType===area).sort((a,b)=>a.name.localeCompare(b.name));
+      const linhas = pessoas.length === 0
+        ? `<tr><td colspan="3" style="color:var(--ink-soft);">Não há prestadores registados com esta função.</td></tr>`
+        : pessoas.map(p=>{
+            const inv = getInvitation(ev.id, p.id);
+            const jaEnviado = inv && inv.sent;
+            const semEmail = !(p.email||'').trim();
+            const indisponivel = p.available === false;
+            const estado = jaEnviado ? (respLabel[inv.response] || respLabel.pendente)
+              : semEmail ? '<span class="tag low">Sem email na ficha</span>'
+              : indisponivel ? '<span class="tag past">Marcado como indisponível</span>' : '';
+            const caixa = jaEnviado ? '' : `<input type="checkbox" class="pd-check" value="${p.id}" ${(!indisponivel && !semEmail) ? 'checked' : ''} ${semEmail ? 'disabled' : ''}>`;
+            return `<tr>
+              <td style="width:28px;">${caixa}</td>
+              <td><strong>${escapeHtml(p.name)}</strong>${p.concelho ? `<div style="font-size:12px;color:var(--ink-soft);">${escapeHtml(p.concelho)}</div>` : ''}</td>
+              <td style="text-align:right;">${estado}</td>
+            </tr>`;
+          }).join('');
+      return `<div style="margin-bottom:14px;">
+        <div class="posto-title" style="font-size:15px;"><span>${areaShortLabel(area)}</span><span style="font-size:12.5px;color:var(--ink-soft);font-weight:500;">precisa de ${needs[area]}</span></div>
+        <table><tbody>${linhas}</tbody></table>
+      </div>`;
+    }).join('');
+    $('pedirDispList').innerHTML = blocos || '<p style="color:var(--ink-soft);">Este evento não tem funções necessárias definidas.</p>';
+    $('pedirDispList').querySelectorAll('.pd-check').forEach(cb=> cb.addEventListener('change', updatePedirDispCount));
+    updatePedirDispCount();
+    $('pedirDispBackdrop').classList.add('show');
+  }
+  function updatePedirDispCount(){
+    const n = $('pedirDispList').querySelectorAll('.pd-check:checked').length;
+    $('pedirDispSend').textContent = n ? `Enviar pedidos (${n})` : 'Enviar pedidos';
+    $('pedirDispSend').disabled = n === 0;
+  }
+  $('pedirDispCancel').addEventListener('click', ()=>{ pedirDispEventId = null; $('pedirDispBackdrop').classList.remove('show'); });
+  $('pedirDispSend').addEventListener('click', async ()=>{
+    const ids = [...$('pedirDispList').querySelectorAll('.pd-check:checked')].map(cb=>cb.value);
+    if(!pedirDispEventId || !ids.length) return;
+    const btn = $('pedirDispSend');
+    btn.disabled = true;
+    ids.forEach(pid=>{
+      const inv = ensureInvitation(pedirDispEventId, pid);
+      inv.sent = true;
+      inv.sentAt = new Date().toISOString();
+    });
+    await saveInvitations();
+    $('pedirDispBackdrop').classList.remove('show');
+    pedirDispEventId = null;
+    renderAll();
+    showToast(`Pedido de disponibilidade enviado a ${ids.length} pessoa${ids.length===1 ? '' : 's'}`);
+  });
+
   let eventNotesId = null;
   function openEventNotes(id){
     const ev = eventById(id);
@@ -1766,6 +1863,7 @@
         <td><span class="tag ${state}">${stateLabel(state)}</span></td>
         <td>
           <div class="row-actions">
+            ${state !== 'past' ? pedirDispButtonHtml(ev) : ''}
             <button class="btn ghost small" data-action="pessoal" data-id="${ev.id}">Pessoal</button>
             <button class="btn ghost small" data-action="ev-notes" data-id="${ev.id}">Observações</button>
             <button class="btn danger small" data-action="del-event" data-id="${ev.id}">Eliminar</button>
@@ -1774,6 +1872,9 @@
       </tr>`;
     }).join('');
 
+    tbody.querySelectorAll('[data-action="pedir-disp"]').forEach(b=>{
+      b.addEventListener('click', ()=> openPedirDisp(b.dataset.id));
+    });
     tbody.querySelectorAll('[data-action="ev-notes"]').forEach(b=>{
       b.addEventListener('click', ()=> openEventNotes(b.dataset.id));
     });
