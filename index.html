@@ -1702,7 +1702,10 @@
             const estado = jaEnviado ? (respLabel[inv.response] || respLabel.pendente)
               : semEmail ? '<span class="tag low">Sem email na ficha</span>'
               : indisponivel ? '<span class="tag past">Marcado como indisponível</span>' : '';
-            const caixa = jaEnviado ? '' : `<input type="checkbox" class="pd-check" value="${p.id}" ${(!indisponivel && !semEmail) ? 'checked' : ''} ${semEmail ? 'disabled' : ''}>`;
+            const semResposta = jaEnviado && (!inv.response || inv.response === 'pendente');
+            const caixa = semResposta
+              ? `<input type="checkbox" class="pd-resend" value="${p.id}" ${semEmail ? 'disabled' : ''} title="Reenviar o pedido">`
+              : (jaEnviado ? '' : `<input type="checkbox" class="pd-check" value="${p.id}" ${(!indisponivel && !semEmail) ? 'checked' : ''} ${semEmail ? 'disabled' : ''}>`);
             return `<tr>
               <td style="width:28px;">${caixa}</td>
               <td><strong>${escapeHtml(p.name)}</strong>${p.concelho ? `<div style="font-size:12px;color:var(--ink-soft);">${escapeHtml(p.concelho)}</div>` : ''}</td>
@@ -1715,31 +1718,52 @@
       </div>`;
     }).join('');
     $('pedirDispList').innerHTML = blocos || '<p style="color:var(--ink-soft);">Este evento não tem funções necessárias definidas.</p>';
-    $('pedirDispList').querySelectorAll('.pd-check').forEach(cb=> cb.addEventListener('change', updatePedirDispCount));
+    const reenviaveis = $('pedirDispList').querySelectorAll('.pd-resend:not(:disabled)');
+    if(reenviaveis.length){
+      const barra = document.createElement('div');
+      barra.style.cssText = 'margin:0 0 12px 0;padding:10px 12px;background:var(--panel-2);border-left:3px solid var(--amber);font-size:13px;';
+      barra.innerHTML = `${reenviaveis.length} pessoa(s) receberam o pedido mas ainda não responderam. Marca a caixa de quem queres lembrar, ou <a href="#" id="pdSelectResend" style="color:var(--amber);">seleciona todas</a>.`;
+      $('pedirDispList').prepend(barra);
+      $('pdSelectResend').addEventListener('click', (e)=>{ e.preventDefault(); reenviaveis.forEach(cb=> cb.checked = true); updatePedirDispCount(); });
+    }
+    $('pedirDispList').querySelectorAll('.pd-check, .pd-resend').forEach(cb=> cb.addEventListener('change', updatePedirDispCount));
     updatePedirDispCount();
     $('pedirDispBackdrop').classList.add('show');
   }
   function updatePedirDispCount(){
     const n = $('pedirDispList').querySelectorAll('.pd-check:checked').length;
-    $('pedirDispSend').textContent = n ? `Enviar pedidos (${n})` : 'Enviar pedidos';
-    $('pedirDispSend').disabled = n === 0;
+    const r = $('pedirDispList').querySelectorAll('.pd-resend:checked').length;
+    $('pedirDispSend').textContent = (n && r) ? `Enviar (${n}) e reenviar (${r})` : r ? `Reenviar pedidos (${r})` : n ? `Enviar pedidos (${n})` : 'Enviar pedidos';
+    $('pedirDispSend').disabled = (n + r) === 0;
   }
   $('pedirDispCancel').addEventListener('click', ()=>{ pedirDispEventId = null; $('pedirDispBackdrop').classList.remove('show'); });
   $('pedirDispSend').addEventListener('click', async ()=>{
     const ids = [...$('pedirDispList').querySelectorAll('.pd-check:checked')].map(cb=>cb.value);
-    if(!pedirDispEventId || !ids.length) return;
+    const reenviar = [...$('pedirDispList').querySelectorAll('.pd-resend:checked')].map(cb=>cb.value);
+    if(!pedirDispEventId || (!ids.length && !reenviar.length)) return;
     const btn = $('pedirDispSend');
     btn.disabled = true;
-    ids.forEach(pid=>{
-      const inv = ensureInvitation(pedirDispEventId, pid);
-      inv.sent = true;
-      inv.sentAt = new Date().toISOString();
-    });
-    await saveInvitations();
+    const eventId = pedirDispEventId;
+    const partes = [];
+    if(ids.length){
+      ids.forEach(pid=>{
+        const inv = ensureInvitation(eventId, pid);
+        inv.sent = true;
+        inv.sentAt = new Date().toISOString();
+      });
+      await saveInvitations();
+      partes.push(`enviado a ${ids.length}`);
+    }
+    if(reenviar.length){
+      if(!sb){ showToast('Sem ligação à base de dados'); btn.disabled = false; return; }
+      const { data: n, error } = await sb.rpc('resend_invites', { p_event_id: eventId, p_provider_ids: reenviar });
+      if(error){ console.error(error); showToast('Não foi possível reenviar. Tenta outra vez.'); btn.disabled = false; return; }
+      partes.push(`reenviado a ${n}`);
+    }
     $('pedirDispBackdrop').classList.remove('show');
     pedirDispEventId = null;
     renderAll();
-    showToast(`Pedido de disponibilidade enviado a ${ids.length} pessoa${ids.length===1 ? '' : 's'}`);
+    showToast(`Pedido de disponibilidade ${partes.join(' e ')} — os emails saem nos próximos minutos`);
   });
 
   let eventNotesId = null;
