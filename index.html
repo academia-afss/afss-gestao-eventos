@@ -375,6 +375,48 @@
   .ev-notes{font-size:12px;color:var(--ink-soft);white-space:pre-line;max-width:260px;margin-top:3px;}
 
   .pw-input{width:100%;padding:10px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--ink);font-size:14px;font-family:'Inter',sans-serif;box-sizing:border-box;margin-top:8px;}
+
+  .ev-list{display:flex;flex-direction:column;gap:10px;}
+  .ev-card{border:1px solid var(--line);border-left:4px solid var(--line-strong);background:var(--panel);}
+  .ev-card.gap{border-left-color:var(--danger);}
+  .ev-card.full{border-left-color:var(--success);}
+  .ev-card.cancel{opacity:.62;}
+  .ev-head{display:flex;align-items:center;gap:14px;padding:12px 14px;cursor:pointer;flex-wrap:wrap;}
+  .ev-head:hover{background:var(--row-hover);}
+  .ev-date{width:48px;text-align:center;flex-shrink:0;line-height:1.05;}
+  .ev-date .d{display:block;font-family:'Barlow Semi Condensed',sans-serif;font-size:24px;font-weight:700;color:var(--heading);}
+  .ev-date .m{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);}
+  .ev-main{flex:1;min-width:170px;}
+  .ev-title{font-weight:600;color:var(--heading);font-size:15px;}
+  .ev-type{font-size:12px;color:var(--ink-soft);font-weight:500;margin-left:8px;}
+  .ev-sub{font-size:12.5px;color:var(--ink-soft);margin-top:3px;}
+  .ev-side{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .ev-caret{color:var(--ink-soft);font-size:11px;width:12px;transition:transform .15s ease;}
+  .ev-card.open .ev-caret{transform:rotate(90deg);}
+  .ev-body{display:none;border-top:1px solid var(--line);padding:14px 16px;}
+  .ev-card.open .ev-body{display:block;}
+  .ev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px 18px;}
+  .ev-k{font-size:11.5px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em;}
+  .ev-v{font-size:14px;color:var(--ink);margin-top:2px;}
+  .ev-section{margin-top:14px;}
+  .ev-team{margin:4px 0 0 0;padding:0;list-style:none;font-size:13.5px;}
+  .ev-team li{padding:4px 0;border-bottom:1px dashed var(--line);}
+  .ev-status{font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:13.5px;padding:5px 8px;border:1px solid var(--input-border);background:var(--input-bg);color:var(--ink);cursor:pointer;}
+  .ev-status option{background:var(--panel);color:var(--ink);}
+  .ev-status.st-wait{color:#FFB54D;border-color:#6A4E1C;}
+  .ev-status.st-ok{color:#8BD17C;border-color:#3E6B3A;}
+  .ev-status.st-warn{color:#FF8C00;border-color:#6A3D10;}
+  .ev-status.st-live{color:#000;background:var(--amber);border-color:var(--amber);}
+  .ev-status.st-done{color:#B7D9B1;border-color:#3A4A38;}
+  .ev-status.st-bill{color:#8FB8FF;border-color:#2C4466;}
+  .ev-status.st-bill2{color:#C2B2FF;border-color:#41376B;}
+  .ev-status.st-closed{color:#A5A5A5;border-color:#3D3D3D;}
+  .ev-status.st-cancel{color:#FF6B57;border-color:#6A2219;}
+
+  .evview-btn{font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:14px;background:transparent;color:#9A9A9A;border:none;padding:7px 14px;cursor:pointer;}
+  .evview-btn + .evview-btn{border-left:1px solid var(--input-border);}
+  .evview-btn.active{background:var(--amber);color:#000;}
+  .evview-btn:not(.active):hover{color:#fff;}
 </style>
 </head>
 <body>
@@ -450,6 +492,10 @@
             </select>
           </div>
           <div class="field">
+            <label for="evEstado">Estado</label>
+            <select id="evEstado"></select>
+          </div>
+          <div class="field">
             <label for="evData">Data</label>
             <input type="date" id="evData">
           </div>
@@ -523,26 +569,22 @@
       </div>
       <div class="panel-body">
         <div class="toolbar">
+          <div class="periodo-switch" id="evViewSwitch" style="flex-wrap:wrap;">
+            <button type="button" class="evview-btn active" data-evview="ativos">Ativos</button>
+            <button type="button" class="evview-btn" data-evview="por_alocar">Por alocar</button>
+            <button type="button" class="evview-btn" data-evview="arquivo">Realizados</button>
+            <button type="button" class="evview-btn" data-evview="cancelados">Cancelados</button>
+            <button type="button" class="evview-btn" data-evview="todos">Todos</button>
+          </div>
+        </div>
+        <div class="toolbar">
           <input type="text" id="searchEventos" placeholder="Pesquisar por nome ou local…">
           <select id="filterTipo"><option value="">Todos os tipos</option></select>
-          <select id="filterEstado">
-            <option value="">Todos os estados</option>
-            <option value="future">Futuros</option>
-            <option value="today">Hoje</option>
-            <option value="past">Concluídos</option>
-          </select>
+          <select id="filterEstado"><option value="">Todos os estados</option></select>
+          <button type="button" class="btn ghost small" id="evExpandAll">Expandir todos</button>
+          <button type="button" class="btn ghost small" id="evCollapseAll">Recolher todos</button>
         </div>
-        <div style="overflow-x:auto;">
-        <table id="tblEventos">
-          <thead>
-            <tr>
-              <th>Nome</th><th>Tipo</th><th>Data</th><th>Horário</th><th>Local</th>
-              <th>Equipa necessária</th><th>Pessoal</th><th>Valor a pagar</th><th>Estado</th><th>Ações</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-        </div>
+        <div id="eventosList" class="ev-list"></div>
       </div>
     </div>
   </section>
@@ -1372,14 +1414,14 @@
   // ---------------- Mapeamento camelCase (app) <-> snake_case (Supabase) ----------------
   const toDbEvent = e => ({
     id: e.id, name: e.name, service_type: e.serviceType, date: e.date,
-    time_start: e.timeStart, time_end: e.timeEnd, location: e.location, morada: e.morada || '',
+    time_start: e.timeStart, time_end: e.timeEnd, location: e.location, morada: e.morada || '', status: e.status || 'confirmado',
     rate: e.rate, staffing_needs: e.staffingNeeds || {}, area_rates: e.areaRates || {},
     invoice_sent: !!e.invoiceSent, fees_paid: !!e.feesPaid, receipt_issued: !!e.receiptIssued,
     billing_notes: e.billingNotes || '', created_at: e.createdAt || new Date().toISOString()
   });
   const fromDbEvent = r => ({
     id: r.id, name: r.name, serviceType: r.service_type, date: r.date,
-    timeStart: r.time_start, timeEnd: r.time_end, location: r.location, morada: r.morada || '',
+    timeStart: r.time_start, timeEnd: r.time_end, location: r.location, morada: r.morada || '', status: r.status || 'confirmado',
     rate: r.rate, staffingNeeds: r.staffing_needs || {}, areaRates: r.area_rates || {},
     invoiceSent: r.invoice_sent, feesPaid: r.fees_paid, receiptIssued: r.receipt_issued,
     billingNotes: r.billing_notes, notes: r.notes || '', createdAt: r.created_at
@@ -1835,6 +1877,7 @@
       location: location,
       morada: $('evMorada').value.trim(),
       notes: $('evObs').value.trim(),
+      status: $('evEstado').value || 'confirmado',
       rate: fallbackRate,
       staffingNeeds: {
         'Coordenador': parseInt($('needCoordenador').value)||0,
@@ -1849,6 +1892,7 @@
     await saveEvents();
     if(ev.notes && !(await saveEventNotes(ev.id, ev.notes))) showToast('Evento criado, mas as observações não foram guardadas');
     $('formEvento').reset();
+    $('evEstado').value = 'confirmado';
     ['needCoordenador','needMedico','needEnfermeiro','needTecnico'].forEach(id=>$(id).value = 0);
     ['rateCoordenador','rateMedico','rateEnfermeiro','rateTecnico'].forEach(id=>$(id).value = 25);
     renderAll();
@@ -1867,72 +1911,164 @@
     sel.value = current;
   }
 
+  // ---------- Estados dos eventos ----------
+  const EVENT_STATUSES = [
+    { key:'aguardar_info', label:'A aguardar informações', cls:'st-wait' },
+    { key:'confirmado', label:'Confirmado', cls:'st-ok' },
+    { key:'reagendar', label:'Reagendar', cls:'st-warn' },
+    { key:'a_decorrer', label:'A decorrer', cls:'st-live' },
+    { key:'realizado', label:'Realizado', cls:'st-done' },
+    { key:'fatura_processamento', label:'Fatura em processamento', cls:'st-bill' },
+    { key:'fatura_emitida', label:'Fatura emitida', cls:'st-bill2' },
+    { key:'fechada', label:'Fechada', cls:'st-closed' },
+    { key:'cancelado', label:'Cancelado pelo cliente', cls:'st-cancel' }
+  ];
+  function statusInfo(k){ return EVENT_STATUSES.find(s=>s.key===k) || EVENT_STATUSES[1]; }
+  function statusOptionsHtml(sel){ return EVENT_STATUSES.map(s=>`<option value="${s.key}" ${s.key===sel?'selected':''}>${s.label}</option>`).join(''); }
+  $('evEstado').innerHTML = statusOptionsHtml('confirmado');
+  $('filterEstado').innerHTML = '<option value="">Todos os estados</option>' + EVENT_STATUSES.map(s=>`<option value="${s.key}">${s.label}</option>`).join('');
+
+  let evView = 'ativos';
+  const evOpen = new Set();
+  const EV_VIEW_LABEL = { ativos:'Ativos', por_alocar:'Por alocar', arquivo:'Realizados', cancelados:'Cancelados', todos:'Todos' };
+  const EV_VIEW_EMPTY = {
+    ativos:'Não há eventos por realizar ou a decorrer. Cria um evento acima.',
+    por_alocar:'Todos os eventos ativos têm a equipa completa.',
+    arquivo:'Ainda não há eventos realizados.',
+    cancelados:'Não há eventos cancelados.',
+    todos:'Nenhum evento encontrado.'
+  };
+  function eventNeedTotal(ev){ const n = ev.staffingNeeds || {}; return AREAS.reduce((s,a)=> s + (n[a]||0), 0); }
+  function eventGap(ev){ const n = ev.staffingNeeds || {}; return AREAS.reduce((s,a)=> s + Math.max(0, (n[a]||0) - staffAreaFilled(ev.id, a)), 0); }
+  function evCategoria(ev){
+    const st = ev.status || 'confirmado';
+    if(st === 'cancelado') return 'cancelados';
+    if(st !== 'fechada' && (eventState(ev.date) !== 'past' || st === 'a_decorrer')) return 'ativos';
+    return 'arquivo';
+  }
+  function evRelDays(ev){
+    const d = daysUntil(ev.date);
+    return d === 0 ? 'hoje' : d === 1 ? 'amanhã' : d > 1 ? `em ${d} dias` : d === -1 ? 'ontem' : `há ${-d} dias`;
+  }
+
+  function evCardHtml(ev){
+    const st = ev.status || 'confirmado';
+    const info = statusInfo(st);
+    const dt = new Date(ev.date + 'T00:00:00');
+    const dia = dt.getDate();
+    const mes = dt.toLocaleDateString('pt-PT', { month:'short' }).replace('.', '');
+    const semana = dt.toLocaleDateString('pt-PT', { weekday:'short' }).replace('.', '');
+    const horario = (ev.timeStart || ev.timeEnd) ? `${ev.timeStart||'—'}–${ev.timeEnd||'—'}` : '';
+    const need = eventNeedTotal(ev), gap = eventGap(ev);
+    const lista = staffForEvent(ev.id).slice().sort((a,b)=>((a.area||'')+a.name).localeCompare((b.area||'')+b.name));
+    const disp = providers.filter(p=>{ const inv = getInvitation(ev.id, p.id); return inv && inv.response === 'disponivel'; }).length;
+    const passado = eventState(ev.date) === 'past';
+    const cancelado = st === 'cancelado';
+    const borda = cancelado ? 'cancel' : (need === 0 ? '' : (gap > 0 ? 'gap' : 'full'));
+    const equipaChip = need ? `<span class="tag ${gap>0?'low':'ok'}" title="Prestadores alocados / necessários">Equipa ${need-gap}/${need}</span>` : '<span class="tag past">Sem equipa definida</span>';
+    const dispChip = (!passado && !cancelado && disp) ? `<span class="tag future" title="Responderam que estão disponíveis">${disp} disponíve${disp===1?'l':'is'}</span>` : '';
+    const sub = [semana, horario, ev.location, evRelDays(ev)].filter(Boolean).map(escapeHtml).join(' · ');
+    const equipaLista = lista.length
+      ? `<ul class="ev-team">${lista.map(s=>`<li><strong>${escapeHtml(s.name)}</strong>${s.area ? ' — ' + escapeHtml(s.area) : ''}${(s.timeStart||s.timeEnd) ? ` <span style="color:var(--ink-soft);">(${s.timeStart||'—'}–${s.timeEnd||'—'})</span>` : ''}${s.absent ? ' <span class="tag absent">Falta</span>' : ''}</li>`).join('')}</ul>`
+      : '<p style="margin:4px 0 0 0;color:var(--ink-soft);font-size:13.5px;">Ainda ninguém alocado.</p>';
+    return `<div class="ev-card ${borda} ${evOpen.has(ev.id) ? 'open' : ''}" data-id="${ev.id}">
+      <div class="ev-head" data-id="${ev.id}">
+        <div class="ev-date"><span class="d">${dia}</span><span class="m">${escapeHtml(mes)}</span></div>
+        <div class="ev-main">
+          <div class="ev-title">${escapeHtml(ev.name)}<span class="ev-type">${escapeHtml(ev.serviceType||'')}</span></div>
+          <div class="ev-sub">${sub}</div>
+        </div>
+        <div class="ev-side">
+          ${equipaChip}${dispChip}
+          <select class="ev-status ${info.cls}" data-id="${ev.id}" title="Estado do evento">${statusOptionsHtml(st)}</select>
+          <span class="ev-caret">▶</span>
+        </div>
+      </div>
+      <div class="ev-body">
+        <div class="ev-grid">
+          <div><div class="ev-k">Data</div><div class="ev-v">${dt.toLocaleDateString('pt-PT', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}</div></div>
+          <div><div class="ev-k">Horário</div><div class="ev-v">${horario || '—'}</div></div>
+          <div><div class="ev-k">Local</div><div class="ev-v">${escapeHtml(ev.location||'—')}</div></div>
+          <div><div class="ev-k">Morada</div><div class="ev-v">${escapeHtml(ev.morada||'—')}</div></div>
+          <div><div class="ev-k">Pessoal registado</div><div class="ev-v">${lista.length}</div></div>
+          <div><div class="ev-k">Valor a pagar</div><div class="ev-v">${fmtEuro(eventTotalValue(ev.id))}</div></div>
+        </div>
+        <div class="ev-section"><div class="ev-k">Equipa necessária e disponibilidades</div>
+          <div style="margin-top:4px;">${areaCoverageHtml(ev)}${areaAvailabilityHtml(ev) ? '<div style="margin-top:4px;">' + areaAvailabilityHtml(ev) + '</div>' : ''}</div>
+        </div>
+        <div class="ev-section"><div class="ev-k">Equipa alocada</div>${equipaLista}</div>
+        <div class="ev-section"><div class="ev-k">Observações</div>
+          <div class="ev-v" style="white-space:pre-line;">${ev.notes ? escapeHtml(ev.notes) : '<span style="color:var(--ink-soft);">—</span>'}</div>
+        </div>
+        <div class="row-actions" style="margin-top:14px;">
+          ${(!passado && !cancelado) ? pedirDispButtonHtml(ev) : ''}
+          <button class="btn ghost small" data-action="pessoal" data-id="${ev.id}">Pessoal</button>
+          <button class="btn ghost small" data-action="ev-notes" data-id="${ev.id}">Observações</button>
+          <button class="btn danger small" data-action="del-event" data-id="${ev.id}">Eliminar</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
   function renderEventos(){
     renderTipoFilterOptions();
     const search = $('searchEventos').value.trim().toLowerCase();
     const tipoFilter = $('filterTipo').value;
-    const estadoFilter = $('filterEstado').value;
-
-    let list = events.slice().sort((a,b)=> a.date.localeCompare(b.date));
-    if(search){
-      list = list.filter(e => e.name.toLowerCase().includes(search) || e.location.toLowerCase().includes(search));
-    }
-    if(tipoFilter){
-      list = list.filter(e => e.serviceType === tipoFilter);
-    }
-    if(estadoFilter){
-      list = list.filter(e => eventState(e.date) === estadoFilter);
-    }
-
-    const tbody = document.querySelector('#tblEventos tbody');
-    if(list.length === 0){
-      tbody.innerHTML = `<tr class="empty-row"><td colspan="10">Nenhum evento encontrado. Cria o primeiro evento acima.</td></tr>`;
-      return;
-    }
-    tbody.innerHTML = list.map(ev=>{
-      const state = eventState(ev.date);
-      const count = staffForEvent(ev.id).length;
-      const total = eventTotalValue(ev.id);
-      const dateDisplay = new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT');
-      const horario = (ev.timeStart||ev.timeEnd) ? `${ev.timeStart||'—'}–${ev.timeEnd||'—'}` : '—';
-      return `<tr>
-        <td><strong>${escapeHtml(ev.name)}</strong>${ev.notes ? `<div class="ev-notes">${escapeHtml(ev.notes)}</div>` : ''}</td>
-        <td>${escapeHtml(ev.serviceType)}</td>
-        <td>${dateDisplay}</td>
-        <td>${horario}</td>
-        <td>${escapeHtml(ev.location)}${ev.morada ? `<div style="font-size:12px;color:var(--ink-soft);">${escapeHtml(ev.morada)}</div>` : ''}</td>
-        <td style="white-space:normal;">${areaCoverageHtml(ev)}${areaAvailabilityHtml(ev) ? '<div style="margin-top:4px;">'+areaAvailabilityHtml(ev)+'</div>' : ''}</td>
-        <td>${count}</td>
-        <td>${fmtEuro(total)}</td>
-        <td><span class="tag ${state}">${stateLabel(state)}</span></td>
-        <td>
-          <div class="row-actions">
-            ${state !== 'past' ? pedirDispButtonHtml(ev) : ''}
-            <button class="btn ghost small" data-action="pessoal" data-id="${ev.id}">Pessoal</button>
-            <button class="btn ghost small" data-action="ev-notes" data-id="${ev.id}">Observações</button>
-            <button class="btn danger small" data-action="del-event" data-id="${ev.id}">Eliminar</button>
-          </div>
-        </td>
-      </tr>`;
-    }).join('');
-
-    tbody.querySelectorAll('[data-action="pedir-disp"]').forEach(b=>{
-      b.addEventListener('click', ()=> openPedirDisp(b.dataset.id));
+    const statusFilter = $('filterEstado').value;
+    const base = events.filter(ev=>{
+      if(search && !((ev.name||'').toLowerCase().includes(search) || (ev.location||'').toLowerCase().includes(search))) return false;
+      if(tipoFilter && ev.serviceType !== tipoFilter) return false;
+      if(statusFilter && (ev.status || 'confirmado') !== statusFilter) return false;
+      return true;
     });
-    tbody.querySelectorAll('[data-action="ev-notes"]').forEach(b=>{
-      b.addEventListener('click', ()=> openEventNotes(b.dataset.id));
+    const groups = { ativos:[], arquivo:[], cancelados:[], todos: base };
+    base.forEach(ev=> groups[evCategoria(ev)].push(ev));
+    groups.por_alocar = groups.ativos.filter(ev=> eventGap(ev) > 0);
+    document.querySelectorAll('[data-evview]').forEach(b=>{
+      const k = b.dataset.evview;
+      b.classList.toggle('active', k === evView);
+      b.textContent = `${EV_VIEW_LABEL[k]} (${groups[k].length})`;
     });
-    tbody.querySelectorAll('[data-action="pessoal"]').forEach(b=>{
+    const asc = (a,b)=> (a.date + (a.timeStart||'')).localeCompare(b.date + (b.timeStart||''));
+    const list = groups[evView].slice().sort((evView === 'arquivo' || evView === 'cancelados') ? (a,b)=> asc(b,a) : asc);
+    const box = $('eventosList');
+    if(!list.length){ box.innerHTML = `<div class="empty-state"><p>${EV_VIEW_EMPTY[evView]}</p></div>`; return; }
+    box.innerHTML = list.map(evCardHtml).join('');
+
+    box.querySelectorAll('.ev-head').forEach(h=>{
+      h.addEventListener('click', (e)=>{
+        if(e.target.closest('select,button,a,input')) return;
+        const id = h.dataset.id;
+        if(evOpen.has(id)) evOpen.delete(id); else evOpen.add(id);
+        h.parentElement.classList.toggle('open');
+      });
+    });
+    box.querySelectorAll('.ev-status').forEach(sel=>{
+      sel.addEventListener('change', async ()=>{
+        const ev = eventById(sel.dataset.id);
+        if(!ev) return;
+        ev.status = sel.value;
+        await saveEvents();
+        renderAll();
+        showToast(`${ev.name}: ${statusInfo(sel.value).label}`);
+      });
+    });
+    box.querySelectorAll('[data-action="pedir-disp"]').forEach(b=> b.addEventListener('click', ()=> openPedirDisp(b.dataset.id)));
+    box.querySelectorAll('[data-action="ev-notes"]').forEach(b=> b.addEventListener('click', ()=> openEventNotes(b.dataset.id)));
+    box.querySelectorAll('[data-action="pessoal"]').forEach(b=>{
       b.addEventListener('click', ()=>{
         activeEventId = b.dataset.id;
         renderPessoal();
         switchView('pessoal');
       });
     });
-    tbody.querySelectorAll('[data-action="del-event"]').forEach(b=>{
+    box.querySelectorAll('[data-action="del-event"]').forEach(b=>{
       b.addEventListener('click', ()=> confirmDelete('event', b.dataset.id, 'Eliminar este evento e todos os registos de pessoal associados?'));
     });
   }
+  document.querySelectorAll('[data-evview]').forEach(b=> b.addEventListener('click', ()=>{ evView = b.dataset.evview; renderEventos(); }));
+  $('evExpandAll').addEventListener('click', ()=>{ document.querySelectorAll('#eventosList .ev-card').forEach(c=> evOpen.add(c.dataset.id)); renderEventos(); });
+  $('evCollapseAll').addEventListener('click', ()=>{ evOpen.clear(); renderEventos(); });
 
   $('searchEventos').addEventListener('input', renderEventos);
   $('filterTipo').addEventListener('change', renderEventos);
@@ -2626,7 +2762,7 @@
 
     const upcoming = events.filter(ev => {
       const d = daysUntil(ev.date);
-      return d >= 0;
+      return d >= 0 && (ev.status || 'confirmado') !== 'cancelado';
     }).sort((a,b)=>a.date.localeCompare(b.date));
 
     if(upcoming.length === 0){
@@ -2784,7 +2920,7 @@
   function pendingEventsAlertCount(){
     const upcoming = events.filter(ev => {
       const d = daysUntil(ev.date);
-      return d >= 0 && d <= 30;
+      return d >= 0 && d <= 30 && (ev.status || 'confirmado') !== 'cancelado';
     });
     let count = 0;
     upcoming.forEach(ev=>{
@@ -3700,7 +3836,7 @@
     const myArea = p ? p.serviceType : null;
 
     // 1. Novos eventos para a função, ainda sem resposta
-    const novos = events.filter(ev => daysUntil(ev.date) >= 0 && (ev.staffingNeeds||{})[myArea] > 0 && !getInvitation(ev.id, currentProviderId))
+    const novos = events.filter(ev => daysUntil(ev.date) >= 0 && (ev.staffingNeeds||{})[myArea] > 0 && (ev.status || 'confirmado') !== 'cancelado' && !getInvitation(ev.id, currentProviderId))
       .sort((a,b)=>a.date.localeCompare(b.date));
     const novosContainer = $('provAlertasNovosContainer');
     if(novos.length === 0){
@@ -3824,7 +3960,7 @@
     const container = $('provDisponibilidadesContainer');
     const p = providers.find(x=>x.id===currentProviderId);
     const myArea = p ? p.serviceType : null;
-    const upcoming = events.filter(ev => daysUntil(ev.date) >= 0 && (ev.staffingNeeds||{})[myArea] > 0).sort((a,b)=>a.date.localeCompare(b.date));
+    const upcoming = events.filter(ev => daysUntil(ev.date) >= 0 && (ev.staffingNeeds||{})[myArea] > 0 && (ev.status || 'confirmado') !== 'cancelado').sort((a,b)=>a.date.localeCompare(b.date));
     if(upcoming.length === 0){
       container.innerHTML = `<div class="empty-state"><p>Não há eventos futuros que precisem da tua função (${escapeHtml(myArea||'—')}) de momento.</p></div>`;
       return;
