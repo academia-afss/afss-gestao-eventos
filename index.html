@@ -992,6 +992,8 @@
             <option value="por_validar">Por validar</option>
             <option value="por_enviar">Validados por enviar</option>
             <option value="enviados">Enviados ao financeiro</option>
+            <option value="por_liquidar">Por liquidar</option>
+            <option value="liquidados">Liquidados</option>
             <option value="rejeitados">Rejeitados</option>
             <option value="em_falta">Sem recibo (eventos já realizados)</option>
             <option value="todos">Todos</option>
@@ -3260,7 +3262,21 @@
     if(!rc) return 'em_falta';
     if(rc.status === 'pendente') return 'por_validar';
     if(rc.status === 'rejeitado') return 'rejeitados';
-    return rc.sentFinanceAt ? 'enviados' : 'por_enviar';
+    return rc.paidAt ? 'liquidados' : (rc.sentFinanceAt ? 'enviados' : 'por_enviar');
+  }
+  function reciboNoFiltro(s, filtro){
+    const rc = receiptForStaff(s.id);
+    const validado = !!(rc && rc.status === 'validado');
+    const cat = reciboCategoria(s);
+    switch(filtro){
+      case 'todos': return true;
+      case 'ativos': return cat === 'por_validar' || cat === 'por_enviar';
+      case 'por_enviar': return validado && !rc.sentFinanceAt && !rc.paidAt;
+      case 'enviados': return validado && !!rc.sentFinanceAt;
+      case 'por_liquidar': return validado && !rc.paidAt;
+      case 'liquidados': return validado && !!rc.paidAt;
+      default: return cat === filtro;
+    }
   }
   function renderRecibosFat(){
     const box = $('recibosContainer');
@@ -3273,8 +3289,7 @@
     const corresponde = (s)=>{
       const cat = reciboCategoria(s);
       const ev = eventById(s.eventId);
-      if(filtro === 'ativos'){ if(cat !== 'por_validar' && cat !== 'por_enviar') return false; }
-      else if(filtro !== 'todos' && cat !== filtro) return false;
+      if(!reciboNoFiltro(s, filtro)) return false;
       if(cat === 'em_falta' && ev && eventState(ev.date) !== 'past' && filtro === 'em_falta') return false;
       if(q && !((s.name||'').toLowerCase().includes(q) || (ev && (ev.name||'').toLowerCase().includes(q)))) return false;
       return true;
@@ -3283,6 +3298,7 @@
       const rows = staffForEvent(ev.id).filter(s=> s.providerId).filter(corresponde).sort((a,b)=>(a.name||'').localeCompare(b.name||''));
       if(!rows.length) return '';
       const porEnviar = staffForEvent(ev.id).filter(s=> s.providerId && reciboCategoria(s) === 'por_enviar').map(s=> receiptForStaff(s.id).id);
+      const porLiquidar = staffForEvent(ev.id).filter(s=> s.providerId && reciboNoFiltro(s, 'por_liquidar')).map(s=> receiptForStaff(s.id).id);
       const linhas = rows.map(s=>{
         const rc = receiptForStaff(s.id);
         let acoes = '';
@@ -3291,6 +3307,9 @@
           if(rc.status !== 'validado') acoes += `<button class="btn amber small" data-action="rc-validar" data-id="${rc.id}">Validar</button>`;
           if(rc.status === 'pendente') acoes += `<button class="btn danger small" data-action="rc-rejeitar" data-id="${rc.id}">Rejeitar</button>`;
           if(rc.status === 'validado') acoes += `<button class="btn ${rc.sentFinanceAt ? 'ghost' : 'amber'} small" data-action="rc-enviar" data-id="${rc.id}">${rc.sentFinanceAt ? 'Reenviar ao financeiro' : 'Enviar ao financeiro'}</button>`;
+          if(rc.status === 'validado') acoes += rc.paidAt
+            ? `<button class="btn ghost small" data-action="rc-desliquidar" data-id="${rc.id}">Anular liquidação</button>`
+            : `<button class="btn ${rc.sentFinanceAt ? 'amber' : 'ghost'} small" data-action="rc-liquidar" data-id="${rc.id}">Marcar liquidado</button>`;
         }
         const extra = rc
           ? (rc.sentFinanceAt ? `<div style="font-size:12px;color:var(--ink-soft);margin-top:3px;">Enviado em ${new Date(rc.sentFinanceAt).toLocaleString('pt-PT')}</div>`
@@ -3301,14 +3320,17 @@
           <td><strong>${escapeHtml(s.name)}</strong></td>
           <td>${escapeHtml(s.area||'—')}</td>
           <td>${fmtEuro(staffValue(s))}</td>
-          <td>${rc ? receiptTagHtml(rc) : '<span class="tag past">Ainda não carregou</span>'}${extra}</td>
+          <td>${rc ? receiptTagHtml(rc) : '<span class="tag past">Ainda não carregou</span>'}${extra}${rc && rc.paidAt ? `<div style="font-size:12px;color:var(--success);margin-top:3px;">Liquidado em ${new Date(rc.paidAt).toLocaleDateString('pt-PT')}${rc.paidBy ? ' · ' + escapeHtml(rc.paidBy) : ''}</div>` : ''}</td>
           <td><div class="row-actions">${acoes || '<span style="color:var(--ink-soft);">—</span>'}</div></td>
         </tr>`;
       }).join('');
       return `<div class="posto-block">
         <div class="posto-title">
           <span>${escapeHtml(ev.name)} — ${new Date(ev.date+'T00:00:00').toLocaleDateString('pt-PT')}</span>
-          ${porEnviar.length ? `<button class="btn amber small" data-action="rc-enviar-evento" data-ids="${porEnviar.join(',')}">Enviar validados ao financeiro (${porEnviar.length})</button>` : ''}
+          <div class="row-actions">
+            ${porEnviar.length ? `<button class="btn amber small" data-action="rc-enviar-evento" data-ids="${porEnviar.join(',')}">Enviar validados ao financeiro (${porEnviar.length})</button>` : ''}
+            ${porLiquidar.length ? `<button class="btn ghost small" data-action="rc-liquidar-evento" data-ids="${porLiquidar.join(',')}">Marcar liquidados (${porLiquidar.length})</button>` : ''}
+          </div>
         </div>
         <div style="overflow-x:auto;"><table>
           <thead><tr><th>Prestador</th><th>Área</th><th>Valor</th><th>Recibo</th><th>Ações</th></tr></thead>
@@ -3317,7 +3339,7 @@
       </div>`;
     }).join('');
     const vazio = { ativos:'Não há recibos por validar nem por enviar.', por_validar:'Não há recibos por validar.', por_enviar:'Não há recibos validados por enviar.',
-      enviados:'Ainda não foi enviado nenhum recibo ao financeiro.', rejeitados:'Não há recibos rejeitados.', em_falta:'Todos os prestadores de eventos realizados já carregaram o recibo.', todos:'Ainda não há prestadores alocados.' };
+      enviados:'Ainda não foi enviado nenhum recibo ao financeiro.', por_liquidar:'Não há recibos validados por liquidar.', liquidados:'Ainda não há recibos liquidados.', rejeitados:'Não há recibos rejeitados.', em_falta:'Todos os prestadores de eventos realizados já carregaram o recibo.', todos:'Ainda não há prestadores alocados.' };
     box.innerHTML = blocos || `<div class="empty-state"><p>${vazio[filtro] || vazio.todos}</p></div>`;
 
     box.querySelectorAll('[data-action="rc-validar"]').forEach(b=> b.addEventListener('click', ()=>
@@ -3329,6 +3351,22 @@
     }));
     box.querySelectorAll('[data-action="rc-enviar"]').forEach(b=> b.addEventListener('click', ()=> enviarRecibosFinanceiro([Number(b.dataset.id)], b)));
     box.querySelectorAll('[data-action="rc-enviar-evento"]').forEach(b=> b.addEventListener('click', ()=> enviarRecibosFinanceiro(b.dataset.ids.split(',').map(Number), b)));
+    box.querySelectorAll('[data-action="rc-liquidar"]').forEach(b=> b.addEventListener('click', ()=>
+      atualizarRecibo(Number(b.dataset.id), { paid_at: new Date().toISOString(), paid_by: currentManagerEmail || '' }, 'Marcado como liquidado')));
+    box.querySelectorAll('[data-action="rc-desliquidar"]').forEach(b=> b.addEventListener('click', ()=>{
+      if(!confirm('Anular a liquidação deste recibo?')) return;
+      atualizarRecibo(Number(b.dataset.id), { paid_at: null, paid_by: null }, 'Liquidação anulada');
+    }));
+    box.querySelectorAll('[data-action="rc-liquidar-evento"]').forEach(b=> b.addEventListener('click', async ()=>{
+      const ids = b.dataset.ids.split(',').map(Number);
+      if(!confirm(`Marcar ${ids.length === 1 ? 'este recibo' : ids.length + ' recibos'} como liquidado${ids.length === 1 ? '' : 's'}?`)) return;
+      if(!sb){ showToast('Sem ligação. Tenta outra vez.'); return; }
+      const { error } = await sb.from('staff_receipts').update({ paid_at: new Date().toISOString(), paid_by: currentManagerEmail || '' }).in('id', ids);
+      if(error){ console.error(error); showToast('Não foi possível atualizar.'); return; }
+      await loadReceipts();
+      renderRecibosFat();
+      showToast(`${ids.length} recibo${ids.length === 1 ? '' : 's'} marcado${ids.length === 1 ? '' : 's'} como liquidado${ids.length === 1 ? '' : 's'}`);
+    }));
   }
   async function atualizarRecibo(id, campos, msg){
     if(!sb){ showToast('Sem ligação. Tenta outra vez.'); return; }
@@ -3858,7 +3896,7 @@
   // ---------------- Recibos verdes ----------------
   var receipts = [];
   const fromDbReceipt = r => ({ id: r.id, staffId: r.staff_id, providerId: r.provider_id, eventId: r.event_id, filePath: r.file_path, fileName: r.file_name,
-    mime: r.mime, uploadedAt: r.uploaded_at, status: r.status, rejectReason: r.reject_reason, validatedBy: r.validated_by, validatedAt: r.validated_at, sentFinanceAt: r.sent_finance_at });
+    mime: r.mime, uploadedAt: r.uploaded_at, status: r.status, rejectReason: r.reject_reason, validatedBy: r.validated_by, validatedAt: r.validated_at, sentFinanceAt: r.sent_finance_at, paidAt: r.paid_at, paidBy: r.paid_by });
   async function loadReceipts(){
     if(!sb) return;
     try{
@@ -3869,7 +3907,7 @@
   }
   function receiptForStaff(staffId){ return receipts.find(r=>r.staffId===staffId) || null; }
   function receiptTagHtml(rc){
-    if(rc.status === 'validado') return rc.sentFinanceAt ? '<span class="tag ok">Validado · enviado ao financeiro</span>' : '<span class="tag ok">Validado</span>';
+    if(rc.status === 'validado') return rc.paidAt ? '<span class="tag ok">Liquidado</span>' : rc.sentFinanceAt ? '<span class="tag ok">Validado · enviado ao financeiro</span>' : '<span class="tag ok">Validado</span>';
     if(rc.status === 'rejeitado') return '<span class="tag low">Rejeitado</span>';
     return '<span class="tag future">Por validar</span>';
   }
@@ -3898,7 +3936,7 @@
       if(upErr){ console.error(upErr); showToast('Não foi possível carregar o recibo. Confirma que é PDF ou imagem e tenta outra vez.'); return; }
       const anterior = receiptForStaff(s.id);
       const row = { staff_id: s.id, provider_id: s.providerId, event_id: s.eventId, file_path: path, file_name: file.name, mime: file.type || null,
-        uploaded_at: new Date().toISOString(), status: 'pendente', reject_reason: null, validated_by: null, validated_at: null, sent_finance_at: null, sent_by: null };
+        uploaded_at: new Date().toISOString(), status: 'pendente', reject_reason: null, validated_by: null, validated_at: null, sent_finance_at: null, sent_by: null, paid_at: null, paid_by: null };
       const { error } = await sb.from('staff_receipts').upsert(row, { onConflict: 'staff_id' });
       if(error){
         console.error(error);
