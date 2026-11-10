@@ -595,9 +595,9 @@
   <!-- ============ PESSOAL ============ -->
   <section class="view" id="view-pedidos">
     <div class="panel">
-      <div class="panel-head"><h2>Link para pedidos de orçamento</h2></div>
+      <div class="panel-head"><h2>Link para pedidos de serviço</h2></div>
       <div class="panel-body">
-        <p class="hint" style="margin:0 0 12px 0;">Partilha este link com clientes e entidades (ex.: Médis) para pedirem orçamento. Os pedidos aparecem em baixo e os gestores recebem um email sempre que chega um novo.</p>
+        <p class="hint" style="margin:0 0 12px 0;">Partilha este link com clientes e entidades (ex.: Médis) para pedirem serviços. Os pedidos aparecem em baixo e os gestores recebem um email sempre que chega um novo.</p>
         <div class="toolbar">
           <input type="text" id="pedidoLink" readonly style="flex:1;min-width:240px;">
           <button type="button" class="btn amber small" id="pedidoCopiar">Copiar link</button>
@@ -1955,7 +1955,7 @@
     catch(err){ $('pedidoLink').select(); showToast('Seleciona e copia o link manualmente'); }
   }
   $('pedidoCopiar').addEventListener('click', ()=> copiarTexto(pedidoLinkUrl(), 'Link copiado'));
-  $('pedidoCopiarMsg').addEventListener('click', ()=> copiarTexto(`Olá! Para pedir um orçamento de assistência médica/emergência à AFSS, basta preencher este formulário: ${pedidoLinkUrl()}`, 'Mensagem copiada — cola no email ou WhatsApp'));
+  $('pedidoCopiarMsg').addEventListener('click', ()=> copiarTexto(`Olá! Para pedir um serviço de assistência médica/emergência à AFSS, basta preencher este formulário: ${pedidoLinkUrl()}`, 'Mensagem copiada — cola no email ou WhatsApp'));
   ['pedidoLinkTipo','pedidoLinkEntidade'].forEach(id=> $(id).addEventListener('input', updatePedidoLink));
   $('pedidoLinkTipo').addEventListener('change', updatePedidoLink);
   updatePedidoLink();
@@ -2001,7 +2001,7 @@
           <textarea data-pednotas="${r.id}" class="pw-input" style="min-height:60px;margin-top:4px;" placeholder="Ex.: orçamento enviado a 12/11, aguardar resposta…">${escapeHtml(r.internal_notes || '')}</textarea>
         </div>
         <div class="row-actions" style="margin-top:14px;">
-          <a class="btn amber small" href="mailto:${encodeURIComponent(r.email)}?subject=${encodeURIComponent('Orçamento AFSS — pedido n.º ' + r.id + ' — ' + r.event_name)}">Responder por email</a>
+          <a class="btn amber small" href="mailto:${encodeURIComponent(r.email)}?subject=${encodeURIComponent('AFSS — pedido de serviço n.º ' + r.id + ' — ' + r.event_name)}">Responder por email</a>
           ${ev ? `<button class="btn ghost small" data-pedver="${r.id}">Ver evento</button>` : `<button class="btn ghost small" data-pedevento="${r.id}">Criar evento a partir do pedido</button>`}
           <button class="btn danger small" data-peddel="${r.id}">Eliminar</button>
         </div>
