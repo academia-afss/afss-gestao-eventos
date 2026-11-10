@@ -457,6 +457,7 @@
   </div>
   <nav class="tabs">
     <button class="nav-tab active" data-view="eventos">Eventos</button>
+    <button class="nav-tab" data-view="pedidos">Pedidos<span class="nav-badge" id="navBadgePedidos" style="display:none;"></span></button>
     <button class="nav-tab" data-view="pessoal">Pessoal</button>
     <button class="nav-tab" data-view="assistencias">Assistências</button>
     <button class="nav-tab" data-view="prestadores">Prestadores<span class="nav-badge" id="navBadgePrestadores" style="display:none;"></span></button>
@@ -473,6 +474,7 @@
     <div class="panel">
       <div class="panel-head"><h2>Novo evento</h2></div>
       <div class="panel-body">
+        <div id="pedidoEmCriacao" style="display:none;margin:0 0 14px 0;padding:10px 12px;background:var(--panel-2);border-left:3px solid var(--amber);font-size:13.5px;"></div>
         <form id="formEvento" class="form-grid">
           <div class="field">
             <label for="evNome">Nome do evento</label>
@@ -591,6 +593,45 @@
   </section>
 
   <!-- ============ PESSOAL ============ -->
+  <section class="view" id="view-pedidos">
+    <div class="panel">
+      <div class="panel-head"><h2>Link para pedidos de orçamento</h2></div>
+      <div class="panel-body">
+        <p class="hint" style="margin:0 0 12px 0;">Partilha este link com clientes e entidades (ex.: Médis) para pedirem orçamento. Os pedidos aparecem em baixo e os gestores recebem um email sempre que chega um novo.</p>
+        <div class="toolbar">
+          <input type="text" id="pedidoLink" readonly style="flex:1;min-width:240px;">
+          <button type="button" class="btn amber small" id="pedidoCopiar">Copiar link</button>
+          <button type="button" class="btn ghost small" id="pedidoCopiarMsg">Copiar mensagem</button>
+          <a class="btn ghost small" id="pedidoAbrir" target="_blank" rel="noopener">Abrir formulário</a>
+        </div>
+        <div class="toolbar" style="margin-bottom:0;">
+          <span class="fat-lbl">Personalizar o link:</span>
+          <select id="pedidoLinkTipo"><option value="">Qualquer tipo de serviço</option><option>Posto de Socorros</option><option>Festa Privada</option><option>Festival</option><option>Corporate</option><option>Desportivo</option><option>Feira</option><option>Filmagens</option><option>Aquático</option><option>Colheita</option></select>
+          <input type="text" id="pedidoLinkEntidade" placeholder="Nome da entidade (opcional)">
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Pedidos de serviço</h2></div>
+      <div class="panel-body">
+        <div class="toolbar">
+          <select id="pedFiltro">
+            <option value="abertos">Em aberto</option>
+            <option value="novo">Novos</option>
+            <option value="em_analise">Em análise</option>
+            <option value="orcamento_enviado">Orçamento enviado</option>
+            <option value="aceite">Aceites</option>
+            <option value="convertido">Convertidos em evento</option>
+            <option value="recusado">Recusados</option>
+            <option value="todos">Todos</option>
+          </select>
+          <input type="text" id="pedPesquisa" placeholder="Pesquisar entidade ou evento…">
+        </div>
+        <div id="pedidosList" class="ev-list"></div>
+      </div>
+    </div>
+  </section>
+
   <section class="view" id="view-pessoal">
     <div class="event-picker">
       <div class="periodo-switch">
@@ -1528,6 +1569,7 @@
     }
     await loadEventNotes();
     await loadReceipts();
+    await loadServiceRequests();
     renderAll();
   }
 
@@ -1603,6 +1645,7 @@
       .on('postgres_changes', { event: '*', schema: 'public', table: 'invitations' }, scheduleRefresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'event_notes' }, scheduleRefresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'staff_receipts' }, scheduleRefresh)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'service_requests' }, scheduleRefresh)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'pending_signups' }, scheduleRefresh)
       .subscribe();
   }
@@ -1878,6 +1921,180 @@
     showToast('Observações guardadas');
   });
 
+  // ---------------- Pedidos de serviço (orçamentos) ----------------
+  var serviceRequests = [];
+  var pendingPedidoId = null;
+  const PEDIDO_STATUS = [
+    { key:'novo', label:'Novo', cls:'st-warn' },
+    { key:'em_analise', label:'Em análise', cls:'st-wait' },
+    { key:'orcamento_enviado', label:'Orçamento enviado', cls:'st-bill' },
+    { key:'aceite', label:'Aceite', cls:'st-ok' },
+    { key:'convertido', label:'Convertido em evento', cls:'st-done' },
+    { key:'recusado', label:'Recusado', cls:'st-cancel' }
+  ];
+  const pedOpen = new Set();
+  async function loadServiceRequests(){
+    if(!sb) return;
+    try{
+      const { data, error } = await sb.from('service_requests').select('*').order('created_at', { ascending:false });
+      if(error){ console.error('Pedidos', error); return; }
+      serviceRequests = data || [];
+    }catch(err){ console.error('Erro ao carregar pedidos', err); }
+  }
+  function pedidoLinkUrl(){
+    const base = window.location.origin + '/pedido/';
+    const qs = new URLSearchParams();
+    if($('pedidoLinkTipo').value) qs.set('tipo', $('pedidoLinkTipo').value);
+    if($('pedidoLinkEntidade').value.trim()) qs.set('entidade', $('pedidoLinkEntidade').value.trim());
+    const s = qs.toString();
+    return s ? base + '?' + s : base;
+  }
+  function updatePedidoLink(){ $('pedidoLink').value = pedidoLinkUrl(); $('pedidoAbrir').href = pedidoLinkUrl(); }
+  async function copiarTexto(txt, msg){
+    try{ await navigator.clipboard.writeText(txt); showToast(msg); }
+    catch(err){ $('pedidoLink').select(); showToast('Seleciona e copia o link manualmente'); }
+  }
+  $('pedidoCopiar').addEventListener('click', ()=> copiarTexto(pedidoLinkUrl(), 'Link copiado'));
+  $('pedidoCopiarMsg').addEventListener('click', ()=> copiarTexto(`Olá! Para pedir um orçamento de assistência médica/emergência à AFSS, basta preencher este formulário: ${pedidoLinkUrl()}`, 'Mensagem copiada — cola no email ou WhatsApp'));
+  ['pedidoLinkTipo','pedidoLinkEntidade'].forEach(id=> $(id).addEventListener('input', updatePedidoLink));
+  $('pedidoLinkTipo').addEventListener('change', updatePedidoLink);
+  updatePedidoLink();
+
+  function pedidoCardHtml(r){
+    const st = PEDIDO_STATUS.find(s=>s.key===r.status) || PEDIDO_STATUS[0];
+    const dt = new Date(r.date + 'T00:00:00');
+    const needs = r.needs || {};
+    const total = AREAS.reduce((s,a)=> s + (needs[a]||0), 0);
+    const equipa = AREAS.filter(a=>(needs[a]||0)>0).map(a=>`${needs[a]} ${a}`).join(' · ');
+    const recebido = new Date(r.created_at);
+    const ev = r.event_id ? eventById(r.event_id) : null;
+    return `<div class="ev-card ${r.status==='novo' ? 'gap' : (r.status==='convertido' || r.status==='aceite' ? 'full' : '')} ${r.status==='recusado' ? 'cancel' : ''} ${pedOpen.has(r.id) ? 'open' : ''}" data-id="${r.id}">
+      <div class="ev-head" data-pid="${r.id}">
+        <div class="ev-date"><span class="d">${dt.getDate()}</span><span class="m">${escapeHtml(dt.toLocaleDateString('pt-PT', { month:'short' }).replace('.', ''))}</span></div>
+        <div class="ev-main">
+          <div class="ev-title">${escapeHtml(r.entity)}<span class="ev-type">${escapeHtml(r.service_type)}</span></div>
+          <div class="ev-sub">${[r.event_name, `${r.time_start}–${r.time_end}`, r.location, `pedido n.º ${r.id} · ${recebido.toLocaleDateString('pt-PT')}`].map(escapeHtml).join(' · ')}</div>
+        </div>
+        <div class="ev-side">
+          <span class="tag future">Equipa ${total}</span>
+          <select class="ev-status ${st.cls}" data-pedstatus="${r.id}">${PEDIDO_STATUS.map(s=>`<option value="${s.key}" ${s.key===r.status?'selected':''}>${s.label}</option>`).join('')}</select>
+          <span class="ev-caret">▶</span>
+        </div>
+      </div>
+      <div class="ev-body">
+        <div class="ev-grid">
+          <div><div class="ev-k">Contacto</div><div class="ev-v">${escapeHtml(r.contact_name)}</div></div>
+          <div><div class="ev-k">Email</div><div class="ev-v"><a href="mailto:${escapeHtml(r.email)}" style="color:var(--amber);">${escapeHtml(r.email)}</a></div></div>
+          <div><div class="ev-k">Telefone</div><div class="ev-v"><a href="tel:${escapeHtml(r.phone)}" style="color:var(--amber);">${escapeHtml(r.phone)}</a></div></div>
+          <div><div class="ev-k">NIF</div><div class="ev-v">${escapeHtml(r.nif)}</div></div>
+          <div><div class="ev-k">Data</div><div class="ev-v">${dt.toLocaleDateString('pt-PT', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}</div></div>
+          <div><div class="ev-k">Horário</div><div class="ev-v">${escapeHtml(r.time_start)}–${escapeHtml(r.time_end)}</div></div>
+          <div><div class="ev-k">Local</div><div class="ev-v">${escapeHtml(r.location)}</div></div>
+          <div><div class="ev-k">Morada</div><div class="ev-v">${escapeHtml(r.morada)}</div></div>
+          <div><div class="ev-k">Participantes</div><div class="ev-v">${r.attendance}</div></div>
+          <div><div class="ev-k">Equipa pretendida</div><div class="ev-v">${escapeHtml(equipa || '—')}</div></div>
+          <div><div class="ev-k">Recebido em</div><div class="ev-v">${recebido.toLocaleString('pt-PT')}</div></div>
+          ${r.handled_by ? `<div><div class="ev-k">Tratado por</div><div class="ev-v">${escapeHtml(r.handled_by)}</div></div>` : ''}
+        </div>
+        <div class="ev-section"><div class="ev-k">Observações do cliente</div><div class="ev-v" style="white-space:pre-line;">${r.notes ? escapeHtml(r.notes) : '<span style="color:var(--ink-soft);">—</span>'}</div></div>
+        <div class="ev-section"><div class="ev-k">Notas internas (só a gestão vê)</div>
+          <textarea data-pednotas="${r.id}" class="pw-input" style="min-height:60px;margin-top:4px;" placeholder="Ex.: orçamento enviado a 12/11, aguardar resposta…">${escapeHtml(r.internal_notes || '')}</textarea>
+        </div>
+        <div class="row-actions" style="margin-top:14px;">
+          <a class="btn amber small" href="mailto:${encodeURIComponent(r.email)}?subject=${encodeURIComponent('Orçamento AFSS — pedido n.º ' + r.id + ' — ' + r.event_name)}">Responder por email</a>
+          ${ev ? `<button class="btn ghost small" data-pedver="${r.id}">Ver evento</button>` : `<button class="btn ghost small" data-pedevento="${r.id}">Criar evento a partir do pedido</button>`}
+          <button class="btn danger small" data-peddel="${r.id}">Eliminar</button>
+        </div>
+      </div>
+    </div>`;
+  }
+  function renderPedidos(){
+    const novos = serviceRequests.filter(r=>r.status==='novo').length;
+    const badge = $('navBadgePedidos');
+    badge.textContent = novos; badge.style.display = novos ? 'inline-block' : 'none';
+    const box = $('pedidosList');
+    if(!box) return;
+    const filtro = $('pedFiltro').value;
+    const q = $('pedPesquisa').value.trim().toLowerCase();
+    const lista = serviceRequests.filter(r=>{
+      if(filtro === 'abertos' && !['novo','em_analise','orcamento_enviado','aceite'].includes(r.status)) return false;
+      if(!['abertos','todos'].includes(filtro) && r.status !== filtro) return false;
+      if(q && !`${r.entity} ${r.event_name} ${r.contact_name} ${r.location}`.toLowerCase().includes(q)) return false;
+      return true;
+    });
+    if(!lista.length){
+      box.innerHTML = `<div class="empty-state"><p>${serviceRequests.length ? 'Não há pedidos neste filtro.' : 'Ainda não chegou nenhum pedido. Partilha o link acima com os clientes.'}</p></div>`;
+      return;
+    }
+    box.innerHTML = lista.map(pedidoCardHtml).join('');
+    box.querySelectorAll('[data-pid]').forEach(h=> h.addEventListener('click', (e)=>{
+      if(e.target.closest('select,button,a,input,textarea')) return;
+      const id = Number(h.dataset.pid);
+      if(pedOpen.has(id)) pedOpen.delete(id); else pedOpen.add(id);
+      h.parentElement.classList.toggle('open');
+    }));
+    box.querySelectorAll('[data-pedstatus]').forEach(sel=> sel.addEventListener('change', ()=>
+      atualizarPedido(Number(sel.dataset.pedstatus), { status: sel.value }, 'Estado do pedido atualizado')));
+    box.querySelectorAll('[data-pednotas]').forEach(t=> t.addEventListener('change', ()=>
+      atualizarPedido(Number(t.dataset.pednotas), { internal_notes: t.value.trim() }, 'Notas guardadas')));
+    box.querySelectorAll('[data-peddel]').forEach(b=> b.addEventListener('click', async ()=>{
+      if(!confirm('Eliminar este pedido? Esta ação não se pode desfazer.')) return;
+      const { error } = await sb.from('service_requests').delete().eq('id', Number(b.dataset.peddel));
+      if(error){ showToast('Não foi possível eliminar.'); return; }
+      await loadServiceRequests(); renderPedidos(); showToast('Pedido eliminado');
+    }));
+    box.querySelectorAll('[data-pedevento]').forEach(b=> b.addEventListener('click', ()=> criarEventoDePedido(Number(b.dataset.pedevento))));
+    box.querySelectorAll('[data-pedver]').forEach(b=> b.addEventListener('click', ()=>{
+      const r = serviceRequests.find(x=>x.id===Number(b.dataset.pedver));
+      const ev = r && eventById(r.event_id);
+      if(!ev) return;
+      evView = 'todos'; $('searchEventos').value = ev.name; evOpen.add(ev.id);
+      switchView('eventos'); renderEventos();
+    }));
+  }
+  async function atualizarPedido(id, campos, msg){
+    if(!sb){ showToast('Sem ligação. Tenta outra vez.'); return; }
+    campos.updated_at = new Date().toISOString();
+    campos.handled_by = currentManagerEmail || null;
+    const { error } = await sb.from('service_requests').update(campos).eq('id', id);
+    if(error){ console.error(error); showToast('Não foi possível guardar.'); return; }
+    await loadServiceRequests(); renderPedidos(); showToast(msg);
+  }
+  function criarEventoDePedido(id){
+    const r = serviceRequests.find(x=>x.id===id);
+    if(!r) return;
+    switchView('eventos');
+    $('formEvento').reset();
+    $('evNome').value = `${r.event_name} — ${r.entity}`;
+    $('evTipo').value = r.service_type;
+    $('evData').value = r.date;
+    $('evHoraInicio').value = r.time_start;
+    $('evHoraFim').value = r.time_end;
+    $('evLocal').value = r.location;
+    $('evMorada').value = r.morada;
+    $('evEstado').value = r.status === 'aceite' ? 'confirmado' : 'aguardar_info';
+    const n = r.needs || {};
+    $('needCoordenador').value = n['Coordenador'] || 0;
+    $('needMedico').value = n['Médico'] || 0;
+    $('needEnfermeiro').value = n['Enfermeiro'] || 0;
+    $('needTecnico').value = n['Técnico'] || 0;
+    $('evObs').value = [`Cliente: ${r.entity} (NIF ${r.nif})`, `Contacto: ${r.contact_name} · ${r.phone} · ${r.email}`, `Participantes estimados: ${r.attendance}`, `Pedido n.º ${r.id}`, r.notes ? `Observações do cliente: ${r.notes}` : ''].filter(Boolean).join('\n');
+    pendingPedidoId = id;
+    $('pedidoEmCriacao').innerHTML = `A criar evento a partir do <strong>pedido n.º ${r.id}</strong> (${escapeHtml(r.entity)}). Confirma os dados, define os honorários por função e carrega em <strong>Criar evento</strong>. <a href="#" id="pedidoCancelarCriacao" style="color:var(--amber);">Cancelar</a>`;
+    $('pedidoEmCriacao').style.display = 'block';
+    $('pedidoCancelarCriacao').addEventListener('click', (e)=>{ e.preventDefault(); pendingPedidoId = null; $('pedidoEmCriacao').style.display = 'none'; $('formEvento').reset(); $('evEstado').value = 'confirmado'; });
+    $('pedidoEmCriacao').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+  async function marcarPedidoConvertido(eventId){
+    if(!pendingPedidoId) return;
+    const id = pendingPedidoId;
+    pendingPedidoId = null;
+    $('pedidoEmCriacao').style.display = 'none';
+    await atualizarPedido(id, { status:'convertido', event_id: eventId }, 'Pedido marcado como convertido em evento');
+  }
+  $('pedFiltro').addEventListener('change', renderPedidos);
+  $('pedPesquisa').addEventListener('input', renderPedidos);
+
   async function handleCriarEvento(){
     const name = $('evNome').value.trim();
     const date = $('evData').value;
@@ -1924,6 +2141,7 @@
     ['rateCoordenador','rateMedico','rateEnfermeiro','rateTecnico'].forEach(id=>$(id).value = 25);
     renderAll();
     showToast('Evento criado: ' + ev.name);
+    if(pendingPedidoId) await marcarPedidoConvertido(ev.id);
   }
   $('btnCriarEvento').addEventListener('click', handleCriarEvento);
   $('formEvento').addEventListener('keydown', (e)=>{
@@ -3660,6 +3878,7 @@
   function renderAll(){
     renderKpis();
     renderEventos();
+    renderPedidos();
     renderPessoal();
     renderAssistencias();
     renderPrestadores();
@@ -3768,7 +3987,7 @@
       closeAdminPassModal();
       setMode('admin');
       showToast('Sessão de gestor iniciada');
-      Promise.all([loadEventNotes(), loadReceipts()]).then(()=> renderAll());
+      Promise.all([loadEventNotes(), loadReceipts(), loadServiceRequests()]).then(()=> renderAll());
     }catch(err){
       console.error(err);
       showAdminError('Não foi possível entrar. Tenta outra vez.');
@@ -4435,7 +4654,7 @@
     if(isAdminUnlocked()){
       setMode('admin');
       const tab = params.get('tab');
-      const validTabs = ['eventos','pessoal','assistencias','prestadores','alertas','faturacao','stock'];
+      const validTabs = ['eventos','pedidos','pessoal','assistencias','prestadores','alertas','faturacao','stock'];
       if(tab && validTabs.includes(tab)){
         switchView(tab);
       }
