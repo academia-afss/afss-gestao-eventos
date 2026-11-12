@@ -2184,6 +2184,7 @@
     todos:'Nenhum evento encontrado.'
   };
   function eventNeedTotal(ev){ const n = ev.staffingNeeds || {}; return AREAS.reduce((s,a)=> s + (n[a]||0), 0); }
+  function equipaCompleta(ev){ return eventNeedTotal(ev) > 0 && eventGap(ev) === 0; }
   function eventGap(ev){ const n = ev.staffingNeeds || {}; return AREAS.reduce((s,a)=> s + Math.max(0, (n[a]||0) - staffAreaFilled(ev.id, a)), 0); }
   function evCategoria(ev){
     const st = ev.status || 'confirmado';
@@ -3005,18 +3006,24 @@
       else alertasOpenDetails.delete(d.dataset.eventId);
     });
 
-    const upcoming = events.filter(ev => {
+    const futuros = events.filter(ev => {
       const d = daysUntil(ev.date);
       return d >= 0 && (ev.status || 'confirmado') !== 'cancelado';
-    }).sort((a,b)=>a.date.localeCompare(b.date));
+    });
+    // Eventos com a equipa completa (todas as vagas preenchidas com pessoas alocadas) deixam de ser alerta
+    const upcoming = futuros.filter(ev => !equipaCompleta(ev)).sort((a,b)=>a.date.localeCompare(b.date));
+    const ocultos = futuros.length - upcoming.length;
+    const avisoOcultos = ocultos ? `<p class="hint" style="margin:0 0 14px 0;">${ocultos} evento${ocultos===1?'':'s'} com a equipa completa ${ocultos===1?'não aparece':'não aparecem'} aqui (vê na aba Eventos).</p>` : '';
 
     if(upcoming.length === 0){
-      container.innerHTML = `<div class="empty-state"><p>Não há eventos futuros. Quando criares um evento, os prestadores para alertar aparecem aqui.</p></div>`;
+      container.innerHTML = futuros.length
+        ? `<div class="empty-state"><p>Todos os eventos futuros já têm a equipa completa. Não há disponibilidades a pedir.</p></div>`
+        : `<div class="empty-state"><p>Não há eventos futuros. Quando criares um evento, os prestadores para alertar aparecem aqui.</p></div>`;
       updateAlertasBadge();
       return;
     }
 
-    container.innerHTML = upcoming.map(ev=>{
+    container.innerHTML = avisoOcultos + upcoming.map(ev=>{
       const dias = daysUntil(ev.date);
       const diasLabel = dias===0 ? 'Hoje' : dias===1 ? 'Amanhã' : `Em ${dias} dias`;
       const list = providers.slice().sort((a,b)=>a.name.localeCompare(b.name));
@@ -3165,7 +3172,7 @@
   function pendingEventsAlertCount(){
     const upcoming = events.filter(ev => {
       const d = daysUntil(ev.date);
-      return d >= 0 && d <= 30 && (ev.status || 'confirmado') !== 'cancelado';
+      return d >= 0 && d <= 30 && (ev.status || 'confirmado') !== 'cancelado' && !equipaCompleta(ev);
     });
     let count = 0;
     upcoming.forEach(ev=>{
