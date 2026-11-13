@@ -418,6 +418,14 @@
   .evview-btn.active{background:var(--amber);color:#000;}
   .evview-btn:not(.active):hover{color:#fff;}
   a.btn{text-decoration:none;display:inline-block;}
+
+  .turno-linha{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 0;border-bottom:1px dashed var(--line);}
+  .turno-linha:last-child{border-bottom:none;}
+  .turno-linha .btn{font-size:16px;padding:11px 20px;}
+  .ev-date .d.d-multi{font-size:17px;}
+  .dias-multi{display:flex;flex-wrap:wrap;gap:8px;}
+  .dias-multi label{display:flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid var(--input-border);background:var(--input-bg);font-size:13px;cursor:pointer;color:var(--ink);}
+  .dias-multi input{width:auto;margin:0;}
 </style>
 </head>
 <body>
@@ -501,6 +509,10 @@
           <div class="field">
             <label for="evData">Data</label>
             <input type="date" id="evData">
+          </div>
+          <div class="field">
+            <label for="evDataFim">Data de fim <span style="color:var(--ink-soft);font-weight:400;">(se durar vários dias)</span></label>
+            <input type="date" id="evDataFim">
           </div>
           <div class="field">
             <label for="evHoraInicio">Hora início</label>
@@ -633,6 +645,10 @@
   </section>
 
   <section class="view" id="view-pessoal">
+    <div class="panel" id="turnosHojePanel" style="display:none;">
+      <div class="panel-head"><h2>Turnos de hoje</h2><span class="tag ok" id="turnosEmCurso"></span></div>
+      <div class="panel-body" id="turnosHojeBody"></div>
+    </div>
     <div class="event-picker">
       <div class="periodo-switch">
         <button type="button" class="periodo-btn active" data-periodo="proximos" id="pesPeriodoProximos">Próximos</button>
@@ -679,6 +695,10 @@
             <div class="field">
               <label for="pesDia">Dia</label>
               <input type="date" id="pesDia">
+            </div>
+            <div class="field" id="pesDiasWrap" style="display:none;grid-column:1/-1;">
+              <label>Dias do turno <span style="color:var(--ink-soft);font-weight:400;">(é criado um turno por cada dia marcado, com o horário indicado)</span></label>
+              <div id="pesDiasMulti" class="dias-multi"></div>
             </div>
             <div class="field">
               <label for="pesHoraInicio">Hora início</label>
@@ -754,7 +774,7 @@
             <thead>
               <tr>
                 <th>Nome</th><th>Dia</th><th>Início</th><th>Fim</th><th>Horas</th><th>Local</th><th>Área</th>
-                <th>Honorário/h</th><th>Valor a pagar</th><th>Falta</th><th>Recibo</th><th>Observações</th><th>Ações</th>
+                <th>Honorário/h</th><th>Valor a pagar</th><th>Falta</th><th>Entrada / Saída</th><th>Recibo</th><th>Observações</th><th>Ações</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -1151,6 +1171,7 @@
   <main id="providerMainContent" style="display:none;">
 
     <!-- ============ DISPONIBILIDADES ============ -->
+    <div id="provTurnosHoje"></div>
     <section class="pview active" id="pview-disponibilidades">
       <div id="provNoIdEmpty1" class="empty-state" style="display:none;">
         <p>Inicia sessão com o teu email no topo da página para veres os eventos e dares a tua disponibilidade.</p>
@@ -1480,14 +1501,14 @@
   // ---------------- Mapeamento camelCase (app) <-> snake_case (Supabase) ----------------
   const toDbEvent = e => ({
     id: e.id, name: e.name, service_type: e.serviceType, date: e.date,
-    time_start: e.timeStart, time_end: e.timeEnd, location: e.location, morada: e.morada || '', status: e.status || 'confirmado',
+    time_start: e.timeStart, time_end: e.timeEnd, location: e.location, morada: e.morada || '', status: e.status || 'confirmado', date_end: e.dateEnd || null,
     rate: e.rate, staffing_needs: e.staffingNeeds || {}, area_rates: e.areaRates || {},
     invoice_sent: !!e.invoiceSent, fees_paid: !!e.feesPaid, receipt_issued: !!e.receiptIssued,
     billing_notes: e.billingNotes || '', created_at: e.createdAt || new Date().toISOString()
   });
   const fromDbEvent = r => ({
     id: r.id, name: r.name, serviceType: r.service_type, date: r.date,
-    timeStart: r.time_start, timeEnd: r.time_end, location: r.location, morada: r.morada || '', status: r.status || 'confirmado',
+    timeStart: r.time_start, timeEnd: r.time_end, location: r.location, morada: r.morada || '', status: r.status || 'confirmado', dateEnd: r.date_end || '',
     rate: r.rate, staffingNeeds: r.staffing_needs || {}, areaRates: r.area_rates || {},
     invoiceSent: r.invoice_sent, feesPaid: r.fees_paid, receiptIssued: r.receipt_issued,
     billingNotes: r.billing_notes, notes: r.notes || '', createdAt: r.created_at
@@ -1502,7 +1523,7 @@
     id: r.id, eventId: r.event_id, providerId: r.provider_id, name: r.name,
     day: r.day, timeStart: r.time_start, timeEnd: r.time_end, local: r.local,
     area: r.area, rate: r.rate, absent: r.absent, absentReason: r.absent_reason,
-    notes: r.notes, receiptIssued: r.receipt_issued, notified: r.notified
+    notes: r.notes, receiptIssued: r.receipt_issued, notified: r.notified, checkinAt: r.checkin_at || null, checkoutAt: r.checkout_at || null, checkinBy: r.checkin_by || null, checkoutBy: r.checkout_by || null
   });
   const toDbProvider = p => ({
     id: p.id, name: p.name, email: (p.email||'').trim().toLowerCase(), contact: p.contact || '', service_type: p.serviceType,
@@ -2122,6 +2143,7 @@
       morada: $('evMorada').value.trim(),
       notes: $('evObs').value.trim(),
       status: $('evEstado').value || 'confirmado',
+      dateEnd: ($('evDataFim').value && $('evDataFim').value > $('evData').value) ? $('evDataFim').value : '',
       rate: fallbackRate,
       staffingNeeds: {
         'Coordenador': parseInt($('needCoordenador').value)||0,
@@ -2189,11 +2211,12 @@
   function evCategoria(ev){
     const st = ev.status || 'confirmado';
     if(st === 'cancelado') return 'cancelados';
-    if(st !== 'fechada' && (eventState(ev.date) !== 'past' || st === 'a_decorrer')) return 'ativos';
+    if(st !== 'fechada' && (eventState(evFim(ev)) !== 'past' || st === 'a_decorrer')) return 'ativos';
     return 'arquivo';
   }
   function evRelDays(ev){
     const d = daysUntil(ev.date);
+    if(d < 0 && daysUntil(evFim(ev)) >= 0) return 'a decorrer';
     return d === 0 ? 'hoje' : d === 1 ? 'amanhã' : d > 1 ? `em ${d} dias` : d === -1 ? 'ontem' : `há ${-d} dias`;
   }
 
@@ -2202,24 +2225,27 @@
     const info = statusInfo(st);
     const dt = new Date(ev.date + 'T00:00:00');
     const dia = dt.getDate();
+    const multi = !!(ev.dateEnd && ev.dateEnd > ev.date);
+    const dtFim = multi ? new Date(ev.dateEnd + 'T00:00:00') : null;
+    const nDias = multi ? Math.round((dtFim - dt) / 86400000) + 1 : 1;
     const mes = dt.toLocaleDateString('pt-PT', { month:'short' }).replace('.', '');
     const semana = dt.toLocaleDateString('pt-PT', { weekday:'short' }).replace('.', '');
     const horario = (ev.timeStart || ev.timeEnd) ? `${ev.timeStart||'—'}–${ev.timeEnd||'—'}` : '';
     const need = eventNeedTotal(ev), gap = eventGap(ev);
     const lista = staffForEvent(ev.id).slice().sort((a,b)=>((a.area||'')+a.name).localeCompare((b.area||'')+b.name));
     const disp = providers.filter(p=>{ const inv = getInvitation(ev.id, p.id); return inv && inv.response === 'disponivel'; }).length;
-    const passado = eventState(ev.date) === 'past';
+    const passado = eventState(evFim(ev)) === 'past';
     const cancelado = st === 'cancelado';
     const borda = cancelado ? 'cancel' : (need === 0 ? '' : (gap > 0 ? 'gap' : 'full'));
     const equipaChip = need ? `<span class="tag ${gap>0?'low':'ok'}" title="Prestadores alocados / necessários">Equipa ${need-gap}/${need}</span>` : '<span class="tag past">Sem equipa definida</span>';
     const dispChip = (!passado && !cancelado && disp) ? `<span class="tag future" title="Responderam que estão disponíveis">${disp} disponíve${disp===1?'l':'is'}</span>` : '';
-    const sub = [semana, horario, ev.location, evRelDays(ev)].filter(Boolean).map(escapeHtml).join(' · ');
+    const sub = [semana, multi ? `${nDias} dias` : '', horario, ev.location, evRelDays(ev)].filter(Boolean).map(escapeHtml).join(' · ');
     const equipaLista = lista.length
       ? `<ul class="ev-team">${lista.map(s=>`<li><strong>${escapeHtml(s.name)}</strong>${s.area ? ' — ' + escapeHtml(s.area) : ''}${(s.timeStart||s.timeEnd) ? ` <span style="color:var(--ink-soft);">(${s.timeStart||'—'}–${s.timeEnd||'—'})</span>` : ''}${s.absent ? ' <span class="tag absent">Falta</span>' : ''}</li>`).join('')}</ul>`
       : '<p style="margin:4px 0 0 0;color:var(--ink-soft);font-size:13.5px;">Ainda ninguém alocado.</p>';
     return `<div class="ev-card ${borda} ${evOpen.has(ev.id) ? 'open' : ''}" data-id="${ev.id}">
       <div class="ev-head" data-id="${ev.id}">
-        <div class="ev-date"><span class="d">${dia}</span><span class="m">${escapeHtml(mes)}</span></div>
+        <div class="ev-date"><span class="d${multi ? ' d-multi' : ''}">${dia}${multi ? '–' + dtFim.getDate() : ''}</span><span class="m">${escapeHtml(mes)}</span></div>
         <div class="ev-main">
           <div class="ev-title">${escapeHtml(ev.name)}<span class="ev-type">${escapeHtml(ev.serviceType||'')}</span></div>
           <div class="ev-sub">${sub}</div>
@@ -2232,7 +2258,7 @@
       </div>
       <div class="ev-body">
         <div class="ev-grid">
-          <div><div class="ev-k">Data</div><div class="ev-v">${dt.toLocaleDateString('pt-PT', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}</div></div>
+          <div><div class="ev-k">${multi ? 'Datas' : 'Data'}</div><div class="ev-v">${multi ? `${dt.toLocaleDateString('pt-PT', { day:'numeric', month:'long' })} a ${dtFim.toLocaleDateString('pt-PT', { day:'numeric', month:'long', year:'numeric' })} (${nDias} dias)` : dt.toLocaleDateString('pt-PT', { weekday:'long', day:'numeric', month:'long', year:'numeric' })}</div></div>
           <div><div class="ev-k">Horário</div><div class="ev-v">${horario || '—'}</div></div>
           <div><div class="ev-k">Local</div><div class="ev-v">${escapeHtml(ev.location||'—')}</div></div>
           <div><div class="ev-k">Morada</div><div class="ev-v">${escapeHtml(ev.morada||'—')}</div></div>
@@ -2322,7 +2348,7 @@
 
   // ================= PESSOAL =================
   let pessoalPeriodo = 'proximos';
-  function isEventoRealizado(ev){ return eventState(ev.date) === 'past'; }
+  function isEventoRealizado(ev){ return eventState(evFim(ev)) === 'past'; }
   function pessoalForaDoIntervalo(ev){
     const de = $('pessoalFiltroDe').value, ate = $('pessoalFiltroAte').value;
     return (de && ev.date < de) || (ate && ev.date > ate);
@@ -2432,9 +2458,81 @@
     $('pesLocal').value = ev ? ev.location : '';
     $('pesTaxa').value = ev ? ev.rate : 25;
     updatePesCalcPreview();
+    pesDiasSel = null;
+    renderPesDias();
   }
 
   $('pesCancelEdit').addEventListener('click', resetPessoalForm);
+
+  // ---------- Pessoal: turnos de hoje, vários dias e registo de entrada/saída ----------
+  var pesDiasSel = null;
+  function diasEntre(a, b){
+    const out = [];
+    const [y1,m1,d1] = a.split('-').map(Number), [y2,m2,d2] = b.split('-').map(Number);
+    for(let t = Date.UTC(y1,m1-1,d1), fim = Date.UTC(y2,m2-1,d2); t <= fim && out.length < 60; t += 86400000) out.push(new Date(t).toISOString().slice(0,10));
+    return out;
+  }
+  function renderPesDias(){
+    const wrap = $('pesDiasWrap'), box = $('pesDiasMulti');
+    const ev = activeEventId ? eventById(activeEventId) : null;
+    const multi = ev && evFim(ev) !== ev.date && !$('pesId').value;
+    wrap.style.display = multi ? '' : 'none';
+    $('pesDia').closest('.field').style.display = multi ? 'none' : '';
+    if(!multi){ box.innerHTML = ''; return; }
+    const dias = diasEntre(ev.date, evFim(ev));
+    if(!pesDiasSel) pesDiasSel = new Set([dias[0]]);
+    box.innerHTML = dias.map(d=>`<label><input type="checkbox" value="${d}" ${pesDiasSel.has(d) ? 'checked' : ''}> ${new Date(d+'T00:00:00').toLocaleDateString('pt-PT', { weekday:'short', day:'numeric', month:'short' })}</label>`).join('')
+      + `<label style="border-style:dashed;"><input type="checkbox" id="pesDiasTodos" ${dias.every(d=>pesDiasSel.has(d)) ? 'checked' : ''}> Todos os dias</label>`;
+    box.querySelectorAll('input[value]').forEach(cb=> cb.addEventListener('change', ()=>{ if(cb.checked) pesDiasSel.add(cb.value); else pesDiasSel.delete(cb.value); renderPesDias(); }));
+    $('pesDiasTodos').addEventListener('change', (e)=>{ pesDiasSel = new Set(e.target.checked ? dias : [dias[0]]); renderPesDias(); });
+    if(!$('pesDia').value || !dias.includes($('pesDia').value)) $('pesDia').value = dias[0];
+  }
+  function registoTurnoCellHtml(s){
+    if(s.absent) return '<span style="color:var(--ink-soft);">—</span>';
+    const linhas = [];
+    if(s.checkinAt) linhas.push(`Entrada ${horaCurta(s.checkinAt)}`);
+    if(s.checkoutAt) linhas.push(`Saída ${horaCurta(s.checkoutAt)}`);
+    const reais = (s.checkinAt && s.checkoutAt) ? `<div style="color:var(--ink-soft);">${fmtHours((new Date(s.checkoutAt) - new Date(s.checkinAt)) / 3600000)} reais</div>` : '';
+    const info = linhas.length ? `<div style="font-size:12.5px;margin-bottom:4px;">${linhas.join('<br>')}${reais}</div>` : '';
+    const acao = !s.checkinAt ? `<button class="btn ghost small" data-turno-acao="entrada" data-id="${s.id}">Registar entrada</button>`
+      : !s.checkoutAt ? `<button class="btn ghost small" data-turno-acao="saida" data-id="${s.id}">Registar saída</button>`
+      : `<a href="#" data-turno-acao="anular" data-id="${s.id}" style="font-size:12px;color:var(--ink-soft);">Anular registo</a>`;
+    return info + acao;
+  }
+  function renderTurnosHoje(){
+    const panel = $('turnosHojePanel'), body = $('turnosHojeBody');
+    if(!panel) return;
+    const agora = new Date();
+    const iniDia = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate());
+    const fimDia = new Date(iniDia.getTime() + 86400000);
+    const hoje = staff.filter(s=>{
+      const j = turnoJanela(s);
+      if(!j) return false;
+      const ev = eventById(s.eventId);
+      if(ev && (ev.status || 'confirmado') === 'cancelado') return false;
+      return (j.inicio < fimDia && j.fim > iniDia) || (s.checkinAt && !s.checkoutAt);
+    }).sort((a,b)=> turnoJanela(a).inicio - turnoJanela(b).inicio);
+    if(!hoje.length){ panel.style.display = 'none'; return; }
+    panel.style.display = '';
+    const emTurno = hoje.filter(s=> s.checkinAt && !s.checkoutAt).length;
+    const atrasados = hoje.filter(s=> turnoEstado(s).key === 'atrasado').length;
+    $('turnosEmCurso').textContent = `${emTurno} em turno agora${atrasados ? ` · ${atrasados} atrasado${atrasados===1?'':'s'}` : ''}`;
+    body.innerHTML = `<div style="overflow-x:auto;"><table>
+      <thead><tr><th>Horário</th><th>Evento</th><th>Colaborador</th><th>Área</th><th>Estado</th><th>Registo</th></tr></thead>
+      <tbody>${hoje.map(s=>{
+        const ev = eventById(s.eventId);
+        const est = turnoEstado(s);
+        return `<tr>
+          <td>${s.timeStart||'—'}–${s.timeEnd||'—'}${s.day !== todayStr() ? `<div style="font-size:12px;color:var(--ink-soft);">${new Date(s.day+'T00:00:00').toLocaleDateString('pt-PT')}</div>` : ''}</td>
+          <td>${escapeHtml(ev ? ev.name : '—')}</td>
+          <td><strong>${escapeHtml(s.name)}</strong></td>
+          <td>${escapeHtml(s.area || '—')}</td>
+          <td><span class="tag ${est.cls}">${est.label}</span></td>
+          <td>${registoTurnoCellHtml(s)}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+  }
 
   async function handleRegistarPessoal(){
     if(!activeEventId){ showToast('Seleciona um evento primeiro'); return; }
@@ -2456,10 +2554,16 @@
       absentReason: isAbsent ? $('pesMotivo').value.trim() : '',
       notes: $('pesObs').value.trim()
     };
+    const evAtivo = eventById(activeEventId);
+    const diasEscolhidos = (!editId && evAtivo && evFim(evAtivo) !== evAtivo.date) ? [...(pesDiasSel || new Set())].sort() : null;
+    if(diasEscolhidos && !diasEscolhidos.length){ showToast('Marca pelo menos um dia do turno'); return; }
     if(editId){
       const idx = staff.findIndex(s=>s.id===editId);
       if(idx>-1) staff[idx] = {...staff[idx], ...data};
       showToast('Registo atualizado');
+    }else if(diasEscolhidos){
+      diasEscolhidos.forEach(dia=> staff.push({id: uid(), receiptIssued:false, notified:false, ...data, day: dia}));
+      showToast(diasEscolhidos.length === 1 ? 'Colaborador registado' : `Colaborador registado em ${diasEscolhidos.length} dias`);
     }else{
       staff.push({id: uid(), receiptIssued:false, notified:false, ...data});
       showToast('Colaborador registado');
@@ -2507,6 +2611,7 @@
   }
 
   function renderPessoal(){
+    renderTurnosHoje();
     renderEventSelect();
     renderPrestadorOptionsInPessoal();
     const empty = !activeEventId;
@@ -2525,7 +2630,7 @@
 
     const tbody = document.querySelector('#tblPessoal tbody');
     if(list.length===0){
-      tbody.innerHTML = `<tr class="empty-row"><td colspan="13">Ainda não há pessoal registado para este evento.</td></tr>`;
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="14">Ainda não há pessoal registado para este evento.</td></tr>`;
     }else{
       tbody.innerHTML = list.map(s=>{
         const h = staffHours(s);
@@ -2543,6 +2648,7 @@
           <td>${fmtEuro(rate)}</td>
           <td>${fmtEuro(val)}</td>
           <td>${s.absent ? `<span class="tag absent" title="${escapeHtml(s.absentReason||'')}">Falta</span>` : `<span class="tag ok">Presente</span>`}</td>
+          <td style="min-width:130px;">${registoTurnoCellHtml(s)}</td>
           <td><span class="toggle-pill ${s.receiptIssued?'yes':'no'}" data-action="toggle-receipt" data-id="${s.id}">${s.receiptIssued?'Sim':'Não'}</span></td>
           <td style="max-width:180px;white-space:normal;">${escapeHtml(s.notes||'—')}</td>
           <td>
@@ -2572,6 +2678,7 @@
         $('pesPrestador').value = s.providerId || '';
         $('pesNome').value = s.name;
         $('pesDia').value = s.day || todayStr();
+        renderPesDias();
         $('pesHoraInicio').value = s.timeStart || '';
         $('pesHoraFim').value = s.timeEnd || '';
         $('pesLocal').value = s.local || '';
@@ -3007,7 +3114,7 @@
     });
 
     const futuros = events.filter(ev => {
-      const d = daysUntil(ev.date);
+      const d = daysUntil(evFim(ev));
       return d >= 0 && (ev.status || 'confirmado') !== 'cancelado';
     });
     // Eventos com a equipa completa (todas as vagas preenchidas com pessoas alocadas) deixam de ser alerta
@@ -3025,7 +3132,7 @@
 
     container.innerHTML = avisoOcultos + upcoming.map(ev=>{
       const dias = daysUntil(ev.date);
-      const diasLabel = dias===0 ? 'Hoje' : dias===1 ? 'Amanhã' : `Em ${dias} dias`;
+      const diasLabel = dias===0 ? 'Hoje' : dias===1 ? 'Amanhã' : dias < 0 ? 'A decorrer' : `Em ${dias} dias`;
       const list = providers.slice().sort((a,b)=>a.name.localeCompare(b.name));
 
       const groupsHtml = list.length === 0
@@ -3171,7 +3278,7 @@
 
   function pendingEventsAlertCount(){
     const upcoming = events.filter(ev => {
-      const d = daysUntil(ev.date);
+      const d = daysUntil(evFim(ev));
       return d >= 0 && d <= 30 && (ev.status || 'confirmado') !== 'cancelado' && !equipaCompleta(ev);
     });
     let count = 0;
@@ -3371,14 +3478,14 @@
       const det = [['Mês','Data do evento','Evento','Tipo de evento','Local do evento','Morada','Horário do evento',
         'Colaborador','Área','Email','Contacto','Dia do turno','Hora início','Hora fim','Local do turno',
         'Horas','Honorário/h','Valor a pagar','Falta','Motivo da falta','Recibo emitido (colaborador)',
-        'Observações do registo','Observações do evento','Fatura ao cliente','Honorários pagos','Recibo emitido (evento)','Notas de faturação']];
+        'Observações do registo','Observações do evento','Fatura ao cliente','Honorários pagos','Recibo emitido (evento)','Notas de faturação','Entrada (real)','Saída (real)','Horas reais']];
       let detH = 0, detV = 0;
       evs.forEach(ev=>{
         const base = [ev.date.slice(0,7), xlDate(ev.date), ev.name, ev.serviceType||'', ev.location||'', ev.morada||'', horarioEv(ev)];
         const fat = [simNao(ev.invoiceSent), simNao(ev.feesPaid), simNao(ev.receiptIssued), ev.billingNotes||''];
         const lst = staffForEvent(ev.id).slice().sort(turnoOrd);
         if(!lst.length){
-          det.push([...base, '(sem pessoal registado)', '', '', '', '', '', '', '', 0, '', 0, '', '', '', '', ev.notes||'', ...fat]);
+          det.push([...base, '(sem pessoal registado)', '', '', '', '', '', '', '', 0, '', 0, '', '', '', '', ev.notes||'', ...fat, '', '', '']);
           return;
         }
         lst.forEach(s=>{
@@ -3389,7 +3496,9 @@
           det.push([...base, s.name||'', s.area||'', p ? (p.email||'') : '', p ? (p.contact||'') : '',
             s.day ? xlDate(s.day) : '', s.timeStart||'', s.timeEnd||'', s.local||'',
             r2(h), r2(rate), r2(v), simNao(s.absent), s.absentReason||'', simNao(s.receiptIssued),
-            s.notes||'', ev.notes||'', ...fat]);
+            s.notes||'', ev.notes||'', ...fat,
+            s.checkinAt ? new Date(s.checkinAt).toLocaleString('pt-PT') : '', s.checkoutAt ? new Date(s.checkoutAt).toLocaleString('pt-PT') : '',
+            (s.checkinAt && s.checkoutAt) ? r2((new Date(s.checkoutAt) - new Date(s.checkinAt)) / 3600000) : '']);
         });
       });
       det.push(totalRow(det[0].length, { 15: r2(detH), 17: r2(detV) }));
@@ -3437,8 +3546,8 @@
       evRows.push(totalRow(evRows[0].length, { 7: te.n, 8: r2(te.h), 9: r2(te.v) }));
 
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, xlSheet(XLSX, det, { 1:XL_DATA, 11:XL_DATA, 15:XL_H, 16:XL_EUR, 17:XL_EUR },
-        [9,12,28,16,18,26,13,24,13,26,14,12,10,10,18,8,12,13,7,18,12,32,32,12,12,12,28]), 'Detalhe');
+      XLSX.utils.book_append_sheet(wb, xlSheet(XLSX, det, { 1:XL_DATA, 11:XL_DATA, 15:XL_H, 16:XL_EUR, 17:XL_EUR, 29:XL_H },
+        [9,12,28,16,18,26,13,24,13,26,14,12,10,10,18,8,12,13,7,18,12,32,32,12,12,12,28,17,17,10]), 'Detalhe');
       XLSX.utils.book_append_sheet(wb, xlSheet(XLSX, resumo, { 4:XL_H, 5:XL_EUR }, [10,20,11,22,9,14]), 'Resumo mês e tipo');
       XLSX.utils.book_append_sheet(wb, xlSheet(XLSX, colab, { 6:XL_H, 7:XL_EUR }, [26,13,28,15,10,8,9,14,17]), 'Por colaborador');
       XLSX.utils.book_append_sheet(wb, xlSheet(XLSX, evRows, { 0:XL_DATA, 8:XL_H, 9:XL_EUR }, [12,28,16,18,26,10,10,10,9,14,12,12,12,28,32]), 'Eventos');
@@ -4119,6 +4228,85 @@
     $('providerLoginBtn').textContent = 'Entrar';
   });
 
+  // ---------------- Turnos: entrada e saída ----------------
+  function evFim(ev){ return (ev && ev.dateEnd && ev.dateEnd > ev.date) ? ev.dateEnd : (ev ? ev.date : ''); }
+  function turnoJanela(s){
+    if(!s || !s.day) return null;
+    const ini = new Date(`${s.day}T${(s.timeStart || '00:00').slice(0,5)}:00`);
+    if(isNaN(ini)) return null;
+    let fim;
+    if(s.timeStart && s.timeEnd){
+      fim = new Date(`${s.day}T${s.timeEnd.slice(0,5)}:00`);
+      if(fim <= ini) fim = new Date(fim.getTime() + 86400000);
+    }else fim = new Date(ini.getTime() + 86400000);
+    return { inicio: ini, fim };
+  }
+  function horaCurta(iso){ return iso ? new Date(iso).toLocaleTimeString('pt-PT', { hour:'2-digit', minute:'2-digit' }) : ''; }
+  function turnoEstado(s){
+    if(s.absent) return { key:'falta', label:'Falta', cls:'absent' };
+    if(s.checkoutAt) return { key:'terminado', label:`Saiu às ${horaCurta(s.checkoutAt)}`, cls:'past' };
+    if(s.checkinAt) return { key:'em_turno', label:`Em turno desde ${horaCurta(s.checkinAt)}`, cls:'ok' };
+    const j = turnoJanela(s), agora = new Date();
+    if(j && agora > j.fim) return { key:'sem_registo', label:'Sem registo de entrada', cls:'low' };
+    if(j && agora > new Date(j.inicio.getTime() + 10*60000)) return { key:'atrasado', label:'Atrasado — sem entrada', cls:'low' };
+    return { key:'por_entrar', label:`Entra às ${s.timeStart || '—'}`, cls:'future' };
+  }
+  async function registarTurno(staffId, acao){
+    if(!sb){ showToast('Sem ligação. Tenta outra vez.'); return false; }
+    const { data, error } = await sb.rpc('staff_check', { p_staff_id: staffId, p_action: acao });
+    if(error){ showToast(error.message || 'Não foi possível registar.'); return false; }
+    const s = staff.find(x=>x.id===staffId);
+    if(s && data){ s.checkinAt = data.checkin_at; s.checkoutAt = data.checkout_at; s.checkinBy = data.checkin_by; s.checkoutBy = data.checkout_by; }
+    showToast(acao === 'entrada' ? 'Entrada registada' : acao === 'saida' ? 'Saída registada' : 'Registo anulado');
+    if(typeof renderAll === 'function') renderAll();
+    if(typeof renderProviderAll === 'function' && currentProviderId) renderProviderAll();
+    return true;
+  }
+  document.addEventListener('click', async (e)=>{
+    const b = e.target.closest('[data-turno-acao]');
+    if(!b) return;
+    e.preventDefault();
+    if(b.dataset.turnoAcao === 'anular' && !confirm('Anular o registo de entrada e saída deste turno?')) return;
+    if(b.dataset.turnoAcao === 'saida' && !confirm('Registar a saída agora?')) return;
+    b.disabled = true;
+    await registarTurno(b.dataset.id, b.dataset.turnoAcao);
+    b.disabled = false;
+  });
+  function renderProvTurnosHoje(){
+    const box = $('provTurnosHoje');
+    if(!box) return;
+    if(!currentProviderId){ box.innerHTML = ''; return; }
+    const agora = new Date();
+    const meus = staff.filter(s=> s.providerId === currentProviderId && !s.absent).filter(s=>{
+      const j = turnoJanela(s);
+      if(!j) return false;
+      if(s.checkoutAt && agora > new Date(new Date(s.checkoutAt).getTime() + 2*3600000)) return false;
+      return agora >= new Date(j.inicio.getTime() - 2*3600000) && agora <= new Date(j.fim.getTime() + 12*3600000);
+    }).sort((a,b)=> turnoJanela(a).inicio - turnoJanela(b).inicio);
+    if(!meus.length){ box.innerHTML = ''; return; }
+    box.innerHTML = `<div class="panel" style="border-left:4px solid var(--amber);">
+      <div class="panel-head"><h2>Os teus turnos de hoje</h2></div>
+      <div class="panel-body">${meus.map(s=>{
+        const ev = eventById(s.eventId);
+        const est = turnoEstado(s);
+        const j = turnoJanela(s);
+        const podeEntrar = agora >= new Date(j.inicio.getTime() - 2*3600000) && agora <= j.fim;
+        const acao = !s.checkinAt
+          ? (podeEntrar ? `<button class="btn amber" data-turno-acao="entrada" data-id="${s.id}">Registar entrada</button>` : '<span style="color:var(--ink-soft);font-size:13px;">Prazo de entrada terminado — fala com a gestão</span>')
+          : !s.checkoutAt ? `<button class="btn amber" data-turno-acao="saida" data-id="${s.id}">Registar saída</button>`
+          : `<span style="color:var(--ink-soft);font-size:13px;">Entrada ${horaCurta(s.checkinAt)} · Saída ${horaCurta(s.checkoutAt)}</span>`;
+        return `<div class="turno-linha">
+          <div>
+            <strong>${escapeHtml(ev ? ev.name : 'Evento')}</strong>
+            <div style="font-size:13px;color:var(--ink-soft);">${new Date(s.day+'T00:00:00').toLocaleDateString('pt-PT')} · ${s.timeStart||'—'}–${s.timeEnd||'—'}${(s.local || (ev && ev.location)) ? ' · ' + escapeHtml(s.local || ev.location) : ''}</div>
+            <div style="margin-top:5px;"><span class="tag ${est.cls}">${est.label}</span></div>
+          </div>
+          <div>${acao}</div>
+        </div>`;
+      }).join('')}</div></div>`;
+  }
+  setInterval(()=>{ if(document.visibilityState === 'visible'){ renderProvTurnosHoje(); if(typeof renderTurnosHoje === 'function') renderTurnosHoje(); } }, 60000);
+
   // ---------------- Recibos verdes ----------------
   var receipts = [];
   const fromDbReceipt = r => ({ id: r.id, staffId: r.staff_id, providerId: r.provider_id, eventId: r.event_id, filePath: r.file_path, fileName: r.file_name,
@@ -4291,6 +4479,7 @@
 
   function renderProviderAll(){
     checkNewAllocations();
+    renderProvTurnosHoje();
     renderProvDisponibilidades();
     renderProvAlertas();
     renderProvAssistenciasEventoOptions();
@@ -4306,7 +4495,7 @@
     const myArea = p ? p.serviceType : null;
 
     // 1. Novos eventos para a função, ainda sem resposta
-    const novos = events.filter(ev => daysUntil(ev.date) >= 0 && (ev.staffingNeeds||{})[myArea] > 0 && (ev.status || 'confirmado') !== 'cancelado' && !getInvitation(ev.id, currentProviderId))
+    const novos = events.filter(ev => daysUntil(evFim(ev)) >= 0 && (ev.staffingNeeds||{})[myArea] > 0 && (ev.status || 'confirmado') !== 'cancelado' && !getInvitation(ev.id, currentProviderId))
       .sort((a,b)=>a.date.localeCompare(b.date));
     const novosContainer = $('provAlertasNovosContainer');
     if(novos.length === 0){
@@ -4430,7 +4619,7 @@
     const container = $('provDisponibilidadesContainer');
     const p = providers.find(x=>x.id===currentProviderId);
     const myArea = p ? p.serviceType : null;
-    const upcoming = events.filter(ev => daysUntil(ev.date) >= 0 && (ev.staffingNeeds||{})[myArea] > 0 && (ev.status || 'confirmado') !== 'cancelado').sort((a,b)=>a.date.localeCompare(b.date));
+    const upcoming = events.filter(ev => daysUntil(evFim(ev)) >= 0 && (ev.staffingNeeds||{})[myArea] > 0 && (ev.status || 'confirmado') !== 'cancelado').sort((a,b)=>a.date.localeCompare(b.date));
     if(upcoming.length === 0){
       container.innerHTML = `<div class="empty-state"><p>Não há eventos futuros que precisem da tua função (${escapeHtml(myArea||'—')}) de momento.</p></div>`;
       return;
