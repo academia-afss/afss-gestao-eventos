@@ -480,10 +480,12 @@
   <!-- ============ EVENTOS ============ -->
   <section class="view active" id="view-eventos">
     <div class="panel">
-      <div class="panel-head"><h2>Novo evento</h2></div>
+      <div class="panel-head"><h2 id="evFormTitle">Novo evento</h2></div>
       <div class="panel-body">
         <div id="pedidoEmCriacao" style="display:none;margin:0 0 14px 0;padding:10px 12px;background:var(--panel-2);border-left:3px solid var(--amber);font-size:13.5px;"></div>
+        <div id="evEditBanner" style="display:none;margin:0 0 14px 0;padding:10px 12px;background:var(--panel-2);border-left:3px solid var(--amber);font-size:13.5px;"></div>
         <form id="formEvento" class="form-grid">
+          <input type="hidden" id="evEditId">
           <div class="field">
             <label for="evNome">Nome do evento</label>
             <input type="text" id="evNome" placeholder="Ex: Festival do Mar 2026">
@@ -571,6 +573,9 @@
           </div>
           <div class="field">
             <button type="button" class="btn amber" id="btnCriarEvento">Criar evento</button>
+          </div>
+          <div class="field">
+            <button type="button" class="btn ghost" id="btnCancelarEdicaoEvento" style="display:none;">Cancelar edição</button>
           </div>
         </form>
         <p class="hint" style="margin-top:12px;">Se a hora de fim for menor que a hora de início, assume-se que o evento passa a meia-noite. Ex: 1 Coordenador, 2 Médico, 2 Enfermeiro.</p>
@@ -2085,6 +2090,7 @@
     const r = serviceRequests.find(x=>x.id===id);
     if(!r) return;
     switchView('eventos');
+    if($('evEditId').value) sairEdicaoEvento();
     $('formEvento').reset();
     $('evNome').value = `${r.event_name} — ${r.entity}`;
     $('evTipo').value = r.service_type;
@@ -2132,6 +2138,8 @@
     };
     const setRates = Object.values(areaRates).filter(v=>v!=null);
     const fallbackRate = setRates.length ? (setRates.reduce((a,b)=>a+b,0)/setRates.length) : 25;
+    const editId = $('evEditId').value;
+    if(editId){ await guardarEdicaoEvento(editId, areaRates, fallbackRate); return; }
     const ev = {
       id: uid(),
       name: name,
@@ -2165,6 +2173,93 @@
     showToast('Evento criado: ' + ev.name);
     if(pendingPedidoId) await marcarPedidoConvertido(ev.id);
   }
+  // ---------- Editar evento existente ----------
+  // Só altera os campos do formulário; tudo o resto (faturação, pessoal, convites,
+  // assistências, data de criação) fica exatamente como estava.
+  function abrirEdicaoEvento(id){
+    const ev = eventById(id);
+    if(!ev) return;
+    if(pendingPedidoId){ pendingPedidoId = null; $('pedidoEmCriacao').style.display = 'none'; }
+    switchView('eventos');
+    $('formEvento').reset();
+    $('evEditId').value = ev.id;
+    $('evNome').value = ev.name || '';
+    if(ev.serviceType && ![...$('evTipo').options].some(o=>o.value===ev.serviceType)){
+      const o = document.createElement('option'); o.textContent = ev.serviceType; $('evTipo').appendChild(o);
+    }
+    $('evTipo').value = ev.serviceType || '';
+    $('evEstado').value = ev.status || 'confirmado';
+    $('evData').value = ev.date || '';
+    $('evDataFim').value = ev.dateEnd || '';
+    $('evHoraInicio').value = ev.timeStart || '';
+    $('evHoraFim').value = ev.timeEnd || '';
+    $('evLocal').value = ev.location || '';
+    $('evMorada').value = ev.morada || '';
+    $('evObs').value = ev.notes || '';
+    const n = ev.staffingNeeds || {}, r = ev.areaRates || {};
+    AREAS.forEach(a=>{
+      const key = {'Coordenador':'Coordenador','Médico':'Medico','Enfermeiro':'Enfermeiro','Técnico':'Tecnico'}[a];
+      if(!key) return;
+      $('need'+key).value = n[a] || 0;
+      $('rate'+key).value = (r[a] !== undefined && r[a] !== null && r[a] !== '') ? r[a] : (ev.rate != null ? ev.rate : 25);
+    });
+    $('evFormTitle').textContent = 'Editar evento';
+    $('btnCriarEvento').textContent = 'Guardar alterações';
+    $('btnCancelarEdicaoEvento').style.display = 'inline-block';
+    $('evEditBanner').innerHTML = `A editar <strong>${escapeHtml(ev.name)}</strong>. Altera o que precisares e carrega em <strong>Guardar alterações</strong>. O pessoal, convites, assistências e faturação deste evento mantêm-se.`;
+    $('evEditBanner').style.display = 'block';
+    $('evFormTitle').scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+  function sairEdicaoEvento(){
+    $('evEditId').value = '';
+    $('formEvento').reset();
+    $('evEstado').value = 'confirmado';
+    ['needCoordenador','needMedico','needEnfermeiro','needTecnico'].forEach(id=>$(id).value = 0);
+    ['rateCoordenador','rateMedico','rateEnfermeiro','rateTecnico'].forEach(id=>$(id).value = 25);
+    $('evFormTitle').textContent = 'Novo evento';
+    $('btnCriarEvento').textContent = 'Criar evento';
+    $('btnCancelarEdicaoEvento').style.display = 'none';
+    $('evEditBanner').style.display = 'none';
+  }
+  async function guardarEdicaoEvento(id, areaRates, fallbackRate){
+    const ev = eventById(id);
+    if(!ev){ showToast('Este evento já não existe'); sairEdicaoEvento(); return; }
+    const dataAntiga = ev.date;
+    const notasAntigas = ev.notes || '';
+    const novasNotas = $('evObs').value.trim();
+    Object.assign(ev, {
+      name: $('evNome').value.trim(),
+      serviceType: $('evTipo').value,
+      status: $('evEstado').value || ev.status || 'confirmado',
+      date: $('evData').value,
+      dateEnd: ($('evDataFim').value && $('evDataFim').value > $('evData').value) ? $('evDataFim').value : '',
+      timeStart: $('evHoraInicio').value,
+      timeEnd: $('evHoraFim').value,
+      location: $('evLocal').value.trim(),
+      morada: $('evMorada').value.trim(),
+      rate: fallbackRate,
+      staffingNeeds: {
+        'Coordenador': parseInt($('needCoordenador').value)||0,
+        'Médico': parseInt($('needMedico').value)||0,
+        'Enfermeiro': parseInt($('needEnfermeiro').value)||0,
+        'Técnico': parseInt($('needTecnico').value)||0
+      },
+      areaRates: areaRates
+    });
+    await saveEvents();
+    if(novasNotas !== notasAntigas){
+      if(await saveEventNotes(ev.id, novasNotas)) ev.notes = novasNotas;
+      else showToast('Evento guardado, mas as observações não foram guardadas');
+    }
+    sairEdicaoEvento();
+    renderAll();
+    const comPessoal = staffForEvent(ev.id).length;
+    showToast(dataAntiga !== ev.date && comPessoal
+      ? `Evento atualizado. Mudaste a data: confirma os dias do pessoal na aba Pessoal.`
+      : 'Evento atualizado: ' + ev.name);
+  }
+  $('btnCancelarEdicaoEvento').addEventListener('click', sairEdicaoEvento);
+
   $('btnCriarEvento').addEventListener('click', handleCriarEvento);
   $('formEvento').addEventListener('keydown', (e)=>{
     if(e.key === 'Enter' && e.target.tagName === 'INPUT'){ e.preventDefault(); handleCriarEvento(); }
@@ -2275,6 +2370,7 @@
         <div class="row-actions" style="margin-top:14px;">
           ${(!passado && !cancelado) ? pedirDispButtonHtml(ev) : ''}
           <button class="btn ghost small" data-action="pessoal" data-id="${ev.id}">Pessoal</button>
+          <button class="btn ghost small" data-action="edit-event" data-id="${ev.id}">Editar</button>
           <button class="btn ghost small" data-action="ev-notes" data-id="${ev.id}">Observações</button>
           <button class="btn danger small" data-action="del-event" data-id="${ev.id}">Eliminar</button>
         </div>
@@ -2327,6 +2423,7 @@
     });
     box.querySelectorAll('[data-action="pedir-disp"]').forEach(b=> b.addEventListener('click', ()=> openPedirDisp(b.dataset.id)));
     box.querySelectorAll('[data-action="ev-notes"]').forEach(b=> b.addEventListener('click', ()=> openEventNotes(b.dataset.id)));
+    box.querySelectorAll('[data-action="edit-event"]').forEach(b=> b.addEventListener('click', ()=> abrirEdicaoEvento(b.dataset.id)));
     box.querySelectorAll('[data-action="pessoal"]').forEach(b=>{
       b.addEventListener('click', ()=>{
         activeEventId = b.dataset.id;
@@ -3900,6 +3997,7 @@
     if(!pendingDelete) return;
     const {type, id} = pendingDelete;
     if(type==='event'){
+      if($('evEditId').value === id) sairEdicaoEvento();
       events = events.filter(e=>e.id!==id);
       staff = staff.filter(s=>s.eventId!==id);
       assistances = assistances.filter(a=>a.eventId!==id);
